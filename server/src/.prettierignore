@@ -1,0 +1,22 @@
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+**/.cache
+**/.git
+**/.svn
+**/.hg
+
+# Ignore artifacts:
+build
+coverage
+
+# Ignore all HTML files:
+**/*.html
+
+# Ignore env files:
+**/.env
+**/.env.*
+
+**/.prettierignore
+**/.prettierrc

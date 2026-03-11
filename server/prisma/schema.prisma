@@ -147,6 +147,7 @@ model Post {
   author   User   @relation(fields: [authorId], references: [id])
 
   readingTime Int?
+  wordCount   Int?
 
   viewCount     Int @default(0)
   likeCount     Int @default(0)

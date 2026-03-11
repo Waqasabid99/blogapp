@@ -2,154 +2,312 @@ import { prisma } from "../src/lib/prisma.js"
 
 async function main() {
 
-  console.log("Starting database seed...");
+  console.log("Starting RBAC seed...")
 
-  ////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////
   // PERMISSIONS
-  ////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////
 
   const permissions = [
-    { action: "create_post", description: "Create blog posts" },
-    { action: "update_post", description: "Update blog posts" },
-    { action: "delete_post", description: "Delete blog posts" },
-    { action: "publish_post", description: "Publish posts" },
-    { action: "approve_post", description: "Approve submitted posts" },
-    { action: "reject_post", description: "Reject submitted posts" },
 
-    { action: "manage_categories", description: "Create/update/delete categories" },
-    { action: "manage_tags", description: "Create/update/delete tags" },
+    //////////////////////////////////////////////////////
+    // DASHBOARD
+    //////////////////////////////////////////////////////
 
-    { action: "manage_users", description: "Create/update/delete users" },
-    { action: "manage_roles", description: "Manage roles and permissions" },
+    { action: "dashboard.view", description: "View admin dashboard" },
 
-    { action: "manage_comments", description: "Moderate comments" },
+    //////////////////////////////////////////////////////
+    // POSTS
+    //////////////////////////////////////////////////////
 
-    { action: "view_admin_dashboard", description: "Access admin dashboard" }
-  ];
+    { action: "post.create", description: "Create posts" },
+    { action: "post.update", description: "Update any post" },
+    { action: "post.delete", description: "Delete posts" },
+    { action: "post.publish", description: "Publish posts" },
+    { action: "post.schedule", description: "Schedule posts" },
+    { action: "post.archive", description: "Archive posts" },
+    { action: "post.feature", description: "Feature posts" },
+    { action: "post.pin", description: "Pin posts" },
 
-  const createdPermissions = {};
+    //////////////////////////////////////////////////////
+    // POST WORKFLOW
+    //////////////////////////////////////////////////////
+
+    { action: "post.submit_for_review", description: "Submit post for review" },
+    { action: "post.approve", description: "Approve posts" },
+    { action: "post.reject", description: "Reject posts" },
+
+    //////////////////////////////////////////////////////
+    // POST MANAGEMENT
+    //////////////////////////////////////////////////////
+
+    { action: "post.lock", description: "Lock posts for editing" },
+    { action: "post.unlock", description: "Unlock posts" },
+    { action: "post.view_drafts", description: "View draft posts" },
+
+    //////////////////////////////////////////////////////
+    // POST REVISIONS
+    //////////////////////////////////////////////////////
+
+    { action: "post_revision.view", description: "View post revisions" },
+    { action: "post_revision.restore", description: "Restore revision" },
+
+    //////////////////////////////////////////////////////
+    // CATEGORIES
+    //////////////////////////////////////////////////////
+
+    { action: "category.create", description: "Create categories" },
+    { action: "category.update", description: "Update categories" },
+    { action: "category.delete", description: "Delete categories" },
+
+    //////////////////////////////////////////////////////
+    // TAGS
+    //////////////////////////////////////////////////////
+
+    { action: "tag.create", description: "Create tags" },
+    { action: "tag.update", description: "Update tags" },
+    { action: "tag.delete", description: "Delete tags" },
+
+    //////////////////////////////////////////////////////
+    // MEDIA LIBRARY
+    //////////////////////////////////////////////////////
+
+    { action: "media.upload", description: "Upload media" },
+    { action: "media.update", description: "Update media metadata" },
+    { action: "media.delete", description: "Delete media" },
+    { action: "media.view", description: "View media library" },
+
+    //////////////////////////////////////////////////////
+    // COMMENTS
+    //////////////////////////////////////////////////////
+
+    { action: "comment.create", description: "Create comments" },
+    { action: "comment.update", description: "Edit comments" },
+    { action: "comment.delete", description: "Delete comments" },
+    { action: "comment.moderate", description: "Moderate comments" },
+    { action: "comment.approve", description: "Approve comments" },
+    { action: "comment.reject", description: "Reject comments" },
+    { action: "comment.spam", description: "Mark comments as spam" },
+
+    //////////////////////////////////////////////////////
+    // USERS
+    //////////////////////////////////////////////////////
+
+    { action: "user.view", description: "View users" },
+    { action: "user.create", description: "Create users" },
+    { action: "user.update", description: "Update users" },
+    { action: "user.delete", description: "Delete users" },
+
+    //////////////////////////////////////////////////////
+    // ROLES & PERMISSIONS
+    //////////////////////////////////////////////////////
+
+    { action: "role.view", description: "View roles" },
+    { action: "role.create", description: "Create roles" },
+    { action: "role.update", description: "Update roles" },
+    { action: "role.delete", description: "Delete roles" },
+
+    { action: "permission.view", description: "View permissions" },
+    { action: "permission.assign", description: "Assign permissions to roles" },
+
+    //////////////////////////////////////////////////////
+    // ANALYTICS
+    //////////////////////////////////////////////////////
+
+    { action: "analytics.view", description: "View analytics" },
+
+    //////////////////////////////////////////////////////
+    // NEWSLETTER
+    //////////////////////////////////////////////////////
+
+    { action: "newsletter.create_campaign", description: "Create newsletter campaign" },
+    { action: "newsletter.send_campaign", description: "Send newsletter campaign" },
+    { action: "newsletter.view_subscribers", description: "View subscribers" },
+    { action: "newsletter.delete_subscriber", description: "Delete subscribers" }
+
+  ]
+
+  const permissionMap = {}
 
   for (const permission of permissions) {
+
     const record = await prisma.permission.upsert({
       where: { action: permission.action },
       update: {},
       create: permission
-    });
+    })
 
-    createdPermissions[permission.action] = record;
+    permissionMap[permission.action] = record
   }
 
-  console.log("Permissions seeded");
+  console.log("Permissions seeded")
 
-  ////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////
   // ROLES
-  ////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////
 
   const roles = [
+
     { name: "Admin", slug: "admin" },
     { name: "Editor", slug: "editor" },
     { name: "Writer", slug: "writer" },
-    { name: "Guest Poster", slug: "guest_poster" },
+    { name: "Guest Writer", slug: "guest_writer" },
     { name: "User", slug: "user" }
-  ];
 
-  const createdRoles = {};
+  ]
+
+  const roleMap = {}
 
   for (const role of roles) {
+
     const record = await prisma.role.upsert({
       where: { slug: role.slug },
       update: {},
       create: role
-    });
+    })
 
-    createdRoles[role.slug] = record;
+    roleMap[role.slug] = record
   }
 
-  console.log("Roles seeded");
+  console.log("Roles seeded")
 
-  ////////////////////////////////////////////////////////
-  // ROLE → PERMISSION MAPPING
-  ////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////
+  // ROLE PERMISSIONS
+  //////////////////////////////////////////////////////
 
   const rolePermissions = {
 
-    admin: [
-      "create_post",
-      "update_post",
-      "delete_post",
-      "publish_post",
-      "approve_post",
-      "reject_post",
-      "manage_categories",
-      "manage_tags",
-      "manage_users",
-      "manage_roles",
-      "manage_comments",
-      "view_admin_dashboard"
-    ],
+    //////////////////////////////////////////////////////
+    // ADMIN
+    //////////////////////////////////////////////////////
+
+    admin: permissions.map(p => p.action),
+
+    //////////////////////////////////////////////////////
+    // EDITOR
+    //////////////////////////////////////////////////////
 
     editor: [
-      "create_post",
-      "update_post",
-      "delete_post",
-      "publish_post",
-      "approve_post",
-      "reject_post",
-      "manage_categories",
-      "manage_tags",
-      "manage_comments",
-      "view_admin_dashboard"
+
+      "dashboard.view",
+
+      "post.create",
+      "post.update",
+      "post.delete",
+      "post.publish",
+      "post.schedule",
+      "post.feature",
+      "post.pin",
+      "post.approve",
+      "post.reject",
+      "post.view_drafts",
+
+      "post_revision.view",
+      "post_revision.restore",
+
+      "category.create",
+      "category.update",
+      "category.delete",
+
+      "tag.create",
+      "tag.update",
+      "tag.delete",
+
+      "media.upload",
+      "media.update",
+      "media.delete",
+      "media.view",
+
+      "comment.moderate",
+      "comment.approve",
+      "comment.reject",
+      "comment.spam",
+
+      "analytics.view"
     ],
+
+    //////////////////////////////////////////////////////
+    // WRITER
+    //////////////////////////////////////////////////////
 
     writer: [
-      "create_post",
-      "update_post",
-      "delete_post",
-      "view_admin_dashboard"
+
+      "dashboard.view",
+
+      "post.create",
+      "post.update",
+      "post.delete",
+      "post.submit_for_review",
+
+      "media.upload",
+      "media.view",
+
+      "comment.create",
+      "comment.update"
     ],
 
-    guest_poster: [
-      "create_post"
+    //////////////////////////////////////////////////////
+    // GUEST WRITER
+    //////////////////////////////////////////////////////
+
+    guest_writer: [
+
+      "post.create",
+      "post.submit_for_review"
     ],
 
-    user: []
-  };
+    //////////////////////////////////////////////////////
+    // USER
+    //////////////////////////////////////////////////////
+
+    user: [
+
+      "comment.create"
+    ]
+
+  }
 
   for (const roleSlug of Object.keys(rolePermissions)) {
 
-    const role = createdRoles[roleSlug];
+    const role = roleMap[roleSlug]
 
     for (const action of rolePermissions[roleSlug]) {
 
-      const permission = createdPermissions[action];
+      const permission = permissionMap[action]
 
       await prisma.rolePermission.upsert({
+
         where: {
           roleId_permissionId: {
             roleId: role.id,
             permissionId: permission.id
           }
         },
+
         update: {},
+
         create: {
           roleId: role.id,
           permissionId: permission.id
         }
-      });
+
+      })
 
     }
+
   }
 
-  console.log("Role permissions mapped");
+  console.log("Role permissions mapped")
 
-  console.log("Database seeding completed successfully");
+  console.log("RBAC seed completed successfully")
+
 }
 
 main()
   .catch((error) => {
-    console.error("Seeding error:", error);
-    process.exit(1);
+    console.error(error)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })

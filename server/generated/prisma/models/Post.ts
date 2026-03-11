@@ -28,6 +28,7 @@ export type AggregatePost = {
 
 export type PostAvgAggregateOutputType = {
   readingTime: number | null
+  wordCount: number | null
   viewCount: number | null
   likeCount: number | null
   clapCount: number | null
@@ -37,6 +38,7 @@ export type PostAvgAggregateOutputType = {
 
 export type PostSumAggregateOutputType = {
   readingTime: number | null
+  wordCount: number | null
   viewCount: number | null
   likeCount: number | null
   clapCount: number | null
@@ -53,6 +55,7 @@ export type PostMinAggregateOutputType = {
   status: $Enums.PostStatus | null
   authorId: string | null
   readingTime: number | null
+  wordCount: number | null
   viewCount: number | null
   likeCount: number | null
   clapCount: number | null
@@ -78,6 +81,7 @@ export type PostMaxAggregateOutputType = {
   status: $Enums.PostStatus | null
   authorId: string | null
   readingTime: number | null
+  wordCount: number | null
   viewCount: number | null
   likeCount: number | null
   clapCount: number | null
@@ -104,6 +108,7 @@ export type PostCountAggregateOutputType = {
   status: number
   authorId: number
   readingTime: number
+  wordCount: number
   viewCount: number
   likeCount: number
   clapCount: number
@@ -124,6 +129,7 @@ export type PostCountAggregateOutputType = {
 
 export type PostAvgAggregateInputType = {
   readingTime?: true
+  wordCount?: true
   viewCount?: true
   likeCount?: true
   clapCount?: true
@@ -133,6 +139,7 @@ export type PostAvgAggregateInputType = {
 
 export type PostSumAggregateInputType = {
   readingTime?: true
+  wordCount?: true
   viewCount?: true
   likeCount?: true
   clapCount?: true
@@ -149,6 +156,7 @@ export type PostMinAggregateInputType = {
   status?: true
   authorId?: true
   readingTime?: true
+  wordCount?: true
   viewCount?: true
   likeCount?: true
   clapCount?: true
@@ -174,6 +182,7 @@ export type PostMaxAggregateInputType = {
   status?: true
   authorId?: true
   readingTime?: true
+  wordCount?: true
   viewCount?: true
   likeCount?: true
   clapCount?: true
@@ -200,6 +209,7 @@ export type PostCountAggregateInputType = {
   status?: true
   authorId?: true
   readingTime?: true
+  wordCount?: true
   viewCount?: true
   likeCount?: true
   clapCount?: true
@@ -313,6 +323,7 @@ export type PostGroupByOutputType = {
   status: $Enums.PostStatus
   authorId: string
   readingTime: number | null
+  wordCount: number | null
   viewCount: number
   likeCount: number
   clapCount: number
@@ -362,6 +373,7 @@ export type PostWhereInput = {
   status?: Prisma.EnumPostStatusFilter<"Post"> | $Enums.PostStatus
   authorId?: Prisma.StringFilter<"Post"> | string
   readingTime?: Prisma.IntNullableFilter<"Post"> | number | null
+  wordCount?: Prisma.IntNullableFilter<"Post"> | number | null
   viewCount?: Prisma.IntFilter<"Post"> | number
   likeCount?: Prisma.IntFilter<"Post"> | number
   clapCount?: Prisma.IntFilter<"Post"> | number
@@ -401,6 +413,7 @@ export type PostOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   readingTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  wordCount?: Prisma.SortOrderInput | Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   likeCount?: Prisma.SortOrder
   clapCount?: Prisma.SortOrder
@@ -443,6 +456,7 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumPostStatusFilter<"Post"> | $Enums.PostStatus
   authorId?: Prisma.StringFilter<"Post"> | string
   readingTime?: Prisma.IntNullableFilter<"Post"> | number | null
+  wordCount?: Prisma.IntNullableFilter<"Post"> | number | null
   viewCount?: Prisma.IntFilter<"Post"> | number
   likeCount?: Prisma.IntFilter<"Post"> | number
   clapCount?: Prisma.IntFilter<"Post"> | number
@@ -482,6 +496,7 @@ export type PostOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   readingTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  wordCount?: Prisma.SortOrderInput | Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   likeCount?: Prisma.SortOrder
   clapCount?: Prisma.SortOrder
@@ -516,6 +531,7 @@ export type PostScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumPostStatusWithAggregatesFilter<"Post"> | $Enums.PostStatus
   authorId?: Prisma.StringWithAggregatesFilter<"Post"> | string
   readingTime?: Prisma.IntNullableWithAggregatesFilter<"Post"> | number | null
+  wordCount?: Prisma.IntNullableWithAggregatesFilter<"Post"> | number | null
   viewCount?: Prisma.IntWithAggregatesFilter<"Post"> | number
   likeCount?: Prisma.IntWithAggregatesFilter<"Post"> | number
   clapCount?: Prisma.IntWithAggregatesFilter<"Post"> | number
@@ -540,6 +556,7 @@ export type PostCreateInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -577,6 +594,7 @@ export type PostUncheckedCreateInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -610,6 +628,7 @@ export type PostUpdateInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -647,6 +666,7 @@ export type PostUncheckedUpdateInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -682,6 +702,7 @@ export type PostCreateManyInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -706,6 +727,7 @@ export type PostUpdateManyMutationInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -730,6 +752,7 @@ export type PostUncheckedUpdateManyInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -766,6 +789,7 @@ export type PostCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   readingTime?: Prisma.SortOrder
+  wordCount?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   likeCount?: Prisma.SortOrder
   clapCount?: Prisma.SortOrder
@@ -784,6 +808,7 @@ export type PostCountOrderByAggregateInput = {
 
 export type PostAvgOrderByAggregateInput = {
   readingTime?: Prisma.SortOrder
+  wordCount?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   likeCount?: Prisma.SortOrder
   clapCount?: Prisma.SortOrder
@@ -800,6 +825,7 @@ export type PostMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   readingTime?: Prisma.SortOrder
+  wordCount?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   likeCount?: Prisma.SortOrder
   clapCount?: Prisma.SortOrder
@@ -825,6 +851,7 @@ export type PostMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   readingTime?: Prisma.SortOrder
+  wordCount?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   likeCount?: Prisma.SortOrder
   clapCount?: Prisma.SortOrder
@@ -843,6 +870,7 @@ export type PostMinOrderByAggregateInput = {
 
 export type PostSumOrderByAggregateInput = {
   readingTime?: Prisma.SortOrder
+  wordCount?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   likeCount?: Prisma.SortOrder
   clapCount?: Prisma.SortOrder
@@ -1181,6 +1209,7 @@ export type PostCreateWithoutAuthorInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1216,6 +1245,7 @@ export type PostUncheckedCreateWithoutAuthorInput = {
   coverImageId?: string | null
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1259,6 +1289,7 @@ export type PostCreateWithoutLockedByInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1295,6 +1326,7 @@ export type PostUncheckedCreateWithoutLockedByInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1358,6 +1390,7 @@ export type PostScalarWhereInput = {
   status?: Prisma.EnumPostStatusFilter<"Post"> | $Enums.PostStatus
   authorId?: Prisma.StringFilter<"Post"> | string
   readingTime?: Prisma.IntNullableFilter<"Post"> | number | null
+  wordCount?: Prisma.IntNullableFilter<"Post"> | number | null
   viewCount?: Prisma.IntFilter<"Post"> | number
   likeCount?: Prisma.IntFilter<"Post"> | number
   clapCount?: Prisma.IntFilter<"Post"> | number
@@ -1398,6 +1431,7 @@ export type PostCreateWithoutRevisionsInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1434,6 +1468,7 @@ export type PostUncheckedCreateWithoutRevisionsInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1482,6 +1517,7 @@ export type PostUpdateWithoutRevisionsInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1518,6 +1554,7 @@ export type PostUncheckedUpdateWithoutRevisionsInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1550,6 +1587,7 @@ export type PostCreateWithoutSlugHistoryInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1586,6 +1624,7 @@ export type PostUncheckedCreateWithoutSlugHistoryInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1634,6 +1673,7 @@ export type PostUpdateWithoutSlugHistoryInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1670,6 +1710,7 @@ export type PostUncheckedUpdateWithoutSlugHistoryInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1702,6 +1743,7 @@ export type PostCreateWithoutSeoInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1738,6 +1780,7 @@ export type PostUncheckedCreateWithoutSeoInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1786,6 +1829,7 @@ export type PostUpdateWithoutSeoInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1822,6 +1866,7 @@ export type PostUncheckedUpdateWithoutSeoInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1854,6 +1899,7 @@ export type PostCreateWithoutSeriesInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1890,6 +1936,7 @@ export type PostUncheckedCreateWithoutSeriesInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1948,6 +1995,7 @@ export type PostCreateWithoutCategoriesInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -1984,6 +2032,7 @@ export type PostUncheckedCreateWithoutCategoriesInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2032,6 +2081,7 @@ export type PostUpdateWithoutCategoriesInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2068,6 +2118,7 @@ export type PostUncheckedUpdateWithoutCategoriesInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2100,6 +2151,7 @@ export type PostCreateWithoutTagsInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2136,6 +2188,7 @@ export type PostUncheckedCreateWithoutTagsInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2184,6 +2237,7 @@ export type PostUpdateWithoutTagsInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2220,6 +2274,7 @@ export type PostUncheckedUpdateWithoutTagsInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2252,6 +2307,7 @@ export type PostCreateWithoutCoverImageInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2287,6 +2343,7 @@ export type PostUncheckedCreateWithoutCoverImageInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2346,6 +2403,7 @@ export type PostCreateWithoutCommentsInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2382,6 +2440,7 @@ export type PostUncheckedCreateWithoutCommentsInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2430,6 +2489,7 @@ export type PostUpdateWithoutCommentsInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2466,6 +2526,7 @@ export type PostUncheckedUpdateWithoutCommentsInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2498,6 +2559,7 @@ export type PostCreateWithoutViewsInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2534,6 +2596,7 @@ export type PostUncheckedCreateWithoutViewsInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2582,6 +2645,7 @@ export type PostUpdateWithoutViewsInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2618,6 +2682,7 @@ export type PostUncheckedUpdateWithoutViewsInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2650,6 +2715,7 @@ export type PostCreateWithoutReactionsInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2686,6 +2752,7 @@ export type PostUncheckedCreateWithoutReactionsInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2734,6 +2801,7 @@ export type PostUpdateWithoutReactionsInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2770,6 +2838,7 @@ export type PostUncheckedUpdateWithoutReactionsInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2802,6 +2871,7 @@ export type PostCreateWithoutBookmarksInput = {
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2838,6 +2908,7 @@ export type PostUncheckedCreateWithoutBookmarksInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2886,6 +2957,7 @@ export type PostUpdateWithoutBookmarksInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2922,6 +2994,7 @@ export type PostUncheckedUpdateWithoutBookmarksInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2955,6 +3028,7 @@ export type PostCreateManyAuthorInput = {
   coverImageId?: string | null
   status?: $Enums.PostStatus
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -2981,6 +3055,7 @@ export type PostCreateManyLockedByInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -3004,6 +3079,7 @@ export type PostUpdateWithoutAuthorInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3039,6 +3115,7 @@ export type PostUncheckedUpdateWithoutAuthorInput = {
   coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3073,6 +3150,7 @@ export type PostUncheckedUpdateManyWithoutAuthorInput = {
   coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3097,6 +3175,7 @@ export type PostUpdateWithoutLockedByInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3133,6 +3212,7 @@ export type PostUncheckedUpdateWithoutLockedByInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3167,6 +3247,7 @@ export type PostUncheckedUpdateManyWithoutLockedByInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3192,6 +3273,7 @@ export type PostCreateManySeriesInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -3215,6 +3297,7 @@ export type PostUpdateWithoutSeriesInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3251,6 +3334,7 @@ export type PostUncheckedUpdateWithoutSeriesInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3285,6 +3369,7 @@ export type PostUncheckedUpdateManyWithoutSeriesInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3309,6 +3394,7 @@ export type PostCreateManyCoverImageInput = {
   status?: $Enums.PostStatus
   authorId: string
   readingTime?: number | null
+  wordCount?: number | null
   viewCount?: number
   likeCount?: number
   clapCount?: number
@@ -3333,6 +3419,7 @@ export type PostUpdateWithoutCoverImageInput = {
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3368,6 +3455,7 @@ export type PostUncheckedUpdateWithoutCoverImageInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3402,6 +3490,7 @@ export type PostUncheckedUpdateManyWithoutCoverImageInput = {
   status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   likeCount?: Prisma.IntFieldUpdateOperationsInput | number
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -3522,6 +3611,7 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   status?: boolean
   authorId?: boolean
   readingTime?: boolean
+  wordCount?: boolean
   viewCount?: boolean
   likeCount?: boolean
   clapCount?: boolean
@@ -3562,6 +3652,7 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   status?: boolean
   authorId?: boolean
   readingTime?: boolean
+  wordCount?: boolean
   viewCount?: boolean
   likeCount?: boolean
   clapCount?: boolean
@@ -3592,6 +3683,7 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   status?: boolean
   authorId?: boolean
   readingTime?: boolean
+  wordCount?: boolean
   viewCount?: boolean
   likeCount?: boolean
   clapCount?: boolean
@@ -3622,6 +3714,7 @@ export type PostSelectScalar = {
   status?: boolean
   authorId?: boolean
   readingTime?: boolean
+  wordCount?: boolean
   viewCount?: boolean
   likeCount?: boolean
   clapCount?: boolean
@@ -3638,7 +3731,7 @@ export type PostSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "coverImageId" | "status" | "authorId" | "readingTime" | "viewCount" | "likeCount" | "clapCount" | "commentCount" | "bookmarkCount" | "publishedAt" | "scheduledAt" | "isFeatured" | "isPinned" | "lockedById" | "lockedAt" | "seriesId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "coverImageId" | "status" | "authorId" | "readingTime" | "wordCount" | "viewCount" | "likeCount" | "clapCount" | "commentCount" | "bookmarkCount" | "publishedAt" | "scheduledAt" | "isFeatured" | "isPinned" | "lockedById" | "lockedAt" | "seriesId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   coverImage?: boolean | Prisma.Post$coverImageArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -3695,6 +3788,7 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     status: $Enums.PostStatus
     authorId: string
     readingTime: number | null
+    wordCount: number | null
     viewCount: number
     likeCount: number
     clapCount: number
@@ -4154,6 +4248,7 @@ export interface PostFieldRefs {
   readonly status: Prisma.FieldRef<"Post", 'PostStatus'>
   readonly authorId: Prisma.FieldRef<"Post", 'String'>
   readonly readingTime: Prisma.FieldRef<"Post", 'Int'>
+  readonly wordCount: Prisma.FieldRef<"Post", 'Int'>
   readonly viewCount: Prisma.FieldRef<"Post", 'Int'>
   readonly likeCount: Prisma.FieldRef<"Post", 'Int'>
   readonly clapCount: Prisma.FieldRef<"Post", 'Int'>

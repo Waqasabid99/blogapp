@@ -160,6 +160,7 @@ export const PostScalarFieldEnum = {
   status: 'status',
   authorId: 'authorId',
   readingTime: 'readingTime',
+  wordCount: 'wordCount',
   viewCount: 'viewCount',
   likeCount: 'likeCount',
   clapCount: 'clapCount',

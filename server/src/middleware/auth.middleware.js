@@ -60,10 +60,10 @@ export const verifyUser = async (req, res, next) => {
     req.user = {
       id: user.id,
       email: user.email,
-      role: user.role.slug,
-      permissions: user.role.permissions.map(
+      role: user.role?.slug || null,
+      permissions: user.role?.permissions?.map(
         (p) => p.permission.action
-      )
+      ) || []
     };
 
     next();

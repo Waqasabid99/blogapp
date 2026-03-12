@@ -70,6 +70,7 @@ export type PostMinAggregateOutputType = {
   seriesId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type PostMaxAggregateOutputType = {
@@ -96,6 +97,7 @@ export type PostMaxAggregateOutputType = {
   seriesId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type PostCountAggregateOutputType = {
@@ -123,6 +125,7 @@ export type PostCountAggregateOutputType = {
   seriesId: number
   createdAt: number
   updatedAt: number
+  deletedAt: number
   _all: number
 }
 
@@ -171,6 +174,7 @@ export type PostMinAggregateInputType = {
   seriesId?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type PostMaxAggregateInputType = {
@@ -197,6 +201,7 @@ export type PostMaxAggregateInputType = {
   seriesId?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type PostCountAggregateInputType = {
@@ -224,6 +229,7 @@ export type PostCountAggregateInputType = {
   seriesId?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
   _all?: true
 }
 
@@ -338,6 +344,7 @@ export type PostGroupByOutputType = {
   seriesId: string | null
   createdAt: Date
   updatedAt: Date
+  deletedAt: Date | null
   _count: PostCountAggregateOutputType | null
   _avg: PostAvgAggregateOutputType | null
   _sum: PostSumAggregateOutputType | null
@@ -388,6 +395,7 @@ export type PostWhereInput = {
   seriesId?: Prisma.StringNullableFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   coverImage?: Prisma.XOR<Prisma.MediaNullableScalarRelationFilter, Prisma.MediaWhereInput> | null
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   lockedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -428,6 +436,7 @@ export type PostOrderByWithRelationInput = {
   seriesId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   coverImage?: Prisma.MediaOrderByWithRelationInput
   author?: Prisma.UserOrderByWithRelationInput
   lockedBy?: Prisma.UserOrderByWithRelationInput
@@ -471,6 +480,7 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   seriesId?: Prisma.StringNullableFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   coverImage?: Prisma.XOR<Prisma.MediaNullableScalarRelationFilter, Prisma.MediaWhereInput> | null
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   lockedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -511,6 +521,7 @@ export type PostOrderByWithAggregationInput = {
   seriesId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PostCountOrderByAggregateInput
   _avg?: Prisma.PostAvgOrderByAggregateInput
   _max?: Prisma.PostMaxOrderByAggregateInput
@@ -546,6 +557,7 @@ export type PostScalarWhereWithAggregatesInput = {
   seriesId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
 }
 
 export type PostCreateInput = {
@@ -569,6 +581,7 @@ export type PostCreateInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -609,6 +622,7 @@ export type PostUncheckedCreateInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -641,6 +655,7 @@ export type PostUpdateInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -681,6 +696,7 @@ export type PostUncheckedUpdateInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -717,6 +733,7 @@ export type PostCreateManyInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type PostUpdateManyMutationInput = {
@@ -740,6 +757,7 @@ export type PostUpdateManyMutationInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type PostUncheckedUpdateManyInput = {
@@ -767,6 +785,7 @@ export type PostUncheckedUpdateManyInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type PostListRelationFilter = {
@@ -804,6 +823,7 @@ export type PostCountOrderByAggregateInput = {
   seriesId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type PostAvgOrderByAggregateInput = {
@@ -840,6 +860,7 @@ export type PostMaxOrderByAggregateInput = {
   seriesId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type PostMinOrderByAggregateInput = {
@@ -866,6 +887,7 @@ export type PostMinOrderByAggregateInput = {
   seriesId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type PostSumOrderByAggregateInput = {
@@ -1222,6 +1244,7 @@ export type PostCreateWithoutAuthorInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
   seo?: Prisma.PostSEOCreateNestedOneWithoutPostInput
@@ -1260,6 +1283,7 @@ export type PostUncheckedCreateWithoutAuthorInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -1302,6 +1326,7 @@ export type PostCreateWithoutLockedByInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   seo?: Prisma.PostSEOCreateNestedOneWithoutPostInput
@@ -1340,6 +1365,7 @@ export type PostUncheckedCreateWithoutLockedByInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -1405,6 +1431,7 @@ export type PostScalarWhereInput = {
   seriesId?: Prisma.StringNullableFilter<"Post"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
 }
 
 export type PostUpsertWithWhereUniqueWithoutLockedByInput = {
@@ -1444,6 +1471,7 @@ export type PostCreateWithoutRevisionsInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -1483,6 +1511,7 @@ export type PostUncheckedCreateWithoutRevisionsInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -1530,6 +1559,7 @@ export type PostUpdateWithoutRevisionsInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -1569,6 +1599,7 @@ export type PostUncheckedUpdateWithoutRevisionsInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -1600,6 +1631,7 @@ export type PostCreateWithoutSlugHistoryInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -1639,6 +1671,7 @@ export type PostUncheckedCreateWithoutSlugHistoryInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -1686,6 +1719,7 @@ export type PostUpdateWithoutSlugHistoryInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -1725,6 +1759,7 @@ export type PostUncheckedUpdateWithoutSlugHistoryInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -1756,6 +1791,7 @@ export type PostCreateWithoutSeoInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -1795,6 +1831,7 @@ export type PostUncheckedCreateWithoutSeoInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutPostInput
@@ -1842,6 +1879,7 @@ export type PostUpdateWithoutSeoInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -1881,6 +1919,7 @@ export type PostUncheckedUpdateWithoutSeoInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutPostNestedInput
@@ -1912,6 +1951,7 @@ export type PostCreateWithoutSeriesInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -1950,6 +1990,7 @@ export type PostUncheckedCreateWithoutSeriesInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -2008,6 +2049,7 @@ export type PostCreateWithoutCategoriesInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -2047,6 +2089,7 @@ export type PostUncheckedCreateWithoutCategoriesInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutPostInput
@@ -2094,6 +2137,7 @@ export type PostUpdateWithoutCategoriesInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -2133,6 +2177,7 @@ export type PostUncheckedUpdateWithoutCategoriesInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutPostNestedInput
@@ -2164,6 +2209,7 @@ export type PostCreateWithoutTagsInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -2203,6 +2249,7 @@ export type PostUncheckedCreateWithoutTagsInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutPostInput
@@ -2250,6 +2297,7 @@ export type PostUpdateWithoutTagsInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -2289,6 +2337,7 @@ export type PostUncheckedUpdateWithoutTagsInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutPostNestedInput
@@ -2320,6 +2369,7 @@ export type PostCreateWithoutCoverImageInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
   seo?: Prisma.PostSEOCreateNestedOneWithoutPostInput
@@ -2358,6 +2408,7 @@ export type PostUncheckedCreateWithoutCoverImageInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -2416,6 +2467,7 @@ export type PostCreateWithoutCommentsInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -2455,6 +2507,7 @@ export type PostUncheckedCreateWithoutCommentsInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -2502,6 +2555,7 @@ export type PostUpdateWithoutCommentsInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -2541,6 +2595,7 @@ export type PostUncheckedUpdateWithoutCommentsInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -2572,6 +2627,7 @@ export type PostCreateWithoutViewsInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -2611,6 +2667,7 @@ export type PostUncheckedCreateWithoutViewsInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -2658,6 +2715,7 @@ export type PostUpdateWithoutViewsInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -2697,6 +2755,7 @@ export type PostUncheckedUpdateWithoutViewsInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -2728,6 +2787,7 @@ export type PostCreateWithoutReactionsInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -2767,6 +2827,7 @@ export type PostUncheckedCreateWithoutReactionsInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -2814,6 +2875,7 @@ export type PostUpdateWithoutReactionsInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -2853,6 +2915,7 @@ export type PostUncheckedUpdateWithoutReactionsInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -2884,6 +2947,7 @@ export type PostCreateWithoutBookmarksInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   coverImage?: Prisma.MediaCreateNestedOneWithoutPostsInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
   lockedBy?: Prisma.UserCreateNestedOneWithoutLockedPostsInput
@@ -2923,6 +2987,7 @@ export type PostUncheckedCreateWithoutBookmarksInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   seo?: Prisma.PostSEOUncheckedCreateNestedOneWithoutPostInput
   categories?: Prisma.PostCategoryUncheckedCreateNestedManyWithoutPostInput
   tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
@@ -2970,6 +3035,7 @@ export type PostUpdateWithoutBookmarksInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -3009,6 +3075,7 @@ export type PostUncheckedUpdateWithoutBookmarksInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -3043,6 +3110,7 @@ export type PostCreateManyAuthorInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type PostCreateManyLockedByInput = {
@@ -3069,6 +3137,7 @@ export type PostCreateManyLockedByInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type PostUpdateWithoutAuthorInput = {
@@ -3092,6 +3161,7 @@ export type PostUpdateWithoutAuthorInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
   seo?: Prisma.PostSEOUpdateOneWithoutPostNestedInput
@@ -3130,6 +3200,7 @@ export type PostUncheckedUpdateWithoutAuthorInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -3165,6 +3236,7 @@ export type PostUncheckedUpdateManyWithoutAuthorInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type PostUpdateWithoutLockedByInput = {
@@ -3188,6 +3260,7 @@ export type PostUpdateWithoutLockedByInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   seo?: Prisma.PostSEOUpdateOneWithoutPostNestedInput
@@ -3226,6 +3299,7 @@ export type PostUncheckedUpdateWithoutLockedByInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -3261,6 +3335,7 @@ export type PostUncheckedUpdateManyWithoutLockedByInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type PostCreateManySeriesInput = {
@@ -3287,6 +3362,7 @@ export type PostCreateManySeriesInput = {
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type PostUpdateWithoutSeriesInput = {
@@ -3310,6 +3386,7 @@ export type PostUpdateWithoutSeriesInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   coverImage?: Prisma.MediaUpdateOneWithoutPostsNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
@@ -3348,6 +3425,7 @@ export type PostUncheckedUpdateWithoutSeriesInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -3383,6 +3461,7 @@ export type PostUncheckedUpdateManyWithoutSeriesInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type PostCreateManyCoverImageInput = {
@@ -3409,6 +3488,7 @@ export type PostCreateManyCoverImageInput = {
   seriesId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type PostUpdateWithoutCoverImageInput = {
@@ -3432,6 +3512,7 @@ export type PostUpdateWithoutCoverImageInput = {
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   lockedBy?: Prisma.UserUpdateOneWithoutLockedPostsNestedInput
   seo?: Prisma.PostSEOUpdateOneWithoutPostNestedInput
@@ -3470,6 +3551,7 @@ export type PostUncheckedUpdateWithoutCoverImageInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seo?: Prisma.PostSEOUncheckedUpdateOneWithoutPostNestedInput
   categories?: Prisma.PostCategoryUncheckedUpdateManyWithoutPostNestedInput
   tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
@@ -3505,6 +3587,7 @@ export type PostUncheckedUpdateManyWithoutCoverImageInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -3626,6 +3709,7 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   seriesId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   coverImage?: boolean | Prisma.Post$coverImageArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   lockedBy?: boolean | Prisma.Post$lockedByArgs<ExtArgs>
@@ -3667,6 +3751,7 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   seriesId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   coverImage?: boolean | Prisma.Post$coverImageArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   lockedBy?: boolean | Prisma.Post$lockedByArgs<ExtArgs>
@@ -3698,6 +3783,7 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   seriesId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   coverImage?: boolean | Prisma.Post$coverImageArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   lockedBy?: boolean | Prisma.Post$lockedByArgs<ExtArgs>
@@ -3729,9 +3815,10 @@ export type PostSelectScalar = {
   seriesId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "coverImageId" | "status" | "authorId" | "readingTime" | "wordCount" | "viewCount" | "likeCount" | "clapCount" | "commentCount" | "bookmarkCount" | "publishedAt" | "scheduledAt" | "isFeatured" | "isPinned" | "lockedById" | "lockedAt" | "seriesId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "coverImageId" | "status" | "authorId" | "readingTime" | "wordCount" | "viewCount" | "likeCount" | "clapCount" | "commentCount" | "bookmarkCount" | "publishedAt" | "scheduledAt" | "isFeatured" | "isPinned" | "lockedById" | "lockedAt" | "seriesId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   coverImage?: boolean | Prisma.Post$coverImageArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -3803,6 +3890,7 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     seriesId: string | null
     createdAt: Date
     updatedAt: Date
+    deletedAt: Date | null
   }, ExtArgs["result"]["post"]>
   composites: {}
 }
@@ -4263,6 +4351,7 @@ export interface PostFieldRefs {
   readonly seriesId: Prisma.FieldRef<"Post", 'String'>
   readonly createdAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly deletedAt: Prisma.FieldRef<"Post", 'DateTime'>
 }
     
 

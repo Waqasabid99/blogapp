@@ -184,3 +184,472 @@ const createPost = asyncHandler(async (req, res) => {
     if (!post) throw new ApiError(500, "Failed to create post");
     return apiResponse(res, 201, true, "Post created", post);
 });
+
+// Update post
+const updatePost = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const { title, content, excerpt, coverImageId, categories = [], tags = [], status, seriesId } = req.body;
+
+    const authorId = req.user.id;
+
+    const existingPost = await prisma.post.findUnique({
+        where: { id, deletedAt: null },
+        include: {
+            tags: true,
+            categories: true,
+        },
+    });
+
+    if (!existingPost) {
+        throw new ApiError(404, "Post not found");
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+        let slug = existingPost.slug;
+
+        // Generate new slug if title changed
+        if (title && title !== existingPost.title) {
+            await tx.slugHistory.create({
+                data: {
+                    postId: id,
+                    oldSlug: existingPost.slug,
+                },
+            });
+
+            slug = await generateUniqueSlug(title, prisma);
+        }
+
+        let generatedExcerpt = excerpt;
+
+        if (!generatedExcerpt && content) {
+            generatedExcerpt = generateExcerpt(content);
+        }
+
+        let readingTime = existingPost.readingTime;
+        let wordCount = existingPost.wordCount;
+
+        if (content) {
+            const calc = calculateReadingTime(content);
+            readingTime = calc.readingTime;
+            wordCount = calc.wordCount;
+        }
+
+        // CATEGORY UPDATE
+        if (categories.length) {
+            await tx.postCategory.deleteMany({
+                where: { postId: id },
+            });
+
+            await tx.postCategory.createMany({
+                data: categories.map((categoryId) => ({
+                    postId: id,
+                    categoryId,
+                })),
+            });
+        }
+
+        // TAG UPDATE
+        const oldTagIds = existingPost.tags.map((t) => t.tagId);
+
+        const tagsToAdd = tags.filter((t) => !oldTagIds.includes(t));
+        const tagsToRemove = oldTagIds.filter((t) => !tags.includes(t));
+
+        if (tags.length) {
+            await tx.postTag.deleteMany({
+                where: { postId: id },
+            });
+
+            await tx.postTag.createMany({
+                data: tags.map((tagId) => ({
+                    postId: id,
+                    tagId,
+                })),
+            });
+
+            if (tagsToAdd.length) {
+                await tx.tag.updateMany({
+                    where: { id: { in: tagsToAdd } },
+                    data: { postCount: { increment: 1 } },
+                });
+            }
+
+            if (tagsToRemove.length) {
+                await tx.tag.updateMany({
+                    where: { id: { in: tagsToRemove } },
+                    data: { postCount: { decrement: 1 } },
+                });
+            }
+        }
+
+        // CREATE REVISION
+        if (content) {
+            await tx.postRevision.create({
+                data: {
+                    postId: id,
+                    content,
+                    editorId: authorId,
+                },
+            });
+        }
+
+        const updatedPost = await tx.post.update({
+            where: { id },
+            data: {
+                title,
+                slug,
+                content,
+                excerpt: generatedExcerpt,
+                coverImageId,
+                seriesId,
+                status,
+                readingTime,
+                wordCount,
+            },
+        });
+
+        return updatedPost;
+    });
+
+    return apiResponse(res, 200, true, "Post updated", result);
+});
+
+// Delete post
+const deletePost = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const post = await prisma.post.findFirst({
+        where: {
+            id,
+            deletedAt: null,
+        },
+        include: {
+            tags: true,
+        },
+    });
+
+    if (!post) {
+        throw new ApiError(404, "Post not found");
+    }
+
+    const tagIds = post.tags.map((t) => t.tagId);
+
+    const deletedPost = await prisma.$transaction(async (tx) => {
+        // decrement tag counters
+        if (tagIds.length) {
+            await tx.tag.updateMany({
+                where: {
+                    id: { in: tagIds },
+                },
+                data: {
+                    postCount: {
+                        decrement: 1,
+                    },
+                },
+            });
+        }
+
+        const updated = await tx.post.update({
+            where: { id },
+            data: {
+                deletedAt: new Date(),
+            },
+        });
+
+        return updated;
+    });
+
+    return apiResponse(res, 200, true, "Post deleted", deletedPost);
+});
+
+// Get all posts
+const getAllPosts = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10, search, status, category, tag, author, featured, pinned, sortBy = "createdAt", order = "desc" } = req.query;
+
+    const pageNumber = Math.max(parseInt(page), 1);
+    const pageSize = Math.min(parseInt(limit), 50);
+
+    const skip = (pageNumber - 1) * pageSize;
+
+    // BUILD FILTERS
+
+    const where = {
+        deletedAt: null,
+    };
+
+    // Status filter
+    if (status) {
+        where.status = status;
+    }
+
+    // Author filter
+    if (author) {
+        where.authorId = author;
+    }
+
+    // Featured
+    if (featured === "true") {
+        where.isFeatured = true;
+    }
+
+    // Pinned
+    if (pinned === "true") {
+        where.isPinned = true;
+    }
+
+    // Search (title + excerpt)
+    if (search) {
+        where.OR = [
+            {
+                title: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+            },
+            {
+                excerpt: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+            },
+        ];
+    }
+
+    // Category filter
+    if (category) {
+        where.categories = {
+            some: {
+                categoryId: category,
+            },
+        };
+    }
+
+    // Tag filter
+    if (tag) {
+        where.tags = {
+            some: {
+                tagId: tag,
+            },
+        };
+    }
+
+    // SORTING
+
+    const allowedSortFields = ["createdAt", "updatedAt", "publishedAt", "readingTime", "wordCount", "title"];
+
+    const sortField = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
+
+    const sortOrder = order === "asc" ? "asc" : "desc";
+
+    // QUERY
+
+    const [posts, total] = await prisma.$transaction([
+        prisma.post.findMany({
+            where,
+
+            skip,
+            take: pageSize,
+
+            orderBy: {
+                [sortField]: sortOrder,
+            },
+
+            select: {
+                id: true,
+                title: true,
+                slug: true,
+                excerpt: true,
+                status: true,
+                readingTime: true,
+                wordCount: true,
+                isFeatured: true,
+                isPinned: true,
+                publishedAt: true,
+                createdAt: true,
+
+                coverImage: {
+                    select: {
+                        id: true,
+                        url: true,
+                    },
+                },
+
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        avatarUrl: true,
+                    },
+                },
+
+                categories: {
+                    select: {
+                        category: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                            },
+                        },
+                    },
+                },
+
+                tags: {
+                    select: {
+                        tag: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                            },
+                        },
+                    },
+                },
+            },
+        }),
+
+        prisma.post.count({
+            where,
+        }),
+    ]);
+
+    // PAGINATION META
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    return apiResponse(res, 200, true, "Posts fetched", {
+        posts,
+        pagination: {
+            total,
+            page: pageNumber,
+            limit: pageSize,
+            totalPages,
+        },
+    });
+});
+
+// Get single post
+const getSinglePost = asyncHandler(async (req, res) => {
+    const { slug } = req.params;
+    const user = req.user;
+
+    // FIND POST
+
+    let post = await prisma.post.findFirst({
+        where: {
+            slug,
+            deletedAt: null,
+        },
+        include: {
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatarUrl: true,
+                    bio: true,
+                },
+            },
+
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: {
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                },
+            },
+
+            seo: true,
+        },
+    });
+
+    // HANDLE OLD SLUG REDIRECT
+
+    if (!post) {
+        const slugHistory = await prisma.slugHistory.findFirst({
+            where: {
+                oldSlug: slug,
+            },
+        });
+
+        if (slugHistory) {
+            const newPost = await prisma.post.findUnique({
+                where: {
+                    id: slugHistory.postId,
+                },
+                select: {
+                    slug: true,
+                },
+            });
+
+            return apiResponse(res, 301, true, "Slug updated", {
+                redirect: `/posts/${newPost.slug}`,
+            });
+        }
+
+        throw new ApiError(404, "Post not found");
+    }
+
+    // STATUS VISIBILITY RULES
+
+    const isAuthor = user && user.id === post.authorId;
+    const isAdmin = user && (user.role === "ADMIN" || user.role === "EDITOR");
+
+    if (post.status !== "PUBLISHED" && !isAuthor && !isAdmin) {
+        throw new ApiError(403, "You are not allowed to view this post");
+    }
+
+    // INCREMENT VIEW COUNT
+
+    await prisma.post.update({
+        where: { id: post.id },
+        data: {
+            viewCount: {
+                increment: 1,
+            },
+        },
+    });
+
+    // RESPONSE
+
+    return apiResponse(res, 200, true, "Post fetched", post);
+});
+
+export {
+    createPost,
+    updatePost,
+    deletePost,
+    getAllPosts,
+    getSinglePost,
+};

@@ -1,6 +1,6 @@
-import { ApiError } from "../lib/ApiError";
-import { asyncHandler } from "../lib/helpers";
-import { prisma } from "../lib/prisma";
+import { ApiError } from "../lib/ApiError.js";
+import { apiResponse, asyncHandler } from "../lib/helpers.js";
+import { prisma } from "../lib/prisma.js";
 import slugify from "slugify";
 
 const getAllCategories = asyncHandler(async (req, res) => {

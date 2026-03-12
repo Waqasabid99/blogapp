@@ -174,7 +174,8 @@ export const PostScalarFieldEnum = {
   lockedAt: 'lockedAt',
   seriesId: 'seriesId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
 } as const
 
 export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]

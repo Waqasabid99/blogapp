@@ -5,8 +5,9 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { errorHandler } from "./middleware/error.middleware.js";
-import categoryRouter from "./routes/category.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import categoryRouter from "./routes/category.routes.js";
+import tagRouter from "./routes/tag.routes.js";
 import postRouter from "./routes/post.routes.js";
 import seriesRouter from "./routes/series.routes.js";
 import commentRouter from "./routes/comment.routes.js";
@@ -72,8 +73,9 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.json({ limit: "10mb" }));
 
 // Routes
-app.use("/api/auth", authRouter);
+app.use("/auth", authRouter);
 app.use("/category", categoryRouter);
+app.use("/tag", tagRouter);
 app.use("/post", postRouter);
 app.use("/series", seriesRouter);
 app.use("/comment", commentRouter);

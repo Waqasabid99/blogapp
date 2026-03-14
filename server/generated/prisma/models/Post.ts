@@ -65,6 +65,7 @@ export type PostMinAggregateOutputType = {
   scheduledAt: Date | null
   isFeatured: boolean | null
   isPinned: boolean | null
+  rejectionReason: string | null
   lockedById: string | null
   lockedAt: Date | null
   seriesId: string | null
@@ -92,6 +93,7 @@ export type PostMaxAggregateOutputType = {
   scheduledAt: Date | null
   isFeatured: boolean | null
   isPinned: boolean | null
+  rejectionReason: string | null
   lockedById: string | null
   lockedAt: Date | null
   seriesId: string | null
@@ -120,6 +122,7 @@ export type PostCountAggregateOutputType = {
   scheduledAt: number
   isFeatured: number
   isPinned: number
+  rejectionReason: number
   lockedById: number
   lockedAt: number
   seriesId: number
@@ -169,6 +172,7 @@ export type PostMinAggregateInputType = {
   scheduledAt?: true
   isFeatured?: true
   isPinned?: true
+  rejectionReason?: true
   lockedById?: true
   lockedAt?: true
   seriesId?: true
@@ -196,6 +200,7 @@ export type PostMaxAggregateInputType = {
   scheduledAt?: true
   isFeatured?: true
   isPinned?: true
+  rejectionReason?: true
   lockedById?: true
   lockedAt?: true
   seriesId?: true
@@ -224,6 +229,7 @@ export type PostCountAggregateInputType = {
   scheduledAt?: true
   isFeatured?: true
   isPinned?: true
+  rejectionReason?: true
   lockedById?: true
   lockedAt?: true
   seriesId?: true
@@ -339,6 +345,7 @@ export type PostGroupByOutputType = {
   scheduledAt: Date | null
   isFeatured: boolean
   isPinned: boolean
+  rejectionReason: string | null
   lockedById: string | null
   lockedAt: Date | null
   seriesId: string | null
@@ -390,6 +397,7 @@ export type PostWhereInput = {
   scheduledAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   isFeatured?: Prisma.BoolFilter<"Post"> | boolean
   isPinned?: Prisma.BoolFilter<"Post"> | boolean
+  rejectionReason?: Prisma.StringNullableFilter<"Post"> | string | null
   lockedById?: Prisma.StringNullableFilter<"Post"> | string | null
   lockedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   seriesId?: Prisma.StringNullableFilter<"Post"> | string | null
@@ -431,6 +439,7 @@ export type PostOrderByWithRelationInput = {
   scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPinned?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   lockedById?: Prisma.SortOrderInput | Prisma.SortOrder
   lockedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   seriesId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -475,6 +484,7 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   scheduledAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   isFeatured?: Prisma.BoolFilter<"Post"> | boolean
   isPinned?: Prisma.BoolFilter<"Post"> | boolean
+  rejectionReason?: Prisma.StringNullableFilter<"Post"> | string | null
   lockedById?: Prisma.StringNullableFilter<"Post"> | string | null
   lockedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   seriesId?: Prisma.StringNullableFilter<"Post"> | string | null
@@ -516,6 +526,7 @@ export type PostOrderByWithAggregationInput = {
   scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPinned?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   lockedById?: Prisma.SortOrderInput | Prisma.SortOrder
   lockedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   seriesId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -552,6 +563,7 @@ export type PostScalarWhereWithAggregatesInput = {
   scheduledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
   isFeatured?: Prisma.BoolWithAggregatesFilter<"Post"> | boolean
   isPinned?: Prisma.BoolWithAggregatesFilter<"Post"> | boolean
+  rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
   lockedById?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
   lockedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
   seriesId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
@@ -578,6 +590,7 @@ export type PostCreateInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -617,6 +630,7 @@ export type PostUncheckedCreateInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -652,6 +666,7 @@ export type PostUpdateInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -691,6 +706,7 @@ export type PostUncheckedUpdateInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -728,6 +744,7 @@ export type PostCreateManyInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -754,6 +771,7 @@ export type PostUpdateManyMutationInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -780,6 +798,7 @@ export type PostUncheckedUpdateManyInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -818,6 +837,7 @@ export type PostCountOrderByAggregateInput = {
   scheduledAt?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPinned?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
   lockedById?: Prisma.SortOrder
   lockedAt?: Prisma.SortOrder
   seriesId?: Prisma.SortOrder
@@ -855,6 +875,7 @@ export type PostMaxOrderByAggregateInput = {
   scheduledAt?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPinned?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
   lockedById?: Prisma.SortOrder
   lockedAt?: Prisma.SortOrder
   seriesId?: Prisma.SortOrder
@@ -882,6 +903,7 @@ export type PostMinOrderByAggregateInput = {
   scheduledAt?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPinned?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
   lockedById?: Prisma.SortOrder
   lockedAt?: Prisma.SortOrder
   seriesId?: Prisma.SortOrder
@@ -1241,6 +1263,7 @@ export type PostCreateWithoutAuthorInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1278,6 +1301,7 @@ export type PostUncheckedCreateWithoutAuthorInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -1323,6 +1347,7 @@ export type PostCreateWithoutLockedByInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1361,6 +1386,7 @@ export type PostUncheckedCreateWithoutLockedByInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
   createdAt?: Date | string
@@ -1426,6 +1452,7 @@ export type PostScalarWhereInput = {
   scheduledAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   isFeatured?: Prisma.BoolFilter<"Post"> | boolean
   isPinned?: Prisma.BoolFilter<"Post"> | boolean
+  rejectionReason?: Prisma.StringNullableFilter<"Post"> | string | null
   lockedById?: Prisma.StringNullableFilter<"Post"> | string | null
   lockedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   seriesId?: Prisma.StringNullableFilter<"Post"> | string | null
@@ -1468,6 +1495,7 @@ export type PostCreateWithoutRevisionsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1506,6 +1534,7 @@ export type PostUncheckedCreateWithoutRevisionsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -1556,6 +1585,7 @@ export type PostUpdateWithoutRevisionsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1594,6 +1624,7 @@ export type PostUncheckedUpdateWithoutRevisionsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1628,6 +1659,7 @@ export type PostCreateWithoutSlugHistoryInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1666,6 +1698,7 @@ export type PostUncheckedCreateWithoutSlugHistoryInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -1716,6 +1749,7 @@ export type PostUpdateWithoutSlugHistoryInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1754,6 +1788,7 @@ export type PostUncheckedUpdateWithoutSlugHistoryInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1788,6 +1823,7 @@ export type PostCreateWithoutSeoInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1826,6 +1862,7 @@ export type PostUncheckedCreateWithoutSeoInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -1876,6 +1913,7 @@ export type PostUpdateWithoutSeoInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1914,6 +1952,7 @@ export type PostUncheckedUpdateWithoutSeoInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1948,6 +1987,7 @@ export type PostCreateWithoutSeriesInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1986,6 +2026,7 @@ export type PostUncheckedCreateWithoutSeriesInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
@@ -2046,6 +2087,7 @@ export type PostCreateWithoutCategoriesInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2084,6 +2126,7 @@ export type PostUncheckedCreateWithoutCategoriesInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -2134,6 +2177,7 @@ export type PostUpdateWithoutCategoriesInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2172,6 +2216,7 @@ export type PostUncheckedUpdateWithoutCategoriesInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2206,6 +2251,7 @@ export type PostCreateWithoutTagsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2244,6 +2290,7 @@ export type PostUncheckedCreateWithoutTagsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -2294,6 +2341,7 @@ export type PostUpdateWithoutTagsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2332,6 +2380,7 @@ export type PostUncheckedUpdateWithoutTagsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2366,6 +2415,7 @@ export type PostCreateWithoutCoverImageInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2403,6 +2453,7 @@ export type PostUncheckedCreateWithoutCoverImageInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -2464,6 +2515,7 @@ export type PostCreateWithoutCommentsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2502,6 +2554,7 @@ export type PostUncheckedCreateWithoutCommentsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -2552,6 +2605,7 @@ export type PostUpdateWithoutCommentsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2590,6 +2644,7 @@ export type PostUncheckedUpdateWithoutCommentsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2624,6 +2679,7 @@ export type PostCreateWithoutViewsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2662,6 +2718,7 @@ export type PostUncheckedCreateWithoutViewsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -2712,6 +2769,7 @@ export type PostUpdateWithoutViewsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2750,6 +2808,7 @@ export type PostUncheckedUpdateWithoutViewsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2784,6 +2843,7 @@ export type PostCreateWithoutReactionsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2822,6 +2882,7 @@ export type PostUncheckedCreateWithoutReactionsInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -2872,6 +2933,7 @@ export type PostUpdateWithoutReactionsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2910,6 +2972,7 @@ export type PostUncheckedUpdateWithoutReactionsInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2944,6 +3007,7 @@ export type PostCreateWithoutBookmarksInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2982,6 +3046,7 @@ export type PostUncheckedCreateWithoutBookmarksInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -3032,6 +3097,7 @@ export type PostUpdateWithoutBookmarksInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3070,6 +3136,7 @@ export type PostUncheckedUpdateWithoutBookmarksInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3105,6 +3172,7 @@ export type PostCreateManyAuthorInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -3133,6 +3201,7 @@ export type PostCreateManyLockedByInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
   createdAt?: Date | string
@@ -3158,6 +3227,7 @@ export type PostUpdateWithoutAuthorInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3195,6 +3265,7 @@ export type PostUncheckedUpdateWithoutAuthorInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3231,6 +3302,7 @@ export type PostUncheckedUpdateManyWithoutAuthorInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3257,6 +3329,7 @@ export type PostUpdateWithoutLockedByInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3295,6 +3368,7 @@ export type PostUncheckedUpdateWithoutLockedByInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3331,6 +3405,7 @@ export type PostUncheckedUpdateManyWithoutLockedByInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3358,6 +3433,7 @@ export type PostCreateManySeriesInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   createdAt?: Date | string
@@ -3383,6 +3459,7 @@ export type PostUpdateWithoutSeriesInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3421,6 +3498,7 @@ export type PostUncheckedUpdateWithoutSeriesInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3457,6 +3535,7 @@ export type PostUncheckedUpdateManyWithoutSeriesInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3483,6 +3562,7 @@ export type PostCreateManyCoverImageInput = {
   scheduledAt?: Date | string | null
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: string | null
   lockedById?: string | null
   lockedAt?: Date | string | null
   seriesId?: string | null
@@ -3509,6 +3589,7 @@ export type PostUpdateWithoutCoverImageInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3546,6 +3627,7 @@ export type PostUncheckedUpdateWithoutCoverImageInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3582,6 +3664,7 @@ export type PostUncheckedUpdateManyWithoutCoverImageInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3704,6 +3787,7 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   scheduledAt?: boolean
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: boolean
   lockedById?: boolean
   lockedAt?: boolean
   seriesId?: boolean
@@ -3746,6 +3830,7 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   scheduledAt?: boolean
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: boolean
   lockedById?: boolean
   lockedAt?: boolean
   seriesId?: boolean
@@ -3778,6 +3863,7 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   scheduledAt?: boolean
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: boolean
   lockedById?: boolean
   lockedAt?: boolean
   seriesId?: boolean
@@ -3810,6 +3896,7 @@ export type PostSelectScalar = {
   scheduledAt?: boolean
   isFeatured?: boolean
   isPinned?: boolean
+  rejectionReason?: boolean
   lockedById?: boolean
   lockedAt?: boolean
   seriesId?: boolean
@@ -3818,7 +3905,7 @@ export type PostSelectScalar = {
   deletedAt?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "coverImageId" | "status" | "authorId" | "readingTime" | "wordCount" | "viewCount" | "likeCount" | "clapCount" | "commentCount" | "bookmarkCount" | "publishedAt" | "scheduledAt" | "isFeatured" | "isPinned" | "lockedById" | "lockedAt" | "seriesId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "coverImageId" | "status" | "authorId" | "readingTime" | "wordCount" | "viewCount" | "likeCount" | "clapCount" | "commentCount" | "bookmarkCount" | "publishedAt" | "scheduledAt" | "isFeatured" | "isPinned" | "rejectionReason" | "lockedById" | "lockedAt" | "seriesId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   coverImage?: boolean | Prisma.Post$coverImageArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -3885,6 +3972,7 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     scheduledAt: Date | null
     isFeatured: boolean
     isPinned: boolean
+    rejectionReason: string | null
     lockedById: string | null
     lockedAt: Date | null
     seriesId: string | null
@@ -4346,6 +4434,7 @@ export interface PostFieldRefs {
   readonly scheduledAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly isFeatured: Prisma.FieldRef<"Post", 'Boolean'>
   readonly isPinned: Prisma.FieldRef<"Post", 'Boolean'>
+  readonly rejectionReason: Prisma.FieldRef<"Post", 'String'>
   readonly lockedById: Prisma.FieldRef<"Post", 'String'>
   readonly lockedAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly seriesId: Prisma.FieldRef<"Post", 'String'>

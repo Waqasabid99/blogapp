@@ -1,5 +1,5 @@
-import { verifyToken } from "../lib/utils";
-import { prisma } from "../lib/prisma";
+import { verifyToken } from "../lib/utils.js";
+import { prisma } from "../lib/prisma.js";
 
 export const verifyUser = async (req, res, next) => {
   try {
@@ -16,7 +16,7 @@ export const verifyUser = async (req, res, next) => {
 
     if (!token) {
       return res.status(401).json({
-        message: "Authentication required"
+        message: "Unauthorized - Login to your account"
       });
     }
 

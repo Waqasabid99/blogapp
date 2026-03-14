@@ -1,4 +1,3 @@
-// routes/tag.routes.js
 import { Router } from "express";
 import {
     getAllTags,

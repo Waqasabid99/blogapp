@@ -29,6 +29,8 @@ export type PostViewMinAggregateOutputType = {
   postId: string | null
   ipHash: string | null
   userId: string | null
+  userAgent: string | null
+  referrer: string | null
   createdAt: Date | null
 }
 
@@ -37,6 +39,8 @@ export type PostViewMaxAggregateOutputType = {
   postId: string | null
   ipHash: string | null
   userId: string | null
+  userAgent: string | null
+  referrer: string | null
   createdAt: Date | null
 }
 
@@ -45,6 +49,8 @@ export type PostViewCountAggregateOutputType = {
   postId: number
   ipHash: number
   userId: number
+  userAgent: number
+  referrer: number
   createdAt: number
   _all: number
 }
@@ -55,6 +61,8 @@ export type PostViewMinAggregateInputType = {
   postId?: true
   ipHash?: true
   userId?: true
+  userAgent?: true
+  referrer?: true
   createdAt?: true
 }
 
@@ -63,6 +71,8 @@ export type PostViewMaxAggregateInputType = {
   postId?: true
   ipHash?: true
   userId?: true
+  userAgent?: true
+  referrer?: true
   createdAt?: true
 }
 
@@ -71,6 +81,8 @@ export type PostViewCountAggregateInputType = {
   postId?: true
   ipHash?: true
   userId?: true
+  userAgent?: true
+  referrer?: true
   createdAt?: true
   _all?: true
 }
@@ -152,6 +164,8 @@ export type PostViewGroupByOutputType = {
   postId: string
   ipHash: string | null
   userId: string | null
+  userAgent: string | null
+  referrer: string | null
   createdAt: Date
   _count: PostViewCountAggregateOutputType | null
   _min: PostViewMinAggregateOutputType | null
@@ -181,6 +195,8 @@ export type PostViewWhereInput = {
   postId?: Prisma.StringFilter<"PostView"> | string
   ipHash?: Prisma.StringNullableFilter<"PostView"> | string | null
   userId?: Prisma.StringNullableFilter<"PostView"> | string | null
+  userAgent?: Prisma.StringNullableFilter<"PostView"> | string | null
+  referrer?: Prisma.StringNullableFilter<"PostView"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PostView"> | Date | string
   post?: Prisma.XOR<Prisma.PostScalarRelationFilter, Prisma.PostWhereInput>
 }
@@ -190,6 +206,8 @@ export type PostViewOrderByWithRelationInput = {
   postId?: Prisma.SortOrder
   ipHash?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userAgent?: Prisma.SortOrderInput | Prisma.SortOrder
+  referrer?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   post?: Prisma.PostOrderByWithRelationInput
 }
@@ -202,6 +220,8 @@ export type PostViewWhereUniqueInput = Prisma.AtLeast<{
   postId?: Prisma.StringFilter<"PostView"> | string
   ipHash?: Prisma.StringNullableFilter<"PostView"> | string | null
   userId?: Prisma.StringNullableFilter<"PostView"> | string | null
+  userAgent?: Prisma.StringNullableFilter<"PostView"> | string | null
+  referrer?: Prisma.StringNullableFilter<"PostView"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PostView"> | Date | string
   post?: Prisma.XOR<Prisma.PostScalarRelationFilter, Prisma.PostWhereInput>
 }, "id">
@@ -211,6 +231,8 @@ export type PostViewOrderByWithAggregationInput = {
   postId?: Prisma.SortOrder
   ipHash?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userAgent?: Prisma.SortOrderInput | Prisma.SortOrder
+  referrer?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.PostViewCountOrderByAggregateInput
   _max?: Prisma.PostViewMaxOrderByAggregateInput
@@ -225,6 +247,8 @@ export type PostViewScalarWhereWithAggregatesInput = {
   postId?: Prisma.StringWithAggregatesFilter<"PostView"> | string
   ipHash?: Prisma.StringNullableWithAggregatesFilter<"PostView"> | string | null
   userId?: Prisma.StringNullableWithAggregatesFilter<"PostView"> | string | null
+  userAgent?: Prisma.StringNullableWithAggregatesFilter<"PostView"> | string | null
+  referrer?: Prisma.StringNullableWithAggregatesFilter<"PostView"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PostView"> | Date | string
 }
 
@@ -232,6 +256,8 @@ export type PostViewCreateInput = {
   id?: string
   ipHash?: string | null
   userId?: string | null
+  userAgent?: string | null
+  referrer?: string | null
   createdAt?: Date | string
   post: Prisma.PostCreateNestedOneWithoutViewsInput
 }
@@ -241,6 +267,8 @@ export type PostViewUncheckedCreateInput = {
   postId: string
   ipHash?: string | null
   userId?: string | null
+  userAgent?: string | null
+  referrer?: string | null
   createdAt?: Date | string
 }
 
@@ -248,6 +276,8 @@ export type PostViewUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ipHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   post?: Prisma.PostUpdateOneRequiredWithoutViewsNestedInput
 }
@@ -257,6 +287,8 @@ export type PostViewUncheckedUpdateInput = {
   postId?: Prisma.StringFieldUpdateOperationsInput | string
   ipHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -265,6 +297,8 @@ export type PostViewCreateManyInput = {
   postId: string
   ipHash?: string | null
   userId?: string | null
+  userAgent?: string | null
+  referrer?: string | null
   createdAt?: Date | string
 }
 
@@ -272,6 +306,8 @@ export type PostViewUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ipHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -280,6 +316,8 @@ export type PostViewUncheckedUpdateManyInput = {
   postId?: Prisma.StringFieldUpdateOperationsInput | string
   ipHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -298,6 +336,8 @@ export type PostViewCountOrderByAggregateInput = {
   postId?: Prisma.SortOrder
   ipHash?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  userAgent?: Prisma.SortOrder
+  referrer?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -306,6 +346,8 @@ export type PostViewMaxOrderByAggregateInput = {
   postId?: Prisma.SortOrder
   ipHash?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  userAgent?: Prisma.SortOrder
+  referrer?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -314,6 +356,8 @@ export type PostViewMinOrderByAggregateInput = {
   postId?: Prisma.SortOrder
   ipHash?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  userAgent?: Prisma.SortOrder
+  referrer?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -363,6 +407,8 @@ export type PostViewCreateWithoutPostInput = {
   id?: string
   ipHash?: string | null
   userId?: string | null
+  userAgent?: string | null
+  referrer?: string | null
   createdAt?: Date | string
 }
 
@@ -370,6 +416,8 @@ export type PostViewUncheckedCreateWithoutPostInput = {
   id?: string
   ipHash?: string | null
   userId?: string | null
+  userAgent?: string | null
+  referrer?: string | null
   createdAt?: Date | string
 }
 
@@ -407,6 +455,8 @@ export type PostViewScalarWhereInput = {
   postId?: Prisma.StringFilter<"PostView"> | string
   ipHash?: Prisma.StringNullableFilter<"PostView"> | string | null
   userId?: Prisma.StringNullableFilter<"PostView"> | string | null
+  userAgent?: Prisma.StringNullableFilter<"PostView"> | string | null
+  referrer?: Prisma.StringNullableFilter<"PostView"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PostView"> | Date | string
 }
 
@@ -414,6 +464,8 @@ export type PostViewCreateManyPostInput = {
   id?: string
   ipHash?: string | null
   userId?: string | null
+  userAgent?: string | null
+  referrer?: string | null
   createdAt?: Date | string
 }
 
@@ -421,6 +473,8 @@ export type PostViewUpdateWithoutPostInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ipHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -428,6 +482,8 @@ export type PostViewUncheckedUpdateWithoutPostInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ipHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -435,6 +491,8 @@ export type PostViewUncheckedUpdateManyWithoutPostInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ipHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -445,6 +503,8 @@ export type PostViewSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   postId?: boolean
   ipHash?: boolean
   userId?: boolean
+  userAgent?: boolean
+  referrer?: boolean
   createdAt?: boolean
   post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["postView"]>
@@ -454,6 +514,8 @@ export type PostViewSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   postId?: boolean
   ipHash?: boolean
   userId?: boolean
+  userAgent?: boolean
+  referrer?: boolean
   createdAt?: boolean
   post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["postView"]>
@@ -463,6 +525,8 @@ export type PostViewSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   postId?: boolean
   ipHash?: boolean
   userId?: boolean
+  userAgent?: boolean
+  referrer?: boolean
   createdAt?: boolean
   post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["postView"]>
@@ -472,10 +536,12 @@ export type PostViewSelectScalar = {
   postId?: boolean
   ipHash?: boolean
   userId?: boolean
+  userAgent?: boolean
+  referrer?: boolean
   createdAt?: boolean
 }
 
-export type PostViewOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "postId" | "ipHash" | "userId" | "createdAt", ExtArgs["result"]["postView"]>
+export type PostViewOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "postId" | "ipHash" | "userId" | "userAgent" | "referrer" | "createdAt", ExtArgs["result"]["postView"]>
 export type PostViewInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }
@@ -496,6 +562,8 @@ export type $PostViewPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     postId: string
     ipHash: string | null
     userId: string | null
+    userAgent: string | null
+    referrer: string | null
     createdAt: Date
   }, ExtArgs["result"]["postView"]>
   composites: {}
@@ -925,6 +993,8 @@ export interface PostViewFieldRefs {
   readonly postId: Prisma.FieldRef<"PostView", 'String'>
   readonly ipHash: Prisma.FieldRef<"PostView", 'String'>
   readonly userId: Prisma.FieldRef<"PostView", 'String'>
+  readonly userAgent: Prisma.FieldRef<"PostView", 'String'>
+  readonly referrer: Prisma.FieldRef<"PostView", 'String'>
   readonly createdAt: Prisma.FieldRef<"PostView", 'DateTime'>
 }
     

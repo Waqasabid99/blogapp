@@ -17,7 +17,7 @@ const seriesRouter = express.Router();
 seriesRouter.get("/", getAllSeries);
 seriesRouter.get("/:slug", getSeries);
 
-// Protected Routes (Admin / Editor generally handling series)
+// Protected Routes (Admin / Editor handling series)
 seriesRouter.use(verifyUser);
 
 seriesRouter.post("/", requirePermission("series.create"), createSeries);

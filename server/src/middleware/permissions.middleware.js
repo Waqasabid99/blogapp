@@ -30,6 +30,11 @@ export const requirePermission = (...permissions) => {
 
       const userPermissions = req.user.permissions || [];
 
+      // If the user is an admin, bypass permission check
+      if (req.user.role === "admin") {
+        return next();
+      }
+
       if (!hasAnyPermission(userPermissions, permissions)) {
         return res.status(403).json({
           success: false,

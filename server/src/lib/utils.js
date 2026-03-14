@@ -4,7 +4,7 @@ import bcryptjs from "bcryptjs";
 import crypto from "crypto";
 
 const JWT_SECRET = process.env.NODE_ENV === "production" ? process.env.JWT_SECRET : "dev_secret_key";
-export const JWT_EXPIRATION = process.env.NODE_ENV === "production" ? process.env.JWT_EXPIRATION : "7d";
+const JWT_EXPIRATION = process.env.NODE_ENV === "production" ? process.env.JWT_EXPIRATION : "7d";
 const SALT_ROUNDS = process.env.NODE_ENV === "production" ? parseInt(process.env.SALT_ROUNDS || "10") : 10;
 
 if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {

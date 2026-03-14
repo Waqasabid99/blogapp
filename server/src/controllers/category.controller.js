@@ -5,6 +5,9 @@ import slugify from "slugify";
 
 const getAllCategories = asyncHandler(async (req, res) => {
     const categories = await prisma.category.findMany({
+      where: {
+        parentId: null
+      },
         include: {
             children: true,
         },
@@ -24,6 +27,13 @@ const getAllCategories = asyncHandler(async (req, res) => {
     });
 
     return apiResponse(res, 200, true, "Categories fetched", flatCategories);
+})
+
+const getFlatCategories = asyncHandler(async (req, res) => {
+    const categories = await prisma.category.findMany({});
+    if (!categories) throw new ApiError(404, "Categories not found");
+
+    return apiResponse(res, 200, true, "Categories fetched", categories);
 })
 
 const getCategory = asyncHandler(async (req, res) => {
@@ -157,6 +167,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
 
 export {
     getAllCategories,
+    getFlatCategories,
     getCategory,
     createCategory,
     updateCategory,

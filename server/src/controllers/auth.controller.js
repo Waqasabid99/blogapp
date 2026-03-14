@@ -6,10 +6,11 @@ import {
     generateRefreshTokenString,
     generateToken,
     hashPassword,
-    JWT_EXPIRATION,
     refreshTokenCookieOptions,
     verifyPassword,
 } from "../lib/utils.js";
+
+const JWT_EXPIRATION = process.env.NODE_ENV === "production" ? parseInt(process.env.JWT_EXPIRATION || "7") : 7;
 
 // Register
 const register = asyncHandler(async (req, res) => {
@@ -39,9 +40,20 @@ const register = asyncHandler(async (req, res) => {
             passwordHash: hashedPassword,
             roleId: roleId ?? defaultRole.id,
         },
+        include: {
+            role: {
+                include: {
+                    permissions: {
+                        select: {
+                            permission: true,
+                        },
+                    },
+                },
+            },
+        },
     });
     if (!user) throw new ApiError(500, "Failed to create user");
-
+    console.log(user);
     // Get SafeUser
     const safeUser = getSafeUser(user);
 
@@ -59,7 +71,20 @@ const login = asyncHandler(async (req, res) => {
     if (!email || !password) throw new ApiError(400, "Missing required fields");
 
     // Check if user exists
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+        where: { email },
+        include: {
+            role: {
+                include: {
+                    permissions: {
+                        select: {
+                            permission: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
 
     if (!user) throw new ApiError(401, "User not found");
 
@@ -119,6 +144,17 @@ const refreshToken = asyncHandler(async (req, res) => {
 
     const user = await prisma.user.findUnique({
         where: { id: matchedToken.userId },
+        include: {
+            role: {
+                include: {
+                    permissions: {
+                        select: {
+                            permission: true,
+                        }
+                    }
+                }
+            }
+        }
     });
 
     const safeUser = getSafeUser(user);
@@ -151,7 +187,27 @@ const refreshToken = asyncHandler(async (req, res) => {
 
 // Logout
 const logout = asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) throw new ApiError(401, "Token not found");
+    if (refreshToken) {
+        const tokens = await prisma.refreshToken.findMany({
+            where: { expiresAt: { gt: new Date() } },
+        });
+
+        for (const token of tokens) {
+            const isMatch = await verifyPassword(refreshToken, token.tokenHash);
+
+            if (isMatch) {
+                await prisma.refreshToken.delete({
+                    where: { id: token.id },
+                });
+                break;
+            }
+        }
+    }
+
     clearAuthCookies(res);
+
     return apiResponse(res, 200, true, "Logout successful");
 });
 
@@ -189,6 +245,17 @@ const updateUser = asyncHandler(async (req, res) => {
     const updatedUser = await prisma.user.update({
         where: { id: userId },
         data: updateData,
+        include: {
+            role: {
+                include: {
+                    permissions: {
+                        select: {
+                            permission: true,
+                        }
+                    }
+                }
+            }
+        }
     });
 
     if (!updatedUser) throw new ApiError(500, "Failed to update user");
@@ -215,6 +282,17 @@ const forgetPassword = asyncHandler(async (req, res) => {
         data: {
             passwordHash: hashedPassword,
         },
+        include: {
+            role: {
+                include: {
+                    permissions: {
+                        select: {
+                            permission: true,
+                        }
+                    }
+                }
+            }
+        }
     });
     // Get safeUser
     const safeUser = getSafeUser(updatedUser);

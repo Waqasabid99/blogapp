@@ -170,6 +170,7 @@ export const PostScalarFieldEnum = {
   scheduledAt: 'scheduledAt',
   isFeatured: 'isFeatured',
   isPinned: 'isPinned',
+  rejectionReason: 'rejectionReason',
   lockedById: 'lockedById',
   lockedAt: 'lockedAt',
   seriesId: 'seriesId',
@@ -302,6 +303,8 @@ export const PostViewScalarFieldEnum = {
   postId: 'postId',
   ipHash: 'ipHash',
   userId: 'userId',
+  userAgent: 'userAgent',
+  referrer: 'referrer',
   createdAt: 'createdAt'
 } as const
 

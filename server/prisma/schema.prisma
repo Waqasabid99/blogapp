@@ -158,8 +158,9 @@ model Post {
   publishedAt DateTime?
   scheduledAt DateTime?
 
-  isFeatured Boolean @default(false)
-  isPinned   Boolean @default(false)
+  isFeatured      Boolean @default(false)
+  isPinned        Boolean @default(false)
+  rejectionReason String?
 
   lockedById String?
   lockedBy   User?     @relation("PostLock", fields: [lockedById], references: [id])
@@ -181,10 +182,10 @@ model Post {
   seriesId String?
   series   Series? @relation(fields: [seriesId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-   
+
   @@index([status])
   @@index([publishedAt])
   @@index([authorId])
@@ -381,9 +382,10 @@ model PostView {
   postId String
   post   Post   @relation(fields: [postId], references: [id])
 
-  ipHash String?
-  userId String?
-
+  ipHash    String?
+  userId    String?
+  userAgent String?
+  referrer  String?
   createdAt DateTime @default(now())
 
   @@index([postId])

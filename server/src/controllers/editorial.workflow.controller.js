@@ -1,5 +1,5 @@
 import { ApiError } from "../lib/ApiError.js";
-import { asyncHandler } from "../lib/helpers.js";
+import { apiResponse, asyncHandler } from "../lib/helpers.js";
 import { prisma } from "../lib/prisma.js";
 
 // Submit for review

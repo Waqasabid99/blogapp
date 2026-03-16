@@ -16,7 +16,7 @@ const JWT_EXPIRATION = process.env.NODE_ENV === "production" ? parseInt(process.
 const register = asyncHandler(async (req, res) => {
     const { name, email, password, roleId } = req.body;
     // Verify required fields
-    if (!email || !password || !roleId) throw new ApiError(400, "Missing required fields");
+    if (!email || !password) throw new ApiError(400, "Missing required fields");
 
     // Check if user already exists
     const isExists = await prisma.user.findUnique({ where: { email } });

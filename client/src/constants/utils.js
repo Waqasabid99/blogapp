@@ -1,0 +1,1 @@
+export const base_url = process.env.NEXT_API_BASE_URL;

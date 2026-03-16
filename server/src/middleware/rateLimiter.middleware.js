@@ -19,7 +19,7 @@ export const rateLimiter = (options = {}) => {
 
 export const loginLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // max 5 login attempts per IP per window
+  max: 100, // max 5 login attempts per IP per window
   message: {
     status: 429,
     success: false,

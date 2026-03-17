@@ -111,6 +111,15 @@ async function main() {
     { action: "permission.assign", description: "Assign permissions to roles" },
 
     //////////////////////////////////////////////////////
+    // SERIES
+    //////////////////////////////////////////////////////
+
+    { action: "series.view", description: "View series" },
+    { action: "series.create", description: "Create series" },
+    { action: "series.update", description: "Update series" },
+    { action: "series.delete", description: "Delete series" },
+
+    //////////////////////////////////////////////////////
     // ANALYTICS
     //////////////////////////////////////////////////////
 
@@ -223,6 +232,11 @@ async function main() {
       "comment.reject",
       "comment.spam",
 
+      "series.view",
+      "series.create",
+      "series.update",
+      "series.delete",
+
       "analytics.view"
     ],
 
@@ -242,8 +256,10 @@ async function main() {
       "media.upload",
       "media.view",
 
-      "comment.create",
-      "comment.update"
+      "series.view",
+      "series.create",
+      "series.update",
+      "series.delete",
     ],
 
     //////////////////////////////////////////////////////
@@ -253,7 +269,15 @@ async function main() {
     guest_writer: [
 
       "post.create",
-      "post.submit_for_review"
+      "post.submit_for_review",
+
+      "media.upload",
+      "media.view",
+
+      "series.view",
+      "series.create",
+      "series.update",
+      "series.delete",
     ],
 
     //////////////////////////////////////////////////////

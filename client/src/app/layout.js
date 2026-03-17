@@ -1,5 +1,6 @@
 import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
+import "./styles/ucStyles.css";
 import Navbar from "@/components/layout/Navbar";
 import { getAllCategories } from "@/actions/category.action";
 import { Providers } from "./providers";

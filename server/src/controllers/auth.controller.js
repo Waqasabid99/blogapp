@@ -57,9 +57,22 @@ const register = asyncHandler(async (req, res) => {
     // Get SafeUser
     const safeUser = getSafeUser(user);
 
-    // Generate token
+    // Generate tokens
     const token = generateToken(safeUser);
-    setAuthCookies(res, token, null, cookieOptions);
+    const refreshToken = generateRefreshTokenString();
+    const tokenHash = await hashPassword(refreshToken);
+
+    await prisma.refreshToken.create({
+        data: {
+            tokenHash,
+            userId: user.id,
+            ipHash: req.ip,
+            userAgent: req.headers["user-agent"],
+            expiresAt: new Date(Date.now() + JWT_EXPIRATION * 24 * 60 * 60 * 1000), // 7 days
+        },
+    });
+
+    setAuthCookies(res, token, refreshToken, cookieOptions, refreshTokenCookieOptions);
     return apiResponse(res, 201, true, "User created successfully", { user: safeUser });
 });
 
@@ -86,8 +99,8 @@ const login = asyncHandler(async (req, res) => {
         },
     });
 
-    if (!user) throw new ApiError(401, "User not found");
-
+    if (!user) throw new ApiError(401, "User not found");   
+    console.log(user)
     // Check if password is correct
     const isPasswordCorrect = await verifyPassword(password, user.passwordHash);
 
@@ -110,7 +123,7 @@ const login = asyncHandler(async (req, res) => {
             userId: user?.id,
             ipHash: req.ip,
             userAgent: req.headers["user-agent"],
-            expiresAt: new Date(Date.now() + JWT_EXPIRATION), // 7 days
+            expiresAt: new Date(Date.now() + JWT_EXPIRATION * 24 * 60 * 60 * 1000), // 7 days
         },
     });
 
@@ -176,7 +189,7 @@ const refreshToken = asyncHandler(async (req, res) => {
             userId: user.id,
             ipHash: req.ip,
             userAgent: req.headers["user-agent"],
-            expiresAt: new Date(Date.now() + JWT_EXPIRATION),
+            expiresAt: new Date(Date.now() + JWT_EXPIRATION * 24 * 60 * 60 * 1000),
         },
     });
 

@@ -7,6 +7,7 @@ const useAuthStore = create(
   persist(
     (set, get) => ({
       user: null,
+      avatar: null,
       isAuthenticated: false,
       permissions: [],
       role: null,
@@ -20,6 +21,7 @@ const useAuthStore = create(
       setAuthUser: (user) => {
         set({
           user,
+          avatar: user?.avatarUrl,
           isAuthenticated: true,
           permissions: user?.permissions || [],
           role: user?.role || null,
@@ -159,6 +161,7 @@ const useAuthStore = create(
 
       partialize: (state) => ({
         user: state.user,
+        avatar: state.avatar,
         isAuthenticated: state.isAuthenticated,
         permissions: state.permissions,
         role: state.role,

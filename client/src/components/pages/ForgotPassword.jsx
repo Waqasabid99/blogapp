@@ -19,7 +19,6 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted", formData);
     await forgotPassword(formData);
   };
 

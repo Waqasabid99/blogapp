@@ -14,6 +14,9 @@ import commentRouter from "./routes/comment.routes.js";
 import newsletterRouter from "./routes/newsletter.routes.js";
 import editorialRouter from "./routes/editorial.workflow.routes.js";
 import analyticsRouter from "./routes/analytics.routes.js";
+import userRouter from "./routes/user.routes.js";
+import rolePermissionRouter from "./routes/rolePermission.routes.js";
+import mediaRouter from "./routes/media.routes.js";
 const app = express();
 
 // Middleware
@@ -82,6 +85,9 @@ app.use("/comment", commentRouter);
 app.use("/newsletter", newsletterRouter);
 app.use("/editorial", editorialRouter);
 app.use("/analytics", analyticsRouter);
+app.use("/users", userRouter);
+app.use("/role-permission", rolePermissionRouter);
+app.use("/media", mediaRouter);
 app.get("/", (req, res) => {
     res.send("Backend is running!");
 })

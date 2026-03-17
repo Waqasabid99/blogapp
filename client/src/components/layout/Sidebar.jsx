@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -37,13 +36,13 @@ const Sidebar = () => {
         {
             label: "Dashboard",
             icon: LayoutDashboard,
-            href: "/dashboard",
-            requiredPermissions: ["admin.dashboard"],
+            href: `/dashboard/${user?.role}/${user?.id}`,
+            requiredPermissions: ["dashboard.view"],
         },
         {
             label: "Posts",
             icon: FileText,
-            href: "/dashboard/posts",
+            href: `/dashboard/${user?.role}/${user?.id}/posts`,
             requiredPermissions: [
                 "post.create",
                 "post.update",
@@ -51,31 +50,50 @@ const Sidebar = () => {
                 "post.publish",
                 "post.approve",
                 "post.reject",
+                "post.view_drafts"
             ],
         },
         {
             label: "Categories",
             icon: FolderOpen,
-            href: "/dashboard/categories",
-            requiredPermissions: ["category.manage"],
+            href: `/dashboard/${user?.role}/${user?.id}/categories`,
+            requiredPermissions: [
+                "category.create",
+                "category.update",
+                "category.delete"
+            ],
         },
         {
             label: "Tags",
             icon: Tags,
-            href: "/dashboard/tags",
-            requiredPermissions: ["tag.manage"],
+            href: `/dashboard/${user?.role}/${user?.id}/tags`,
+            requiredPermissions: [
+                "tag.create",
+                "tag.update",
+                "tag.delete"
+            ],
         },
         {
             label: "Comments",
             icon: MessageSquare,
-            href: "/dashboard/comments",
-            requiredPermissions: ["comment.moderate"],
+            href: `/dashboard/${user?.role}/${user?.id}/comments`,
+            requiredPermissions: [
+                "comment.moderate",
+                "comment.approve",
+                "comment.reject",
+                "comment.spam"
+            ],
         },
         {
             label: "Users",
             icon: Users,
-            href: "/dashboard/users",
-            requiredPermissions: ["user.manage"],
+            href: `/dashboard/${user?.role}/${user?.id}/users`,
+            requiredPermissions: [
+                "user.view",
+                "user.create",
+                "user.update",
+                "user.delete"
+            ],
         },
     ];
 
@@ -96,35 +114,24 @@ const Sidebar = () => {
     }
 
     const SidebarContent = () => (
-        <div className="flex flex-col h-full bg-(--bg-primary) border-r border-(--border-light)">
-            <div className="p-6 border-b border-(--border-light) flex items-center justify-between">
-                <Link href="/" className="heading-3 text-(--brand-primary) italic">
-                    NEWZONE
-                </Link>
-                <button
-                    className="lg:hidden p-1 rounded-md hover:bg-(--bg-tertiary)"
-                    onClick={() => setMobileOpen(false)}
-                >
-                    <X className="w-5 h-5 text-(--text-primary)" />
-                </button>
-            </div>
-
-            <nav className="flex-1 overflow-y-auto py-4">
+        <div className="flex flex-col h-screen bg-(--bg-primary) border-r border-(--border-light)">
+            <nav className="flex-1 py-4">
                 <ul className="space-y-1 px-3">
                     {visibleItems.map((item) => {
                         const Icon = item.icon;
-                        // Exact match or sub-route
-                        const isActive =
-                            pathname === item.href ||
-                            (pathname.startsWith(item.href + "/") && item.href !== "/dashboard");
+                        // Dashboard should only be active if exact match
+                        const isDashboardLink = item.href === `/dashboard/${user?.role}/${user?.id}`;
+                        const isActive = isDashboardLink
+                            ? pathname === item.href
+                            : pathname.startsWith(item.href);
 
                         return (
                             <li key={item.href}>
                                 <Link
                                     href={item.href}
                                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
-                                            ? "bg-(--brand-primary-light) text-(--brand-primary)"
-                                            : "text-(--text-secondary) hover:bg-(--bg-tertiary) hover:text-(--text-primary)"
+                                        ? "bg-(--brand-primary-light) text-(--brand-primary)"
+                                        : "text-(--text-secondary) hover:bg-(--bg-tertiary) hover:text-(--text-primary)"
                                         }`}
                                 >
                                     <Icon className="w-5 h-5" />
@@ -138,26 +145,6 @@ const Sidebar = () => {
 
             {/* User info & Logout at bottom */}
             <div className="p-4 border-t border-(--border-light) flex flex-col gap-2">
-                <div className="px-3 py-2 mb-2 bg-(--bg-tertiary) rounded-lg border border-(--border-light)">
-                    <p className="text-sm font-semibold text-(--text-primary) truncate">
-                        {user?.name || "Account"}
-                    </p>
-                    <p className="text-xs text-(--text-muted) truncate">
-                        {user?.email}
-                    </p>
-                </div>
-
-                <Link
-                    href="/dashboard/settings"
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/dashboard/settings"
-                            ? "bg-(--brand-primary-light) text-(--brand-primary)"
-                            : "text-(--text-secondary) hover:bg-(--bg-tertiary) hover:text-(--text-primary)"
-                        }`}
-                >
-                    <Settings className="w-5 h-5" />
-                    Settings
-                </Link>
-
                 <button
                     onClick={handleLogout}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors w-full text-left cursor-pointer"

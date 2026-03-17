@@ -1,0 +1,45 @@
+import { base_url } from "@/constants/utils"
+import { cookies } from "next/headers"
+
+export const getAllUsers = async () => {
+    const cookieStore = await cookies()
+    const accessToken = cookieStore.get("accessToken")?.value
+    try {
+        const res = await fetch(`${base_url}/users`, {
+            method: 'GET',
+            headers: {
+                Cookie: `accessToken=${accessToken}`,
+            },
+            next: {
+                tags: ['users']
+            }
+        });
+        const data = await res.json()
+        return data
+    } catch (error) {
+        console.log(error)
+        return error
+    }
+}
+
+export const getUserById = async (id) => {
+    const cookieStore = await cookies()
+    const accessToken = cookieStore.get("accessToken")?.value
+    try {
+        const res = await fetch(`${base_url}/users/${id}`, {
+            method: 'GET',
+            headers: {
+                Cookie: `accessToken=${accessToken}`,
+            },
+            next: {
+                tags: ['users']
+            }
+        });
+        
+        const data = await res.json()
+        return data
+    } catch (error) {
+        console.log(error)
+        return error
+    }
+}

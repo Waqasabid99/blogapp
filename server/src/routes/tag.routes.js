@@ -28,12 +28,12 @@ tagRouter.get("/slug/:slug", getTag);
 tagRouter.use(verifyUser);
 
 // Admin/Editor routes
-tagRouter.post("/", requirePermission("tag.create"), createTag);
+tagRouter.post("/create", requirePermission("tag.create"), createTag);
 tagRouter.post("/bulk", requirePermission("tag.create"), bulkCreateTags);
 tagRouter.post("/merge", requirePermission("tag.update"), mergeTags);
 tagRouter.get("/id/:id", requirePermission("tag.read"), getTagById);
-tagRouter.patch("/:id", requirePermission("tag.update"), updateTag);
-tagRouter.delete("/:id", requirePermission("tag.delete"), deleteTag);
+tagRouter.patch("/update/:id", requirePermission("tag.update"), updateTag);
+tagRouter.delete("/delete/:id", requirePermission("tag.delete"), deleteTag);
 
 // Maintenance routes
 tagRouter.post("/recalculate", requirePermission("admin"), recalculatePostCounts);

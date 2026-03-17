@@ -48,6 +48,7 @@ export default function Loader({
         className={`
           ${ring}
           rounded-full
+          mr-2
           border-(--border-light)
           border-t-(--brand-primary)
           animate-spin

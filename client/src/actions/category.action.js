@@ -1,3 +1,5 @@
+import { cookies } from "next/headers"
+
 const base_url = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export const getAllCategories = async () => {
@@ -10,5 +12,20 @@ export const getAllCategories = async () => {
   if (!response.ok) {
     throw new Error("Failed to fetch categories")
   }
-  return response.json()
+  const data = await response.json()
+  return data
+}
+
+export const getCategoryById = async (id) => {
+  const response = await fetch(`${base_url}/category/${id}`, {
+    next: {
+      tags: ["categories"]
+    }
+  })
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch category")
+  }
+  const data = await response.json()
+  return data
 }

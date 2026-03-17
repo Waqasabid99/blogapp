@@ -5,11 +5,11 @@ import slugify from "slugify";
 
 // GET ALL TAGS
 const getAllTags = asyncHandler(async (req, res) => {
-  const { 
-    page = 1, 
-    limit = 20, 
-    search, 
-    sortBy = "postCount", 
+  const {
+    page = 1,
+    limit = 20,
+    search,
+    sortBy = "postCount",
     order = "desc",
     includePosts = "false",
     postsLimit = 5
@@ -81,7 +81,8 @@ const getAllTags = asyncHandler(async (req, res) => {
     },
   } : {};
 
-  const [tags, total] = await prisma.$transaction([
+  // Run queries in parallel
+  const [tags, total] = await Promise.all([
     prisma.tag.findMany({
       where,
       skip,
@@ -108,8 +109,8 @@ const getAllTags = asyncHandler(async (req, res) => {
     ...tag,
     postCount: tag._count.posts,
     _count: undefined,
-    posts: includePosts === "true" 
-      ? tag.posts?.map((pt) => pt.post).filter(Boolean) 
+    posts: includePosts === "true"
+      ? tag.posts?.map((pt) => pt.post).filter(Boolean)
       : undefined,
   }));
 
@@ -129,9 +130,9 @@ const getAllTags = asyncHandler(async (req, res) => {
 // GET SINGLE TAG (by slug)
 const getTag = asyncHandler(async (req, res) => {
   const { slug } = req.params;
-  const { 
-    includePosts = "true", 
-    postsPage = 1, 
+  const {
+    includePosts = "true",
+    postsPage = 1,
     postsLimit = 10,
     postStatus = "PUBLISHED"
   } = req.query;
@@ -246,7 +247,7 @@ const getTag = asyncHandler(async (req, res) => {
 // GET TAG BY ID (Internal/Admin use)
 const getTagById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-
+  console.log(id);
   const tag = await prisma.tag.findUnique({
     where: { id },
     include: {
@@ -323,21 +324,21 @@ const createTag = asyncHandler(async (req, res) => {
   }
 
   // Generate unique slug
-  let slug = slugify(trimmedName, { 
-    lower: true, 
+  let slug = slugify(trimmedName, {
+    lower: true,
     strict: true,
-    remove: /[*+~.()\\'"!:@]/g 
+    remove: /[*+~.()\\'"!:@]/g
   });
 
   let suffix = 1;
-  let existingSlug = await prisma.tag.findUnique({ 
-    where: { slug } 
+  let existingSlug = await prisma.tag.findUnique({
+    where: { slug }
   });
 
   while (existingSlug) {
     slug = `${slug}-${suffix}`;
-    existingSlug = await prisma.tag.findUnique({ 
-      where: { slug } 
+    existingSlug = await prisma.tag.findUnique({
+      where: { slug }
     });
     suffix++;
   }
@@ -372,14 +373,14 @@ const bulkCreateTags = asyncHandler(async (req, res) => {
 
   for (let i = 0; i < names.length; i++) {
     const name = names[i];
-    
+
     if (!name || typeof name !== "string" || name.trim().length < 2) {
       errors.push({ index: i, name, error: "Invalid name" });
       continue;
     }
 
     const trimmedName = name.trim();
-    
+
     if (trimmedName.length > 50) {
       errors.push({ index: i, name: trimmedName, error: "Name too long (max 50 chars)" });
       continue;
@@ -408,10 +409,10 @@ const bulkCreateTags = asyncHandler(async (req, res) => {
   const slugSet = new Set();
 
   for (const name of newNames) {
-    let slug = slugify(name, { 
-      lower: true, 
+    let slug = slugify(name, {
+      lower: true,
       strict: true,
-      remove: /[*+~.()\\'"!:@]/g 
+      remove: /[*+~.()\\'"!:@]/g
     });
 
     // Handle slug collisions within this batch
@@ -424,13 +425,13 @@ const bulkCreateTags = asyncHandler(async (req, res) => {
     slugSet.add(uniqueSlug);
 
     // Check against database
-    let existingSlug = await prisma.tag.findUnique({ 
-      where: { slug: uniqueSlug } 
+    let existingSlug = await prisma.tag.findUnique({
+      where: { slug: uniqueSlug }
     });
     while (existingSlug) {
       uniqueSlug = `${slug}-${suffix}`;
-      existingSlug = await prisma.tag.findUnique({ 
-        where: { slug: uniqueSlug } 
+      existingSlug = await prisma.tag.findUnique({
+        where: { slug: uniqueSlug }
       });
       suffix++;
     }
@@ -519,10 +520,10 @@ const updateTag = asyncHandler(async (req, res) => {
 
     // Regenerate slug if name changed
     if (trimmedName.toLowerCase() !== existingTag.name.toLowerCase()) {
-      let slug = slugify(trimmedName, { 
-        lower: true, 
+      let slug = slugify(trimmedName, {
+        lower: true,
         strict: true,
-        remove: /[*+~.()\\'"!:@]/g 
+        remove: /[*+~.()\\'"!:@]/g
       });
 
       let suffix = 1;
@@ -879,7 +880,7 @@ const recalculatePostCounts = asyncHandler(async (req, res) => {
 
   for (const tag of tags) {
     const actualCount = tag._count.posts;
-    
+
     if (tag.postCount !== actualCount) {
       mismatches.push({
         id: tag.id,

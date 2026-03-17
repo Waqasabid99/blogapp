@@ -4,61 +4,61 @@ import { prisma } from "../lib/prisma.js";
 import slugify from "slugify";
 
 const getAllCategories = asyncHandler(async (req, res) => {
-    const categories = await prisma.category.findMany({
-      where: {
-        parentId: null
-      },
-        include: {
-            children: true,
-        },
-    });
-    if (!categories) throw new ApiError(404, "Categories not found");
-    
-    const flatCategories = categories.map((category) => {
-        return {
-            ...category,
-            children: category.children.map((child) => {
-                return {
-                    ...child,
-                    children: [],
-                };
-            }),
-        };
-    });
+  const categories = await prisma.category.findMany({
+    where: {
+      parentId: null
+    },
+    include: {
+      children: true,
+    },
+  });
+  if (!categories) throw new ApiError(404, "Categories not found");
 
-    return apiResponse(res, 200, true, "Categories fetched", flatCategories);
+  const flatCategories = categories.map((category) => {
+    return {
+      ...category,
+      children: category.children.map((child) => {
+        return {
+          ...child,
+          children: [],
+        };
+      }),
+    };
+  });
+
+  return apiResponse(res, 200, true, "Categories fetched", flatCategories);
 })
 
 const getFlatCategories = asyncHandler(async (req, res) => {
-    const categories = await prisma.category.findMany({});
-    if (!categories) throw new ApiError(404, "Categories not found");
+  const categories = await prisma.category.findMany({});
+  if (!categories) throw new ApiError(404, "Categories not found");
 
-    return apiResponse(res, 200, true, "Categories fetched", categories);
+  return apiResponse(res, 200, true, "Categories fetched", categories);
 })
 
 const getCategory = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const category = await prisma.category.findUnique({
-        where: { id },
-        include: {
-            children: true,
-        },
-    });
+  const category = await prisma.category.findUnique({
+    where: { id },
+    include: {
+      children: true,
+    },
+  });
 
-    if (!category) throw new ApiError(404, "Category not found");
+  if (!category) throw new ApiError(404, "Category not found");
 
-    const flatCategory = {
-        ...category,
-        children: category.children.map((child) => {
-            return {
-                ...child,
-                children: [],
-            };
-        }),
-    };
+  const flatCategory = {
+    ...category,
+    children: category.children.map((child) => {
+      return {
+        ...child,
+        children: [],
+      };
+    }),
+  };
 
-    return apiResponse(res, 200, true, "Category fetched", flatCategory);
+  return apiResponse(res, 200, true, "Category fetched", flatCategory);
 })
 
 const createCategory = asyncHandler(async (req, res) => {
@@ -152,10 +152,13 @@ const updateCategory = asyncHandler(async (req, res) => {
 });
 
 const deleteCategory = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.query;
 
-  const category = await prisma.category.findUnique({ where: { id } });
+  const category = await prisma.category.findUnique({ where: { id }, include: { children: true } });
+  console.log(category);
   if (!category) throw new ApiError(404, "Category not found");
+
+  if (category?.children.length > 0) throw new ApiError(400, "Category has children, cannot delete");
 
   // Delete category
   await prisma.category.delete({
@@ -166,10 +169,10 @@ const deleteCategory = asyncHandler(async (req, res) => {
 });
 
 export {
-    getAllCategories,
-    getFlatCategories,
-    getCategory,
-    createCategory,
-    updateCategory,
-    deleteCategory
+  getAllCategories,
+  getFlatCategories,
+  getCategory,
+  createCategory,
+  updateCategory,
+  deleteCategory
 }

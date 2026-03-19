@@ -5,6 +5,7 @@ import {
     deletePost,
     getAllPosts,
     getSinglePost,
+    getSinglePostById,
 } from "../controllers/post.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 import { requirePermission } from "../middleware/permissions.middleware.js";
@@ -16,7 +17,7 @@ const postRouter = express.Router();
 // Public / Optional Auth Routes
 postRouter.get("/", optionalPermission(), getAllPosts);
 postRouter.get("/:slug", optionalPermission(), getSinglePost);
-
+postRouter.get("/postId/:id", verifyUser, optionalPermission(), getSinglePostById);
 // Protected Routes (Requires auth)
 postRouter.use(verifyUser);
 

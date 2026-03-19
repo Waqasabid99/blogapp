@@ -155,23 +155,20 @@ const getAllSeries = asyncHandler(async (req, res) => {
 
   const sortOrder = order === "asc" ? "asc" : "desc";
 
-  const [series, total] = await prisma.$transaction([
+  const [series, total] = await Promise.all([
     prisma.series.findMany({
       where,
       skip,
       take: pageSize,
-
       orderBy: {
         [sortField]: sortOrder,
       },
-
       select: {
         id: true,
         title: true,
         slug: true,
         description: true,
         createdAt: true,
-
         _count: {
           select: {
             posts: true,

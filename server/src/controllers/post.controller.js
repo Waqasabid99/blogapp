@@ -443,17 +443,14 @@ const getAllPosts = asyncHandler(async (req, res) => {
 
     // QUERY
 
-    const [posts, total] = await prisma.$transaction([
+    const [posts, total] = await Promise.all([
         prisma.post.findMany({
             where,
-
             skip,
             take: pageSize,
-
             orderBy: {
                 [sortField]: sortOrder,
             },
-
             select: {
                 id: true,
                 title: true,
@@ -534,7 +531,6 @@ const getSinglePost = asyncHandler(async (req, res) => {
     const user = req.user;
 
     // FIND POST
-
     let post = await prisma.post.findFirst({
         where: {
             slug,
@@ -582,14 +578,7 @@ const getSinglePost = asyncHandler(async (req, res) => {
                 },
             },
 
-            series: {
-                select: {
-                    id: true,
-                    name: true,
-                    slug: true,
-                },
-            },
-
+            series: true,
             seo: true,
         },
     });
@@ -624,7 +613,117 @@ const getSinglePost = asyncHandler(async (req, res) => {
     // STATUS VISIBILITY RULES
 
     const isAuthor = user && user.id === post.authorId;
-    const isAdmin = user && (user.role === "ADMIN" || user.role === "EDITOR");
+    const isAdmin = user && (user.role.toUpperCase() === "ADMIN" || user.role.toUpperCase() === "EDITOR");
+
+    if (post.status !== "PUBLISHED" && !isAuthor && !isAdmin) {
+        throw new ApiError(403, "You are not allowed to view this post");
+    }
+
+    // INCREMENT VIEW COUNT
+
+    await prisma.post.update({
+        where: { id: post.id },
+        data: {
+            viewCount: {
+                increment: 1,
+            },
+        },
+    });
+
+    // RESPONSE
+
+    return apiResponse(res, 200, true, "Post fetched", post);
+});
+
+// Get single post
+const getSinglePostById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const user = req.user;
+    
+    // FIND POST
+    let post = await prisma.post.findFirst({
+        where: {
+            id,
+            deletedAt: null,
+        },
+        include: {
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatarUrl: true,
+                    bio: true,
+                },
+            },
+
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: true,
+            seo: true,
+        },
+    });
+
+    // HANDLE OLD SLUG REDIRECT
+
+    if (!post) {
+        const slugHistory = await prisma.slugHistory.findFirst({
+            where: {
+                oldSlug: slug,
+            },
+        });
+
+        if (slugHistory) {
+            const newPost = await prisma.post.findUnique({
+                where: {
+                    id: slugHistory.postId,
+                },
+                select: {
+                    slug: true,
+                },
+            });
+
+            return apiResponse(res, 301, true, "Slug updated", {
+                redirect: `/posts/${newPost.slug}`,
+            });
+        }
+
+        throw new ApiError(404, "Post not found");
+    }
+
+    // STATUS VISIBILITY RULES
+
+    const isAuthor = user && user.id === post.authorId;
+    const isAdmin = user && (user.role.toUpperCase() === "ADMIN" || user.role.toUpperCase() === "EDITOR");
 
     if (post.status !== "PUBLISHED" && !isAuthor && !isAdmin) {
         throw new ApiError(403, "You are not allowed to view this post");
@@ -652,4 +751,5 @@ export {
     deletePost,
     getAllPosts,
     getSinglePost,
+    getSinglePostById
 };

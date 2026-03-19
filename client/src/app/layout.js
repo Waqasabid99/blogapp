@@ -23,13 +23,13 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const { data: categories } = await getAllCategories();
+  const categories = await getAllCategories();
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${serif.variable} antialiased`}>
         <Providers>
           <CheckAuth>
-            <Navbar categories={categories} />
+            <Navbar categories={categories?.data} />
             <ToastContainer />
             {children}
           </CheckAuth>

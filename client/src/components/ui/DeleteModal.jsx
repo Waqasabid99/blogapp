@@ -25,7 +25,7 @@ const DeleteModal = ({
             onClick={(e) => e.target === e.currentTarget && onClose()}
             className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-(--bg-primary)/30 backdrop-blur-sm animate-[fadeIn_0.18s_ease]"
         >
-            <div className="w-full max-w-[440px] overflow-hidden rounded-[10px] border border-var-(--border-light) bg-var-(--bg-primary) shadow-[0_20px_48px_rgba(0,0,0,0.18)] animate-[slideUp_0.22s_cubic-bezier(0.34,1.2,0.64,1)]">
+            <div className="w-full max-w-110 overflow-hidden rounded-[10px] border border-var-(--border-light) bg-var-(--bg-primary) shadow-[0_20px_48px_rgba(0,0,0,0.18)] animate-[slideUp_0.22s_cubic-bezier(0.34,1.2,0.64,1)]">
                 {/* Header */}
                 <div className="flex items-start gap-3.5 pt-6 px-6">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-var-(--brand-primary-light)">
@@ -46,7 +46,7 @@ const DeleteModal = ({
                 )}
 
                 {/* Body */}
-                <div className="px-6 pb-5 pt-[18px]">
+                <div className="px-6 pb-5 pt-4.5">
                     {post && (
                         <div className="mb-3.5 flex items-center gap-3 rounded-md border border-var-(--border-light) bg-var-(--bg-secondary) px-3.5 py-3">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-var-(--bg-tertiary)">
@@ -74,7 +74,7 @@ const DeleteModal = ({
                     <button
                         onClick={onClose}
                         disabled={isLoading}
-                        className="btn btn-outline h-[38px]"
+                        className="btn btn-outline h-9.5"
                     >
                         Cancel
                     </button>

@@ -8,8 +8,9 @@ export const metadata = {
 
 const page = async () => {
     const tags = await getAllTags();
+    console.log(tags)
     return (
-        <AllTags tags={tags.data} />
+        <AllTags tags={tags?.data} />
     )
 }
 

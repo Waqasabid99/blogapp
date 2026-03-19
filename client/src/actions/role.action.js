@@ -1,5 +1,6 @@
-import { base_url } from "@/constants/utils";
 import { cookies } from "next/headers"
+
+const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const getAllRoles = async () => {
     const cookieStore = await cookies();

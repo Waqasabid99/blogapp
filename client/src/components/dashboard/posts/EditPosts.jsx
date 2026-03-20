@@ -6,8 +6,7 @@ import {
     ImagePlus, BookOpen, Eye, Save, Send,
     Layers, Info, Clock, FileText,
     ChevronRight, PanelRight, PanelRightClose,
-    Globe, Star, Pin, History, RefreshCw, Loader2,
-    CheckCircle2, AlertTriangle
+    Globe, Star, Pin, History, ExternalLink,
 } from "lucide-react";
 import ValidationToast from "@/components/ui/ValidationToast";
 import api from "@/api/api";
@@ -15,44 +14,51 @@ import useEditorJs from "@/constants/Editor";
 import { CategorySelector, SectionTitle, STATUS_META, TagSelector, ThumbnailUploader } from "@/constants/utils";
 import { STYLES } from "@/app/styles/postStyles";
 import Loader from "@/components/ui/Loader";
-import { formatDate, formatRelativeTime } from "@/constants/helpers";
+import useAuthStore from "@/store/authStore";
 
-const EditPost = ({ postId, categories = [], tags = [], series = [] }) => {
+const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
     const router = useRouter();
+    const { user } = useAuthStore();
 
-    /* ── Original post data (for dirty-tracking) ── */
-    const originalRef = useRef(null);
+    /* ── Derive initial values from post prop ── */
+    const initialCategoryIds = post?.categories?.map((c) => c.category.id) ?? [];
+    const initialTagIds      = post?.tags?.map((t) => t.tag.id) ?? [];
+    const initialThumbnail   = post?.coverImage
+        ? { id: post.coverImage.id, url: post.coverImage.url, name: "Cover image" }
+        : null;
+    const initialScheduledAt = post?.scheduledAt
+        ? new Date(post.scheduledAt).toISOString().slice(0, 16)
+        : "";
 
     /* ── Form State ── */
-    const [title, setTitle] = useState("");
-    const [excerpt, setExcerpt] = useState("");
-    const [content, setContent] = useState(null);
-    const [thumbnail, setThumbnail] = useState(null); // { id, url, name }
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [selectedSeries, setSelectedSeries] = useState("");
-    const [status, setStatus] = useState("DRAFT");
-    const [isFeatured, setIsFeatured] = useState(false);
-    const [isPinned, setIsPinned] = useState(false);
-    const [scheduledAt, setScheduledAt] = useState("");
+    const [title, setTitle]              = useState(post?.title        ?? "");
+    const [excerpt,            setExcerpt]            = useState(post?.excerpt       ?? "");
+    const [content,            setContent]            = useState(post?.content       ?? null);
+    const [thumbnail,          setThumbnail]          = useState(initialThumbnail);
+    const [selectedCategories, setSelectedCategories] = useState(initialCategoryIds);
+    const [selectedTags,       setSelectedTags]       = useState(initialTagIds);
+    const [selectedSeries,     setSelectedSeries]     = useState(post?.seriesId     ?? "");
+    const [status,             setStatus]             = useState(post?.status        ?? "DRAFT");
+    const [isFeatured,         setIsFeatured]         = useState(post?.isFeatured    ?? false);
+    const [isPinned,           setIsPinned]           = useState(post?.isPinned      ?? false);
+    const [scheduledAt,        setScheduledAt]        = useState(initialScheduledAt);
 
     /* ── SEO State ── */
-    const [metaTitle, setMetaTitle] = useState("");
-    const [metaDescription, setMetaDescription] = useState("");
+    const [metaTitle,       setMetaTitle]       = useState(post?.seo?.metaTitle       ?? post?.title        ?? "");
+    const [metaDescription, setMetaDescription] = useState(post?.seo?.metaDescription ?? post?.excerpt       ?? "");
 
     /* ── UI State ── */
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [activeTab, setActiveTab] = useState("details");
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
+    const [activeTab,   setActiveTab]   = useState("details");
+    const [errors,      setErrors]      = useState({});
+    const [loading,     setLoading]     = useState(false);
     const [savingDraft, setSavingDraft] = useState(false);
-    const [fetchingPost, setFetchingPost] = useState(true);
-    const [fetchError, setFetchError] = useState(null);
-    const [toast, setToast] = useState(null);
-    const [wordCount, setWordCount] = useState(0);
-    const [readTime, setReadTime] = useState(0);
-    const [isDirty, setIsDirty] = useState(false);
-    const [lastSaved, setLastSaved] = useState(null);
+    const [toast,       setToast]       = useState(null);
+    const [wordCount,   setWordCount]   = useState(post?.wordCount    ?? 0);
+    const [readTime,    setReadTime]    = useState(post?.readingTime   ?? 0);
+
+    /* ── Track whether editor has been seeded with existing content ── */
+    const seededRef = useRef(false);
 
     /* ── Editor ── */
     const onContentChange = useCallback((data) => {
@@ -63,119 +69,24 @@ const EditPost = ({ postId, categories = [], tags = [], series = [] }) => {
         const words = text.trim().split(/\s+/).filter(Boolean).length;
         setWordCount(words);
         setReadTime(Math.max(1, Math.ceil(words / 238)));
-        setIsDirty(true);
     }, []);
 
-    const { ready: editorReady, editorRef: editor } = useEditorJs("pc-editor-holder", onContentChange, !fetchingPost && !fetchError);
+    const { editorRef, ready: editorReady } = useEditorJs("ep-editor-holder", onContentChange);
 
-    /* ── Auto-dismiss toast ── */
+    /* ── Seed editor with existing content once it is ready ── */
     useEffect(() => {
-        if (!toast) return;
-        const t = setTimeout(() => setToast(null), 4000);
-        return () => clearTimeout(t);
-    }, [toast]);
+        if (!editorReady || seededRef.current) return;
+        if (!post?.content || !editorRef.current) return;
 
-    /* ── Fetch post on mount ── */
+        // Editor.js exposes render() to load saved data
+        editorRef?.current?.render(post.content).catch(console.error);
+        seededRef.current = true;
+    }, [editorReady, post?.content, editorRef]);
+
+    /* ── Sync title → SEO title only when SEO title is still the old post title ── */
     useEffect(() => {
-        if (!postId) return;
-
-        const fetchPost = async () => {
-            setFetchingPost(true);
-            setFetchError(null);
-            try {
-                const { data } = await api.get(`/post/postId/${postId}`, { withCredentials: true });
-                if (!data.success) throw new Error(data.message ?? "Failed to load post.");
-
-                const post = data.data;
-                originalRef.current = post;
-
-                /* Populate form fields */
-                setTitle(post.title ?? "");
-                setExcerpt(post.excerpt ?? "");
-                setStatus(post.status ?? "DRAFT");
-                setIsFeatured(post.isFeatured ?? false);
-                setIsPinned(post.isPinned ?? false);
-                setScheduledAt(
-                    post.scheduledAt
-                        ? new Date(post.scheduledAt).toISOString().slice(0, 16)
-                        : ""
-                );
-                setSelectedCategories(
-                    (post.categories ?? []).map((c) => c.category?.id ?? c.categoryId ?? c.id).filter(Boolean)
-                );
-                setSelectedTags(
-                    (post.tags ?? []).map((t) => t.tag?.id ?? t.tagId ?? t.id).filter(Boolean)
-                );
-                setSelectedSeries(post.seriesId ?? "");
-
-                if (post.coverImage) {
-                    setThumbnail({ id: post.coverImage.id, url: post.coverImage.url, name: post.coverImage.altText ?? "Cover image" });
-                }
-
-                /* SEO */
-                if (post.seo) {
-                    setMetaTitle(post.seo.metaTitle ?? "");
-                    setMetaDescription(post.seo.metaDescription ?? "");
-                }
-
-                /* Word count from stored value */
-                if (post.wordCount) {
-                    setWordCount(post.wordCount);
-                    setReadTime(post.readingTime ?? Math.max(1, Math.ceil(post.wordCount / 238)));
-                }
-
-                /* Hydrate editor with existing content */
-                if (editorReady && editor.current && post.content) {
-                    editor.current.render(post.content);
-                    setContent(post.content);
-                }
-
-                setLastSaved(post.updatedAt ? new Date(post.updatedAt) : null);
-                setIsDirty(false);
-            } catch (err) {
-                setFetchError(err?.response?.data?.message ?? err.message ?? "Failed to load post.");
-            } finally {
-                setFetchingPost(false);
-            }
-        };
-
-        fetchPost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [postId, editorReady]);
-
-    /* ── Hydrate editor once it becomes ready (if data already fetched) ── */
-useEffect(() => {
-    if (editorReady && editor.current && originalRef.current?.content && !content) {
-        editor.current.render(originalRef.current.content);
-        setContent(originalRef.current.content);
-    }
-}, [editorReady]);
-
-    /* ── Sync title → meta title (only if user hasn't touched meta title) ── */
-    useEffect(() => {
-        if (!metaTitle || metaTitle === originalRef.current?.title) {
-            setMetaTitle(title);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        setMetaTitle((prev) => (prev === post?.title ? title : prev));
     }, [title]);
-
-    /* ── Mark dirty when key fields change (after initial load) ── */
-    useEffect(() => {
-        if (!originalRef.current) return;
-        setIsDirty(true);
-    }, [title, excerpt, selectedCategories, selectedTags, selectedSeries, status, isFeatured, isPinned, scheduledAt, thumbnail, metaTitle, metaDescription]);
-
-    /* ── Warn on unsaved changes ── */
-    useEffect(() => {
-        const handleBeforeUnload = (e) => {
-            if (isDirty) {
-                e.preventDefault();
-                e.returnValue = "";
-            }
-        };
-        window.addEventListener("beforeunload", handleBeforeUnload);
-        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-    }, [isDirty]);
 
     /* ── Validation ── */
     const validate = () => {
@@ -186,21 +97,19 @@ useEffect(() => {
         return e;
     };
 
-    /* ── Payload builder ── */
+    /* ── Payload ── */
     const buildPayload = (overrideStatus) => ({
-        title: title.trim(),
+        title:        title.trim(),
         content,
-        excerpt: excerpt.trim() || undefined,
-        coverImageId: thumbnail?.id ?? null,
-        categories: selectedCategories,
-        tags: selectedTags,
-        seriesId: selectedSeries || null,
-        status: overrideStatus ?? status,
+        excerpt:      excerpt.trim() || undefined,
+        coverImageId: thumbnail?.id  ?? null,
+        categories:   selectedCategories,
+        tags:         selectedTags,
+        seriesId:     selectedSeries || null,
+        status:       overrideStatus ?? status,
         isFeatured,
         isPinned,
-        scheduledAt: scheduledAt || undefined,
-        metaTitle: metaTitle || undefined,
-        metaDescription: metaDescription || undefined,
+        scheduledAt:  scheduledAt    || undefined,
     });
 
     /* ── Save as Draft ── */
@@ -211,14 +120,17 @@ useEffect(() => {
         }
         setSavingDraft(true);
         try {
-            const { data } = await api.put(`/post/${postId}`, buildPayload("DRAFT"), { withCredentials: true });
+            const { data } = await api.put(`/post/${post.id}`, buildPayload("DRAFT"), {
+                withCredentials: true,
+            });
             if (data.success) {
                 setToast({ type: "success", message: "Draft saved successfully." });
-                setLastSaved(new Date());
-                setIsDirty(false);
+                router.refresh();
+            } else {
+                throw new Error(data?.message ?? "Failed to save draft.");
             }
         } catch (err) {
-            setToast({ type: "error", message: err?.response?.data?.message ?? "Failed to save draft." });
+            setToast({ type: "error", message: err?.response?.data?.message ?? err.message ?? "Failed to save draft." });
         } finally {
             setSavingDraft(false);
         }
@@ -233,12 +145,15 @@ useEffect(() => {
         setLoading(true);
 
         try {
-            const { data } = await api.put(`/post/${postId}`, buildPayload(), { withCredentials: true });
+            const { data } = await api.put(`/post/${post.id}`, buildPayload(), {
+                withCredentials: true,
+            });
             if (data.success) {
-                setToast({ type: "success", message: status === "DRAFT" ? "Post updated." : "Post updated & published!" });
-                setLastSaved(new Date());
-                setIsDirty(false);
-                setTimeout(() => router.push("/posts"), 1400);
+                setToast({
+                    type: "success",
+                    message: status === "DRAFT" ? "Post saved as draft." : "Post updated successfully!",
+                });
+                setTimeout(() => router.push(`/dashboard/${user?.role}/${user?.id}/posts`), 1400);
             } else {
                 throw new Error(data?.message ?? "Failed to update post.");
             }
@@ -249,71 +164,11 @@ useEffect(() => {
         }
     };
 
-    /* ── Reset to last saved ── */
-    const handleReset = () => {
-        const post = originalRef.current;
-        if (!post) return;
-        setTitle(post.title ?? "");
-        setExcerpt(post.excerpt ?? "");
-        setStatus(post.status ?? "DRAFT");
-        setIsFeatured(post.isFeatured ?? false);
-        setIsPinned(post.isPinned ?? false);
-        setScheduledAt(post.scheduledAt ? new Date(post.scheduledAt).toISOString().slice(0, 16) : "");
-        setSelectedCategories((post.categories ?? []).map((c) => c.category?.id ?? c.categoryId).filter(Boolean));
-        setSelectedTags((post.tags ?? []).map((t) => t.tag?.id ?? t.tagId).filter(Boolean));
-        setSelectedSeries(post.seriesId ?? "");
-        if (post.coverImage) {
-            setThumbnail({ id: post.coverImage.id, url: post.coverImage.url, name: post.coverImage.altText ?? "Cover image" });
-        } else {
-            setThumbnail(null);
-        }
-        setMetaTitle(post.seo?.metaTitle ?? "");
-        setMetaDescription(post.seo?.metaDescription ?? "");
-        if (editor.current && post.content) editor.current.render(post.content);
-        setContent(post.content ?? null);
-        setIsDirty(false);
-        setToast({ type: "success", message: "Reset to last saved version." });
-    };
-
     const statusMeta = STATUS_META[status] ?? STATUS_META.DRAFT;
-
-    /* ── Loading screen ── */
-    if (fetchingPost) {
-        return (
-            <>
-                <style>{STYLES}</style>
-                <style>{EDIT_EXTRA_STYLES}</style>
-                <div className="pc-root ep-loading-screen">
-                    <div className="ep-loading-inner">
-                        <Loader size="md" text="Loading post…" />
-                    </div>
-                </div>
-            </>
-        );
-    }
-
-    /* ── Error screen ── */
-    if (fetchError) {
-        return (
-            <>
-                <style>{STYLES}</style>
-                <style>{EDIT_EXTRA_STYLES}</style>
-                <div className="pc-root ep-loading-screen">
-                    <div className="ep-error-inner">
-                        <AlertTriangle size={36} className="ep-error-icon" />
-                        <p className="ep-error-title">Failed to load post</p>
-                        <p className="ep-error-msg">{fetchError}</p>
-                        <button className="btn btn-outline" onClick={() => router.back()}>Go back</button>
-                    </div>
-                </div>
-            </>
-        );
-    }
 
     return (
         <>
             <style>{STYLES}</style>
-            <style>{EDIT_EXTRA_STYLES}</style>
 
             <div className="pc-root">
 
@@ -331,25 +186,11 @@ useEffect(() => {
                         <div className="pc-breadcrumb">
                             <span>Posts</span>
                             <ChevronRight size={13} />
-                            <span className="ep-breadcrumb-title" title={title}>{title || "Untitled"}</span>
-                            <ChevronRight size={13} />
-                            <span>Edit</span>
+                            <span>Edit Post</span>
                         </div>
                     </div>
 
                     <div className="pc-topbar-stats">
-                        {isDirty && (
-                            <span className="ep-unsaved-badge">
-                                <span className="ep-unsaved-dot" />
-                                Unsaved changes
-                            </span>
-                        )}
-                        {!isDirty && lastSaved && (
-                            <span className="ep-saved-badge">
-                                <CheckCircle2 size={11} />
-                                Saved {formatRelativeTime(lastSaved)}
-                            </span>
-                        )}
                         {wordCount > 0 && (
                             <>
                                 <span className="pc-stat"><FileText size={12} />{wordCount} words</span>
@@ -362,21 +203,22 @@ useEffect(() => {
                         >
                             {statusMeta.label}
                         </span>
+                        {/* View live post shortcut (only if published) */}
+                        {post?.status === "PUBLISHED" && post?.slug && (
+                            <a
+                                href={`/blog/${post.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="pc-stat"
+                                title="View published post"
+                                style={{ textDecoration: "none" }}
+                            >
+                                <ExternalLink size={12} />View
+                            </a>
+                        )}
                     </div>
 
                     <div className="pc-topbar-actions">
-                        {isDirty && (
-                            <button
-                                type="button"
-                                className="btn btn-ghost ep-reset-btn"
-                                onClick={handleReset}
-                                title="Discard changes"
-                                disabled={loading || savingDraft}
-                            >
-                                <RefreshCw size={13} />
-                                Reset
-                            </button>
-                        )}
                         <button
                             type="button"
                             className="btn btn-ghost"
@@ -392,7 +234,7 @@ useEffect(() => {
                             disabled={loading || savingDraft}
                         >
                             {savingDraft
-                                ? <><Loader size="sm" style={{ marginRight: 5 }} />Saving…</>
+                                ? <Loader size="sm" text="Saving..." />
                                 : <><Save size={13} style={{ marginRight: 5 }} />Save Draft</>
                             }
                         </button>
@@ -404,8 +246,8 @@ useEffect(() => {
                             style={{ minWidth: 130 }}
                         >
                             {loading
-                                ? <><Loader size="sm" style={{ marginRight: 5 }} />Updating…</>
-                                : <><Send size={13} style={{ marginRight: 5 }} />{status === "DRAFT" ? "Update" : "Update & Publish"}</>
+                                ? <Loader size="sm" text="Updating..." />
+                                : <><Send size={13} style={{ marginRight: 5 }} />{status === "DRAFT" ? "Save" : "Update"}</>
                             }
                         </button>
                     </div>
@@ -424,10 +266,40 @@ useEffect(() => {
                     {/* ════ MAIN EDITOR AREA ════ */}
                     <main className="pc-main">
 
-                        {/* Edit mode banner */}
-                        <div className="ep-edit-banner">
-                            <History size={13} />
-                            <span>Editing existing post — changes will create a new revision.</span>
+                        {/* Meta row — last saved, slug, author */}
+                        <div className="uc-meta-row" style={{ marginBottom: 24 }}>
+                            <div className="uc-meta-item">
+                                <span className="uc-meta-key">Post ID</span>
+                                <span className="uc-meta-val">{post?.id}</span>
+                            </div>
+                            <div className="uc-meta-item">
+                                <span className="uc-meta-key">Slug</span>
+                                <span className="uc-meta-val">{post?.slug ?? "—"}</span>
+                            </div>
+                            <div className="uc-meta-item">
+                                <span className="uc-meta-key">Author</span>
+                                <span className="uc-meta-val">{post?.author?.name ?? "—"}</span>
+                            </div>
+                            <div className="uc-meta-item">
+                                <span className="uc-meta-key">Created</span>
+                                <span className="uc-meta-val">
+                                    {post?.createdAt
+                                        ? new Date(post.createdAt).toLocaleDateString("en-US", {
+                                            year: "numeric", month: "short", day: "numeric",
+                                        })
+                                        : "—"}
+                                </span>
+                            </div>
+                            <div className="uc-meta-item">
+                                <span className="uc-meta-key">Published</span>
+                                <span className="uc-meta-val">
+                                    {post?.publishedAt
+                                        ? new Date(post.publishedAt).toLocaleDateString("en-US", {
+                                            year: "numeric", month: "short", day: "numeric",
+                                        })
+                                        : "Not published"}
+                                </span>
+                            </div>
                         </div>
 
                         {/* Title */}
@@ -462,7 +334,7 @@ useEffect(() => {
                                     <div className="pc-skeleton pc-skeleton--p" />
                                 </div>
                             )}
-                            <div id="pc-editor-holder" className="pc-editor-inner" />
+                            <div id="ep-editor-holder" className="pc-editor-inner" />
                         </div>
 
                         {errors.content && (
@@ -492,13 +364,21 @@ useEffect(() => {
                                 >
                                     <Globe size={13} />SEO
                                 </button>
+                                <button
+                                    type="button"
+                                    className={`pc-tab${activeTab === "history" ? " pc-tab--active" : ""}`}
+                                    onClick={() => setActiveTab("history")}
+                                >
+                                    <History size={13} />History
+                                </button>
                             </div>
 
                             <div className="pc-sidebar-body">
 
+                                {/* ════ DETAILS TAB ════ */}
                                 {activeTab === "details" && (
                                     <>
-                                        {/* ── Status ── */}
+                                        {/* ── Status & Visibility ── */}
                                         <div className="pc-sidebar-section">
                                             <SectionTitle icon={Eye}>Visibility &amp; Status</SectionTitle>
                                             <div className="uc-field">
@@ -625,58 +505,21 @@ useEffect(() => {
                                                 </p>
                                             </div>
                                         )}
-
-                                        {/* ── Post Meta Info ── */}
-                                        {originalRef.current && (
-                                            <div className="pc-sidebar-section ep-meta-section">
-                                                <SectionTitle icon={Info}>Post Info</SectionTitle>
-                                                <div className="ep-meta-grid">
-                                                    {originalRef.current.createdAt && (
-                                                        <div className="ep-meta-item">
-                                                            <span className="ep-meta-key">Created</span>
-                                                            <span className="ep-meta-val">{formatDate(originalRef.current.createdAt)}</span>
-                                                        </div>
-                                                    )}
-                                                    {originalRef.current.updatedAt && (
-                                                        <div className="ep-meta-item">
-                                                            <span className="ep-meta-key">Last Updated</span>
-                                                            <span className="ep-meta-val">{formatDate(originalRef.current.updatedAt)}</span>
-                                                        </div>
-                                                    )}
-                                                    {originalRef.current.publishedAt && (
-                                                        <div className="ep-meta-item">
-                                                            <span className="ep-meta-key">Published</span>
-                                                            <span className="ep-meta-val">{formatDate(originalRef.current.publishedAt)}</span>
-                                                        </div>
-                                                    )}
-                                                    {originalRef.current.viewCount !== undefined && (
-                                                        <div className="ep-meta-item">
-                                                            <span className="ep-meta-key">Views</span>
-                                                            <span className="ep-meta-val">{originalRef.current.viewCount.toLocaleString()}</span>
-                                                        </div>
-                                                    )}
-                                                    {originalRef.current.slug && (
-                                                        <div className="ep-meta-item ep-meta-full">
-                                                            <span className="ep-meta-key">Slug</span>
-                                                            <span className="ep-meta-val ep-meta-slug">{originalRef.current.slug}</span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
                                     </>
                                 )}
 
+                                {/* ════ SEO TAB ════ */}
                                 {activeTab === "seo" && (
                                     <>
                                         <div className="pc-sidebar-section">
                                             <SectionTitle icon={Globe}>Search Engine Preview</SectionTitle>
 
                                             <div className="pc-seo-preview">
-                                                <p className="pc-seo-url">yoursite.com/blog/{title
-                                                    ? title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 50)
-                                                    : originalRef.current?.slug ?? "post-slug"
-                                                }</p>
+                                                <p className="pc-seo-url">
+                                                    yoursite.com/blog/{post?.slug ?? (title
+                                                        ? title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 50)
+                                                        : "post-slug")}
+                                                </p>
                                                 <p className="pc-seo-title">{metaTitle || title || "Post title"}</p>
                                                 <p className="pc-seo-desc">{metaDescription || excerpt || "Post excerpt will appear here…"}</p>
                                             </div>
@@ -731,6 +574,111 @@ useEffect(() => {
                                         </div>
                                     </>
                                 )}
+
+                                {/* ════ HISTORY TAB ════ */}
+                                {activeTab === "history" && (
+                                    <div className="pc-sidebar-section">
+                                        <SectionTitle icon={History}>Post History</SectionTitle>
+                                        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+
+                                            {[
+                                                {
+                                                    label: "Created",
+                                                    value: post?.createdAt
+                                                        ? new Date(post.createdAt).toLocaleString("en-US", {
+                                                            year: "numeric", month: "short", day: "numeric",
+                                                            hour: "2-digit", minute: "2-digit",
+                                                        })
+                                                        : "—",
+                                                },
+                                                {
+                                                    label: "Last Updated",
+                                                    value: post?.updatedAt
+                                                        ? new Date(post.updatedAt).toLocaleString("en-US", {
+                                                            year: "numeric", month: "short", day: "numeric",
+                                                            hour: "2-digit", minute: "2-digit",
+                                                        })
+                                                        : "—",
+                                                },
+                                                {
+                                                    label: "Published",
+                                                    value: post?.publishedAt
+                                                        ? new Date(post.publishedAt).toLocaleString("en-US", {
+                                                            year: "numeric", month: "short", day: "numeric",
+                                                            hour: "2-digit", minute: "2-digit",
+                                                        })
+                                                        : "Not published",
+                                                },
+                                                { label: "Views",        value: post?.viewCount  ?? 0 },
+                                                { label: "Reading time", value: `${post?.readingTime ?? readTime} min` },
+                                                { label: "Word count",   value: post?.wordCount   ?? wordCount },
+                                            ].map(({ label, value }) => (
+                                                <div
+                                                    key={label}
+                                                    style={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        alignItems: "center",
+                                                        padding: "8px 12px",
+                                                        background: "var(--bg-secondary)",
+                                                        borderRadius: "var(--radius-md)",
+                                                        border: "1px solid var(--border-light)",
+                                                    }}
+                                                >
+                                                    <span style={{
+                                                        fontSize: "var(--text-xs)",
+                                                        fontWeight: "var(--font-semibold)",
+                                                        textTransform: "uppercase",
+                                                        letterSpacing: ".06em",
+                                                        color: "var(--text-muted)",
+                                                    }}>
+                                                        {label}
+                                                    </span>
+                                                    <span style={{
+                                                        fontSize: "var(--text-xs)",
+                                                        color: "var(--text-secondary)",
+                                                        fontFamily: "monospace",
+                                                    }}>
+                                                        {value}
+                                                    </span>
+                                                </div>
+                                            ))}
+
+                                            {/* Current slug */}
+                                            <div
+                                                style={{
+                                                    padding: "8px 12px",
+                                                    background: "var(--bg-secondary)",
+                                                    borderRadius: "var(--radius-md)",
+                                                    border: "1px solid var(--border-light)",
+                                                }}
+                                            >
+                                                <span style={{
+                                                    fontSize: "var(--text-xs)",
+                                                    fontWeight: "var(--font-semibold)",
+                                                    textTransform: "uppercase",
+                                                    letterSpacing: ".06em",
+                                                    color: "var(--text-muted)",
+                                                    display: "block",
+                                                    marginBottom: 4,
+                                                }}>
+                                                    Current Slug
+                                                </span>
+                                                <span style={{
+                                                    fontSize: "var(--text-xs)",
+                                                    color: "var(--text-secondary)",
+                                                    fontFamily: "monospace",
+                                                    wordBreak: "break-all",
+                                                }}>
+                                                    {post?.slug ?? "—"}
+                                                </span>
+                                                <p className="uc-hint" style={{ marginTop: 6 }}>
+                                                    Slug updates automatically when you change the title. Old slugs are preserved as redirects.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </aside>
                     )}
@@ -739,179 +687,5 @@ useEffect(() => {
         </>
     );
 };
-
-const EDIT_EXTRA_STYLES = `
-  /* ── Loading / error screens ── */
-  .ep-loading-screen {
-    align-items: center;
-    justify-content: center;
-  }
-
-  .ep-loading-inner,
-  .ep-error-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    padding: 60px 24px;
-    text-align: center;
-  }
-
-  @keyframes ep-spin { to { transform: rotate(360deg); } }
-  .ep-loading-spinner {
-    animation: ep-spin .8s linear infinite;
-    color: var(--brand-primary);
-  }
-
-  .ep-loading-text {
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-  }
-
-  .ep-error-icon { color: #dc2626; }
-  .ep-error-title {
-    font-size: var(--text-lg);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-  }
-  .ep-error-msg {
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-    max-width: 360px;
-  }
-
-  /* ── Breadcrumb title truncation ── */
-  .ep-breadcrumb-title {
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
-  }
-
-  /* ── Unsaved / saved badges ── */
-  .ep-unsaved-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: var(--font-semibold);
-    color: #d97706;
-    background: #fffbeb;
-    border: 1px solid #fde68a;
-    padding: 3px 10px;
-    border-radius: var(--radius-xl);
-    letter-spacing: .02em;
-  }
-
-  .dark .ep-unsaved-badge {
-    background: #451a03;
-    border-color: #78350f;
-    color: #fbbf24;
-  }
-
-  .ep-unsaved-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #d97706;
-    animation: ep-pulse-dot 1.4s ease-in-out infinite;
-  }
-
-  @keyframes ep-pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: .3; }
-  }
-
-  .ep-saved-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    color: #16a34a;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    padding: 3px 10px;
-    border-radius: var(--radius-xl);
-    font-weight: var(--font-semibold);
-  }
-
-  .dark .ep-saved-badge {
-    background: #052e16;
-    border-color: #14532d;
-    color: #4ade80;
-  }
-
-  /* ── Reset button ── */
-  .ep-reset-btn {
-    gap: 5px;
-    font-size: var(--text-xs);
-    color: var(--text-muted);
-    padding: 7px 12px;
-  }
-
-  .ep-reset-btn:hover {
-    color: #dc2626;
-    background: #fef2f2;
-  }
-
-  /* ── Edit mode banner ── */
-  .ep-edit-banner {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 14px;
-    background: var(--brand-primary-light);
-    border: 1px solid color-mix(in srgb, var(--brand-primary) 20%, transparent);
-    border-radius: var(--radius-md);
-    font-size: var(--text-xs);
-    color: var(--brand-primary);
-    font-weight: var(--font-medium);
-    margin-bottom: 22px;
-    letter-spacing: .01em;
-  }
-
-  /* ── Post meta info grid ── */
-  .ep-meta-section {}
-
-  .ep-meta-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 14px 16px;
-  }
-
-  .ep-meta-item {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .ep-meta-full {
-    grid-column: 1 / -1;
-  }
-
-  .ep-meta-key {
-    font-size: 10px;
-    font-weight: var(--font-semibold);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--text-muted);
-  }
-
-  .ep-meta-val {
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-  }
-
-  .ep-meta-slug {
-    font-family: monospace;
-    word-break: break-all;
-    color: var(--brand-primary);
-  }
-`;
 
 export default EditPost;

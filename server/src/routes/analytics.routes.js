@@ -3,7 +3,6 @@ import {
     trackPageView,
     updateEngagement,
     getDashboardOverview,
-    getRealtimeAnalytics,
     getTrafficAnalytics,
     getContentAnalytics,
     getPostAnalytics,
@@ -30,7 +29,6 @@ analyticsRouter.use(verifyUser);
 const requireAnalyticsView = requirePermissionWithAdmin("analytics.view");
 
 analyticsRouter.get("/dashboard", requireAnalyticsView, getDashboardOverview);
-analyticsRouter.get("/realtime", requireAnalyticsView, getRealtimeAnalytics);
 analyticsRouter.get("/traffic", requireAnalyticsView, getTrafficAnalytics);
 analyticsRouter.get("/content", requireAnalyticsView, getContentAnalytics);
 analyticsRouter.get("/posts/:id", requireAnalyticsView, getPostAnalytics);

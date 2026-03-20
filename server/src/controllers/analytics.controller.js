@@ -105,61 +105,39 @@ const getDashboardOverview = asyncHandler(async (req, res) => {
     const { start, end } = getDateRange(startDate, endDate, 30);
 
     const [
-        // Content stats
         totalPosts,
         publishedPosts,
         draftPosts,
         totalCategories,
         totalTags,
-        
-        // User stats
         totalUsers,
         newUsers,
-        
-        // Engagement stats
         totalViews,
-        uniqueVisitors,
+        uniqueVisitorsRaw,
         totalComments,
         newComments,
-        
-        // Newsletter stats
         totalSubscribers,
         newSubscribers,
-        
-        // Top performing
         topPosts,
-        recentActivity,
-    ] = await prisma.$transaction([
-        // Content
+        recentPosts,
+    ] = await Promise.all([   // ✅ FIXED (no transaction)
         prisma.post.count({ where: { deletedAt: null } }),
         prisma.post.count({ where: { status: "PUBLISHED", deletedAt: null } }),
         prisma.post.count({ where: { status: "DRAFT", deletedAt: null } }),
         prisma.category.count(),
         prisma.tag.count(),
-        
-        // Users
+
         prisma.user.count(),
-        prisma.user.count({
-            where: {
-                createdAt: { gte: start, lte: end },
-            },
-        }),
-        
-        // Views
-        prisma.postView.count({
-            where: {
-                createdAt: { gte: start, lte: end },
-            },
-        }),
-        prisma.postView.groupBy({
-            by: ["ipHash"],
-            where: {
-                createdAt: { gte: start, lte: end },
-            },
-            _count: { ipHash: true },
-        }).then(results => results.length),
-        
-        // Comments
+        prisma.user.count({ where: { createdAt: { gte: start, lte: end } } }),
+
+        prisma.postView.count({ where: { createdAt: { gte: start, lte: end } } }),
+
+        prisma.$queryRaw`
+            SELECT COUNT(DISTINCT "ipHash")::int as count
+            FROM "PostView"
+            WHERE "createdAt" BETWEEN ${start} AND ${end}
+        `,
+
         prisma.comment.count(),
         prisma.comment.count({
             where: {
@@ -167,8 +145,7 @@ const getDashboardOverview = asyncHandler(async (req, res) => {
                 status: "APPROVED",
             },
         }),
-        
-        // Newsletter
+
         prisma.newsletterSubscriber.count({ where: { isActive: true } }),
         prisma.newsletterSubscriber.count({
             where: {
@@ -176,269 +153,113 @@ const getDashboardOverview = asyncHandler(async (req, res) => {
                 isActive: true,
             },
         }),
-        
-        // Top posts
+
         prisma.post.findMany({
-            where: {
-                status: "PUBLISHED",
-                deletedAt: null,
-            },
+            where: { status: "PUBLISHED", deletedAt: null },
             orderBy: { viewCount: "desc" },
             take: 5,
-            select: {
-                id: true,
-                title: true,
-                slug: true,
-                viewCount: true,
-                commentCount: true,
-                likeCount: true,
-                publishedAt: true,
-            },
         }),
-        
-        // Recent activity (last 10 actions)
+
         prisma.post.findMany({
             where: { deletedAt: null },
             orderBy: { updatedAt: "desc" },
             take: 5,
-            select: {
-                id: true,
-                title: true,
-                status: true,
-                updatedAt: true,
-                author: {
-                    select: { name: true },
-                },
-            },
         }),
     ]);
 
-    // Calculate trends (compare with previous period)
-    const prevStart = new Date(start.getTime() - (end.getTime() - start.getTime()));
-    const prevEnd = new Date(start.getTime());
-
-    const [prevViews, prevUsers, prevComments, prevSubscribers] = await prisma.$transaction([
-        prisma.postView.count({
-            where: { createdAt: { gte: prevStart, lte: prevEnd } },
-        }),
-        prisma.user.count({
-            where: { createdAt: { gte: prevStart, lte: prevEnd } },
-        }),
-        prisma.comment.count({
-            where: { 
-                createdAt: { gte: prevStart, lte: prevEnd },
-                status: "APPROVED",
-            },
-        }),
-        prisma.newsletterSubscriber.count({
-            where: { 
-                createdAt: { gte: prevStart, lte: prevEnd },
-                isActive: true,
-            },
-        }),
-    ]);
-
-    const calculateTrend = (current, previous) => {
-        if (previous === 0) return current > 0 ? 100 : 0;
-        return ((current - previous) / previous * 100).toFixed(1);
-    };
+    const uniqueVisitors = uniqueVisitorsRaw?.[0]?.count || 0;
 
     return apiResponse(res, 200, true, "Dashboard overview fetched", {
-        period: { start, end },
-        content: {
-            totalPosts,
-            publishedPosts,
-            draftPosts,
-            totalCategories,
-            totalTags,
-        },
-        users: {
-            total: totalUsers,
-            new: newUsers,
-            trend: `${calculateTrend(newUsers, prevUsers)}%`,
-        },
-        engagement: {
-            totalViews,
-            uniqueVisitors,
-            totalComments,
-            newComments,
-            trends: {
-                views: `${calculateTrend(totalViews, prevViews)}%`,
-                comments: `${calculateTrend(newComments, prevComments)}%`,
-            },
-        },
-        newsletter: {
-            totalSubscribers,
-            newSubscribers,
-            trend: `${calculateTrend(newSubscribers, prevSubscribers)}%`,
-        },
+        content: { totalPosts, publishedPosts, draftPosts, totalCategories, totalTags },
+        users: { total: totalUsers, new: newUsers },
+        engagement: { totalViews, uniqueVisitors, totalComments, newComments },
+        newsletter: { totalSubscribers, newSubscribers },
         topPosts,
-        recentActivity,
+        recentPosts,
     });
 });
 
 // TRAFFIC ANALYTICS
 const getTrafficAnalytics = asyncHandler(async (req, res) => {
-    const { 
-        startDate, 
-        endDate, 
-        granularity = "day", // hour, day, week, month
-        postId,
-        source,
-    } = req.query;
-    
+    const { startDate, endDate, granularity = "day", postId } = req.query;
     const { start, end } = getDateRange(startDate, endDate, 30);
 
-    // Build where clause
-    const where = {
-        createdAt: { gte: start, lte: end },
+    const dateTruncMap = {
+        hour: "hour",
+        day: "day",
+        week: "week",
+        month: "month",
     };
-    if (postId) where.postId = postId;
 
-    // Get views time series
-    const views = await prisma.postView.findMany({
-        where,
-        select: {
-            createdAt: true,
-            ipHash: true,
-            referrer: true,
-            postId: true,
-        },
-        orderBy: { createdAt: "asc" },
-    });
+    const trunc = dateTruncMap[granularity] || "day";
 
-    // Aggregate by time buckets
-    const timeSeries = generateTimeSeries(start, end, granularity);
-    const trafficData = timeSeries.map((bucket) => {
-        const bucketEnd = new Date(bucket);
-        if (granularity === "hour") bucketEnd.setHours(bucket.getHours() + 1);
-        else if (granularity === "day") bucketEnd.setDate(bucket.getDate() + 1);
-        else if (granularity === "week") bucketEnd.setDate(bucket.getDate() + 7);
-        else if (granularity === "month") bucketEnd.setMonth(bucket.getMonth() + 1);
+    const wherePost = postId ? prisma.sql`AND "postId" = ${postId}` : prisma.empty;
 
-        const bucketViews = views.filter(
-            (v) => v.createdAt >= bucket && v.createdAt < bucketEnd
-        );
+    // Time series aggregation (DB level)
+    const timeSeries = await prisma.$queryRawUnsafe(`
+    SELECT 
+        DATE_TRUNC('${trunc}', "createdAt") as date,
+        COUNT(*)::int as views,
+        COUNT(DISTINCT "ipHash")::int as "uniqueVisitors"
+    FROM "PostView"
+    WHERE "createdAt" BETWEEN $1 AND $2
+    ${postId ? `AND "postId" = '${postId}'` : ""}
+    GROUP BY date
+    ORDER BY date ASC
+`, start, end);
 
-        const uniqueIps = new Set(bucketViews.map((v) => v.ipHash)).size;
+    // Referrers
+    const referrersRaw = await prisma.$queryRaw`
+        SELECT "referrer"
+        FROM "PostView"
+        WHERE "createdAt" BETWEEN ${start} AND ${end}
+        AND "referrer" IS NOT NULL
+    `;
 
-        return {
-            date: bucket.toISOString(),
-            views: bucketViews.length,
-            uniqueVisitors: uniqueIps,
-        };
-    });
-
-    // Calculate referrers
     const referrerStats = {};
-    views.forEach((view) => {
-        if (view.referrer) {
-            try {
-                const url = new URL(view.referrer);
-                const domain = url.hostname.replace("www.", "");
-                referrerStats[domain] = (referrerStats[domain] || 0) + 1;
-            } catch {
-                referrerStats["Direct/Unknown"] = (referrerStats["Direct/Unknown"] || 0) + 1;
-            }
-        } else {
-            referrerStats["Direct/Unknown"] = (referrerStats["Direct/Unknown"] || 0) + 1;
+    for (const r of referrersRaw) {
+        try {
+            const url = new URL(r.referrer);
+            const domain = url.hostname.replace(/^www\./, "");
+            referrerStats[domain] = (referrerStats[domain] || 0) + 1;
+        } catch {
+            referrerStats["Direct/Unknown"] =
+                (referrerStats["Direct/Unknown"] || 0) + 1;
         }
-    });
+    }
 
-    // Top referrers
     const topReferrers = Object.entries(referrerStats)
         .map(([domain, count]) => ({ domain, count }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 10);
 
-    // Device/Browser stats (parsed from user agent - simplified)
-    const userAgents = views.map((v) => v.userAgent);
+    // Devices
+    const devices = await prisma.$queryRaw`
+        SELECT "userAgent"
+        FROM "PostView"
+        WHERE "createdAt" BETWEEN ${start} AND ${end}
+    `;
+
     const deviceStats = {
-        mobile: userAgents.filter((ua) => /Mobile|Android|iPhone/i.test(ua)).length,
-        desktop: userAgents.filter((ua) => !/Mobile|Android|iPhone/i.test(ua)).length,
+        mobile: devices.filter((d) => /Mobile|Android|iPhone/i.test(d.userAgent)).length,
+        desktop: devices.filter((d) => !/Mobile|Android|iPhone/i.test(d.userAgent)).length,
     };
 
     return apiResponse(res, 200, true, "Traffic analytics fetched", {
         period: { start, end, granularity },
+
         summary: {
-            totalViews: views.length,
-            uniqueVisitors: new Set(views.map((v) => v.ipHash)).size,
-            avgViewsPerDay: (views.length / Math.max(1, timeSeries.length)).toFixed(1),
+            totalViews: timeSeries.reduce((acc, d) => acc + d.views, 0),
+            uniqueVisitors: timeSeries.reduce((acc, d) => acc + d.uniqueVisitors, 0),
+            avgViewsPerBucket: (
+                timeSeries.reduce((acc, d) => acc + d.views, 0) /
+                Math.max(timeSeries.length, 1)
+            ).toFixed(1),
         },
-        timeSeries: trafficData,
+
+        timeSeries,
         referrers: topReferrers,
         devices: deviceStats,
-    });
-});
-
-// Get real-time analytics (last 24 hours)
-const getRealtimeAnalytics = asyncHandler(async (req, res) => {
-    const now = new Date();
-    const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    const last1h = new Date(now.getTime() - 60 * 60 * 1000);
-
-    const [views24h, views1h, activePosts, onlineUsers] = await prisma.$transaction([
-        // Last 24h views
-        prisma.postView.count({
-            where: { createdAt: { gte: last24h } },
-        }),
-        
-        // Last 1h views
-        prisma.postView.count({
-            where: { createdAt: { gte: last1h } },
-        }),
-        
-        // Active posts (viewed in last 24h)
-        prisma.postView.groupBy({
-            by: ["postId"],
-            where: { 
-                createdAt: { gte: last24h },
-                postId: { not: null },
-            },
-            _count: { postId: true },
-            orderBy: { _count: { postId: "desc" } },
-            take: 10,
-        }).then(async (results) => {
-            const posts = await prisma.post.findMany({
-                where: {
-                    id: { in: results.map((r) => r.postId) },
-                },
-                select: {
-                    id: true,
-                    title: true,
-                    slug: true,
-                },
-            });
-            return results.map((r) => ({
-                ...r,
-                post: posts.find((p) => p.id === r.postId),
-            }));
-        }),
-        
-        // "Online" users (active in last 5 minutes)
-        prisma.postView.groupBy({
-            by: ["ipHash"],
-            where: {
-                createdAt: { gte: new Date(now.getTime() - 5 * 60 * 1000) },
-            },
-            _count: { ipHash: true },
-        }).then(results => results.length),
-    ]);
-
-    return apiResponse(res, 200, true, "Real-time analytics fetched", {
-        currentTime: now.toISOString(),
-        last24h: {
-            views: views24h,
-            uniqueVisitors: await prisma.postView.groupBy({
-                by: ["ipHash"],
-                where: { createdAt: { gte: last24h } },
-            }).then(r => r.length),
-        },
-        last1h: {
-            views: views1h,
-        },
-        onlineUsers,
-        trendingPosts: activePosts,
     });
 });
 
@@ -447,36 +268,26 @@ const getContentAnalytics = asyncHandler(async (req, res) => {
     const {
         page = 1,
         limit = 20,
-        sortBy = "views", // views, comments, likes, readingTime
+        sortBy = "views",
         order = "desc",
-        startDate,
-        endDate,
         status,
         authorId,
     } = req.query;
 
-    const { start, end } = getDateRange(startDate, endDate, 30);
     const pageNumber = Math.max(parseInt(page), 1);
     const pageSize = Math.min(parseInt(limit), 50);
     const skip = (pageNumber - 1) * pageSize;
 
-    // Build where clause
-    const where = {
-        deletedAt: null,
-        createdAt: { gte: start, lte: end },
-    };
+    const where = { deletedAt: null };
     if (status) where.status = status;
     if (authorId) where.authorId = authorId;
 
-    // Allowed sort fields mapping
     const sortMapping = {
         views: "viewCount",
         comments: "commentCount",
         likes: "likeCount",
         readingTime: "readingTime",
-        wordCount: "wordCount",
         publishedAt: "publishedAt",
-        createdAt: "createdAt",
     };
 
     const sortField = sortMapping[sortBy] || "viewCount";
@@ -496,56 +307,35 @@ const getContentAnalytics = asyncHandler(async (req, res) => {
                 viewCount: true,
                 commentCount: true,
                 likeCount: true,
-                clapCount: true,
                 bookmarkCount: true,
                 readingTime: true,
-                wordCount: true,
                 publishedAt: true,
-                createdAt: true,
                 author: {
-                    select: {
-                        id: true,
-                        name: true,
-                        avatarUrl: true,
-                    },
-                },
-                categories: {
-                    select: {
-                        category: {
-                            select: { name: true, slug: true },
-                        },
-                    },
-                },
-                _count: {
-                    select: {
-                        reactions: true,
-                        bookmarks: true,
-                    },
+                    select: { id: true, name: true, avatarUrl: true },
                 },
             },
         }),
         prisma.post.count({ where }),
     ]);
 
-    // Calculate engagement score (weighted formula)
     const postsWithScore = posts.map((post) => {
-        const engagementScore = (
-            post.viewCount * 1 +
-            post.commentCount * 10 +
-            post.likeCount * 5 +
-            post.bookmarkCount * 15
-        );
-        
+        const views = Math.max(post.viewCount, 1);
+
+        const engagementScore =
+            (post.likeCount / views) * 100 +
+            (post.commentCount / views) * 200 +
+            (post.bookmarkCount / views) * 300;
+
+        const ctr =
+            ((post.likeCount + post.commentCount + post.bookmarkCount) / views) *
+            100;
+
         return {
             ...post,
-            engagementScore,
-            ctr: post.viewCount > 0 
-                ? ((post.likeCount + post.commentCount) / post.viewCount * 100).toFixed(2) 
-                : 0,
+            engagementScore: Number(engagementScore.toFixed(2)),
+            ctr: Number(ctr.toFixed(2)),
         };
     });
-
-    const totalPages = Math.ceil(total / pageSize);
 
     return apiResponse(res, 200, true, "Content analytics fetched", {
         posts: postsWithScore,
@@ -553,7 +343,7 @@ const getContentAnalytics = asyncHandler(async (req, res) => {
             total,
             page: pageNumber,
             limit: pageSize,
-            totalPages,
+            totalPages: Math.ceil(total / pageSize),
         },
     });
 });
@@ -1099,8 +889,7 @@ export {
     
     // Dashboard
     getDashboardOverview,
-    getRealtimeAnalytics,
-    
+
     // Traffic
     getTrafficAnalytics,
     

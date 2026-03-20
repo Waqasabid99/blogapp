@@ -179,7 +179,7 @@ const createPost = asyncHandler(async (req, res) => {
         });
 
         return createdPost;
-    });
+    }, { timeout: 10000 });
 
     if (!post) throw new ApiError(500, "Failed to create post");
     return apiResponse(res, 201, true, "Post created", post);
@@ -695,30 +695,30 @@ const getSinglePostById = asyncHandler(async (req, res) => {
 
     // HANDLE OLD SLUG REDIRECT
 
-    if (!post) {
-        const slugHistory = await prisma.slugHistory.findFirst({
-            where: {
-                oldSlug: slug,
-            },
-        });
+    // if (!post) {
+    //     const slugHistory = await prisma.slugHistory.findFirst({
+    //         where: {
+    //             oldSlug: slug,
+    //         },
+    //     });
 
-        if (slugHistory) {
-            const newPost = await prisma.post.findUnique({
-                where: {
-                    id: slugHistory.postId,
-                },
-                select: {
-                    slug: true,
-                },
-            });
+    //     if (slugHistory) {
+    //         const newPost = await prisma.post.findUnique({
+    //             where: {
+    //                 id: slugHistory.postId,
+    //             },
+    //             select: {
+    //                 slug: true,
+    //             },
+    //         });
 
-            return apiResponse(res, 301, true, "Slug updated", {
-                redirect: `/posts/${newPost.slug}`,
-            });
-        }
+    //         return apiResponse(res, 301, true, "Slug updated", {
+    //             redirect: `/posts/${newPost.slug}`,
+    //         });
+    //     }
 
-        throw new ApiError(404, "Post not found");
-    }
+    //     throw new ApiError(404, "Post not found");
+    // }
 
     // STATUS VISIBILITY RULES
 
@@ -745,11 +745,49 @@ const getSinglePostById = asyncHandler(async (req, res) => {
     return apiResponse(res, 200, true, "Post fetched", post);
 });
 
+// Get related posts
+const getRelatedPosts = asyncHandler(async (req, res) => {
+    const { categoryId, excludeId, limit } = req.body;
+
+    const posts = await prisma.post.findMany({
+        where: {
+            categories: {
+                some: {
+                    categoryId,
+                },
+            },
+            id: {
+                not: excludeId,
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+        include: {
+            author: true,
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+        },
+        take: limit,
+    });
+    if (!posts) {
+        throw new ApiError(404, "No related posts found");
+    }
+
+    return apiResponse(res, 200, true, "Related posts fetched", posts);
+})
+
 export {
     createPost,
     updatePost,
     deletePost,
     getAllPosts,
     getSinglePost,
-    getSinglePostById
+    getSinglePostById,
+    getRelatedPosts
 };

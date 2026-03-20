@@ -6,6 +6,7 @@ import {
     getAllPosts,
     getSinglePost,
     getSinglePostById,
+    getRelatedPosts,
 } from "../controllers/post.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 import { requirePermission } from "../middleware/permissions.middleware.js";
@@ -18,6 +19,8 @@ const postRouter = express.Router();
 postRouter.get("/", optionalPermission(), getAllPosts);
 postRouter.get("/:slug", optionalPermission(), getSinglePost);
 postRouter.get("/postId/:id", verifyUser, optionalPermission(), getSinglePostById);
+postRouter.post("/relatedposts", getRelatedPosts);
+
 // Protected Routes (Requires auth)
 postRouter.use(verifyUser);
 

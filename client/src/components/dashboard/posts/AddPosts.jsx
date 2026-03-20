@@ -14,13 +14,16 @@ import useEditorJs from "@/constants/Editor";
 import { CategorySelector, SectionTitle, STATUS_META, TagSelector, ThumbnailUploader } from "@/constants/utils";
 import { STYLES } from "@/app/styles/postStyles";
 import Loader from "@/components/ui/Loader";
+import useAuthStore from "@/store/authStore";
 
 /* ─────────────────────────────────────────────────────────────
    MAIN COMPONENT
 ───────────────────────────────────────────────────────────── */
 const AddPost = ({ categories = [], tags = [], series = [] }) => {
+    console.log(series)
     const router = useRouter();
-
+    const { user } = useAuthStore();
+    
     /* ── Form State ── */
     const [title, setTitle] = useState("");
     const [excerpt, setExcerpt] = useState("");
@@ -123,7 +126,7 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
             const { data } = await api.post("/post", buildPayload(), { withCredentials: true });
             if (data.success) {
                 setToast({ type: "success", message: status === "DRAFT" ? "Post saved as draft." : "Post published!" });
-                setTimeout(() => router.push("posts"), 1400);
+                setTimeout(() => router.push(`/dashboard/${user?.role}/${user?.id}/posts`), 1400);
             } else {
                 throw new Error(data?.message ?? "Failed to create post.");
             }
@@ -191,7 +194,7 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
                             disabled={loading || savingDraft}
                         >
                             {savingDraft
-                                ? <><Loader size="sm" className="pc-spinner" style={{ marginRight: 5 }} />Saving…</>
+                                ? <Loader size="sm" text={"Saving..."} />
                                 : <><Save size={13} style={{ marginRight: 5 }} />Save Draft</>
                             }
                         </button>
@@ -203,7 +206,7 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
                             style={{ minWidth: 130 }}
                         >
                             {loading
-                                ? <><Loader size="sm" className="pc-spinner" style={{ marginRight: 5 }} />Publishing…</>
+                                ? <Loader size="sm" text={"Publishing.."} />
                                 : <><Send size={13} style={{ marginRight: 5 }} />{status === "DRAFT" ? "Save" : "Publish"}</>
                             }
                         </button>

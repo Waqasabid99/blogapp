@@ -1,18 +1,37 @@
-import { getAllCategories } from "@/actions/category.action"
-import { getAllSeries } from "@/actions/series.action"
-import { getAllTags } from "@/actions/tags.action"
-import EditPost from "@/components/dashboard/posts/EditPosts"
+
+import { getFlatCategories } from "@/actions/category.action";
+import { getPostById } from "@/actions/post.action";
+import { getAllSeries } from "@/actions/series.action";
+import { getAllTags } from "@/actions/tags.action";
+import EditPost from "@/components/dashboard/posts/EditPosts";
+import { notFound } from "next/navigation";
+
+export const metadata = {
+    title: "Edit Post - Dashboard",
+    description: "Edit an existing post",
+};
 
 const page = async ({ params }) => {
-    const { postId } = await params
-    const [categories, tags, series] = await Promise.all([
-        getAllCategories(),
+    const { postId } = await params;
+
+    const [postRes, catRes, tagRes, seriesRes] = await Promise.all([
+        getPostById(postId),
+        getFlatCategories(),
         getAllTags(),
         getAllSeries(),
-    ])
-  return (
-    <EditPost postId={postId} categories={categories?.data} tags={tags?.data?.tags} series={series?.data} />
-  )
-}
+    ]);
 
-export default page
+    // Redirect to 404 if post not found
+    if (!postRes?.data) notFound();
+
+    return (
+        <EditPost
+            post={postRes.data}
+            categories={catRes?.data   ?? []}
+            tags={tagRes?.data?.tags   ?? []}
+            series={seriesRes?.data?.series  ?? []}
+        />
+    );
+};
+
+export default page;

@@ -1,7 +1,8 @@
+import AnalyticsDashboard from "@/components/dashboard/Dashboard"
 
 const DashboardPage = () => {
     return (
-        <div>DashboardPage</div>
+        <AnalyticsDashboard />
     )
 }
 

@@ -10,5 +10,5 @@ export default async function CreatePostPage() {
         getAllSeries(),
     ]);
 
-    return <AddPost categories={categories?.data} tags={tags?.data} series={series?.data} />;
+    return <AddPost categories={categories?.data} tags={tags?.data?.tags} series={series?.data?.series} />;
 }

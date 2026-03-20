@@ -235,7 +235,7 @@ export function ThumbnailUploader({ value, onChange }) {
                 onClick={() => inputRef.current?.click()}
             >
                 {uploading ? (
-                    <Loader size="sm" className="pc-spinner" style={{ color: "var(--brand-primary)" }} />
+                    <Loader size="sm" />
                 ) : (
                     <>
                         <div className="pc-thumb-icon"><ImagePlus size={20} /></div>
@@ -324,6 +324,7 @@ export function StatusBadge({ status }) {
    AVATAR
 ───────────────────────────────────────────────────────────── */
 export function Avatar({ author, size = 28 }) {
+    console.log(author)
     const [err, setErr] = useState(false);
     if (author?.avatarUrl && !err) {
         return (

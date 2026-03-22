@@ -465,6 +465,7 @@ export const STYLES = `
   .pg-row {
     display: flex;
     align-items: center;
+    max-width: 100%;
     gap: 16px;
     padding: 14px 16px;
     background: var(--bg-primary);

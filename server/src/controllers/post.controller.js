@@ -782,6 +782,117 @@ const getRelatedPosts = asyncHandler(async (req, res) => {
     return apiResponse(res, 200, true, "Related posts fetched", posts);
 })
 
+// Get published posts
+const getPublishedPosts = asyncHandler(async (req, res) => {
+    const posts = await prisma.post.findMany({
+        where: {
+            status: "PUBLISHED",
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+        include: {
+            author: true,
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+        },
+    });
+    if (!posts) {
+        throw new ApiError(404, "No related posts found");
+    }
+
+    return apiResponse(res, 200, true, "Published posts fetched", posts);
+})
+
+// Get latest posts
+const getLatestPosts = asyncHandler(async (req, res) => {
+    const posts = await prisma.post.findMany({
+        where: {
+            status: "PUBLISHED",
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+        include: {
+            author: true,
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+        },
+        take: 5,
+    });
+    if (!posts) {
+        throw new ApiError(404, "No related posts found");
+    }
+
+    return apiResponse(res, 200, true, "Latest posts fetched", posts);
+})
+
+// Get Featured posts
+const getFeaturedPosts = asyncHandler(async (req, res) => {
+    const posts = await prisma.post.findMany({
+        where: {
+            status: "PUBLISHED",
+            isFeatured: true,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+        include: {
+            author: true,
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+        },
+    });
+    if (!posts) {
+        throw new ApiError(404, "No related posts found");
+    }
+
+    return apiResponse(res, 200, true, "Featured posts fetched", posts);
+})
+
+// Get pinned posts
+const getPinnedPosts = asyncHandler(async (req, res) => {
+    const posts = await prisma.post.findMany({
+        where: {
+            status: "PUBLISHED",
+            isPinned: true,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+        include: {
+            author: true,
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+        },
+    });
+    if (!posts) {
+        throw new ApiError(404, "No related posts found");
+    }
+
+    return apiResponse(res, 200, true, "Pinned posts fetched", posts);
+})
+
 export {
     createPost,
     updatePost,
@@ -789,5 +900,9 @@ export {
     getAllPosts,
     getSinglePost,
     getSinglePostById,
-    getRelatedPosts
+    getRelatedPosts,
+    getPublishedPosts,
+    getLatestPosts,
+    getFeaturedPosts,
+    getPinnedPosts
 };

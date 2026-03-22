@@ -11,14 +11,12 @@ const hashIp = (ip) => {
 // Parse date range
 const getDateRange = (startDate, endDate, defaultDays = 30) => {
     const end = endDate ? new Date(endDate) : new Date();
-    const start = startDate 
-        ? new Date(startDate) 
-        : new Date(end.getTime() - defaultDays * 24 * 60 * 60 * 1000);
-    
+    const start = startDate ? new Date(startDate) : new Date(end.getTime() - defaultDays * 24 * 60 * 60 * 1000);
+
     // Reset time for accurate day comparison
     start.setHours(0, 0, 0, 0);
     end.setHours(23, 59, 59, 999);
-    
+
     return { start, end };
 };
 
@@ -26,7 +24,7 @@ const getDateRange = (startDate, endDate, defaultDays = 30) => {
 const generateTimeSeries = (start, end, granularity = "day") => {
     const series = [];
     const current = new Date(start);
-    
+
     while (current <= end) {
         series.push(new Date(current));
         if (granularity === "hour") {
@@ -39,14 +37,14 @@ const generateTimeSeries = (start, end, granularity = "day") => {
             current.setMonth(current.getMonth() + 1);
         }
     }
-    
+
     return series;
 };
 
 // Track page view (Public - called from frontend/middleware)
 const trackPageView = asyncHandler(async (req, res) => {
     const { postId, path, referrer, duration } = req.body;
-    
+
     // Get client info
     const ip = req.ip || req.headers["x-forwarded-for"] || "unknown";
     const userAgent = req.headers["user-agent"] || "unknown";
@@ -76,10 +74,12 @@ const trackPageView = asyncHandler(async (req, res) => {
 
     // If post view, update post analytics (async, don't block)
     if (postId) {
-        prisma.post.update({
-            where: { id: postId },
-            data: { viewCount: { increment: 1 } },
-        }).catch(() => {}); // Silent fail
+        prisma.post
+            .update({
+                where: { id: postId },
+                data: { viewCount: { increment: 1 } },
+            })
+            .catch(() => {}); // Silent fail
     }
 
     return apiResponse(res, 201, true, "View tracked", { viewId: view.id });
@@ -95,7 +95,7 @@ const updateEngagement = asyncHandler(async (req, res) => {
 
     // Note: You may want to add a duration field to PostView model
     // For now, we'll store this in a separate engagement log or cache
-    
+
     return apiResponse(res, 200, true, "Engagement recorded");
 });
 
@@ -120,7 +120,8 @@ const getDashboardOverview = asyncHandler(async (req, res) => {
         newSubscribers,
         topPosts,
         recentPosts,
-    ] = await Promise.all([   // ✅ FIXED (no transaction)
+    ] = await Promise.all([
+        // ✅ FIXED (no transaction)
         prisma.post.count({ where: { deletedAt: null } }),
         prisma.post.count({ where: { status: "PUBLISHED", deletedAt: null } }),
         prisma.post.count({ where: { status: "DRAFT", deletedAt: null } }),
@@ -196,7 +197,8 @@ const getTrafficAnalytics = asyncHandler(async (req, res) => {
     const wherePost = postId ? prisma.sql`AND "postId" = ${postId}` : prisma.empty;
 
     // Time series aggregation (DB level)
-    const timeSeries = await prisma.$queryRawUnsafe(`
+    const timeSeries = await prisma.$queryRawUnsafe(
+        `
     SELECT 
         DATE_TRUNC('${trunc}', "createdAt") as date,
         COUNT(*)::int as views,
@@ -206,7 +208,10 @@ const getTrafficAnalytics = asyncHandler(async (req, res) => {
     ${postId ? `AND "postId" = '${postId}'` : ""}
     GROUP BY date
     ORDER BY date ASC
-`, start, end);
+`,
+        start,
+        end
+    );
 
     // Referrers
     const referrersRaw = await prisma.$queryRaw`
@@ -223,8 +228,7 @@ const getTrafficAnalytics = asyncHandler(async (req, res) => {
             const domain = url.hostname.replace(/^www\./, "");
             referrerStats[domain] = (referrerStats[domain] || 0) + 1;
         } catch {
-            referrerStats["Direct/Unknown"] =
-                (referrerStats["Direct/Unknown"] || 0) + 1;
+            referrerStats["Direct/Unknown"] = (referrerStats["Direct/Unknown"] || 0) + 1;
         }
     }
 
@@ -251,10 +255,7 @@ const getTrafficAnalytics = asyncHandler(async (req, res) => {
         summary: {
             totalViews: timeSeries.reduce((acc, d) => acc + d.views, 0),
             uniqueVisitors: timeSeries.reduce((acc, d) => acc + d.uniqueVisitors, 0),
-            avgViewsPerBucket: (
-                timeSeries.reduce((acc, d) => acc + d.views, 0) /
-                Math.max(timeSeries.length, 1)
-            ).toFixed(1),
+            avgViewsPerBucket: (timeSeries.reduce((acc, d) => acc + d.views, 0) / Math.max(timeSeries.length, 1)).toFixed(1),
         },
 
         timeSeries,
@@ -265,14 +266,7 @@ const getTrafficAnalytics = asyncHandler(async (req, res) => {
 
 // CONTENT ANALYTICS
 const getContentAnalytics = asyncHandler(async (req, res) => {
-    const {
-        page = 1,
-        limit = 20,
-        sortBy = "views",
-        order = "desc",
-        status,
-        authorId,
-    } = req.query;
+    const { page = 1, limit = 20, sortBy = "views", order = "desc", status, authorId } = req.query;
 
     const pageNumber = Math.max(parseInt(page), 1);
     const pageSize = Math.min(parseInt(limit), 50);
@@ -321,14 +315,9 @@ const getContentAnalytics = asyncHandler(async (req, res) => {
     const postsWithScore = posts.map((post) => {
         const views = Math.max(post.viewCount, 1);
 
-        const engagementScore =
-            (post.likeCount / views) * 100 +
-            (post.commentCount / views) * 200 +
-            (post.bookmarkCount / views) * 300;
+        const engagementScore = (post.likeCount / views) * 100 + (post.commentCount / views) * 200 + (post.bookmarkCount / views) * 300;
 
-        const ctr =
-            ((post.likeCount + post.commentCount + post.bookmarkCount) / views) *
-            100;
+        const ctr = ((post.likeCount + post.commentCount + post.bookmarkCount) / views) * 100;
 
         return {
             ...post,
@@ -402,9 +391,7 @@ const getPostAnalytics = asyncHandler(async (req, res) => {
         const nextDay = new Date(day);
         nextDay.setDate(nextDay.getDate() + 1);
 
-        const dayViews = views.filter(
-            (v) => v.createdAt >= day && v.createdAt < nextDay
-        ).length;
+        const dayViews = views.filter((v) => v.createdAt >= day && v.createdAt < nextDay).length;
 
         timeSeries.push({
             date: day.toISOString().split("T")[0],
@@ -450,9 +437,7 @@ const getPostAnalytics = asyncHandler(async (req, res) => {
                 return acc;
             }, {}),
             bookmarks,
-            conversionRate: views.length > 0 
-                ? ((post.likeCount + post.commentCount) / views.length * 100).toFixed(2) 
-                : 0,
+            conversionRate: views.length > 0 ? (((post.likeCount + post.commentCount) / views.length) * 100).toFixed(2) : 0,
         },
     });
 });
@@ -487,27 +472,29 @@ const getCategoryAnalytics = asyncHandler(async (req, res) => {
         },
     });
 
-    const categoryStats = categories.map((cat) => {
-        const totals = cat.posts.reduce(
-            (acc, p) => {
-                acc.views += p.post.viewCount;
-                acc.comments += p.post.commentCount;
-                acc.likes += p.post.likeCount;
-                acc.postCount += 1;
-                return acc;
-            },
-            { views: 0, comments: 0, likes: 0, postCount: 0 }
-        );
+    const categoryStats = categories
+        .map((cat) => {
+            const totals = cat.posts.reduce(
+                (acc, p) => {
+                    acc.views += p.post.viewCount;
+                    acc.comments += p.post.commentCount;
+                    acc.likes += p.post.likeCount;
+                    acc.postCount += 1;
+                    return acc;
+                },
+                { views: 0, comments: 0, likes: 0, postCount: 0 }
+            );
 
-        return {
-            id: cat.id,
-            name: cat.name,
-            slug: cat.slug,
-            ...totals,
-            engagementScore: totals.views + totals.comments * 10 + totals.likes * 5,
-            children: cat.children,
-        };
-    }).sort((a, b) => b.engagementScore - a.engagementScore);
+            return {
+                id: cat.id,
+                name: cat.name,
+                slug: cat.slug,
+                ...totals,
+                engagementScore: totals.views + totals.comments * 10 + totals.likes * 5,
+                children: cat.children,
+            };
+        })
+        .sort((a, b) => b.engagementScore - a.engagementScore);
 
     return apiResponse(res, 200, true, "Category analytics fetched", {
         period: { start, end },
@@ -560,9 +547,7 @@ const getTagAnalytics = asyncHandler(async (req, res) => {
             slug: tag.slug,
             postCount: tag.postCount,
             ...totals,
-            avgViewsPerPost: tag.postCount > 0 
-                ? Math.round(totals.views / tag.postCount) 
-                : 0,
+            avgViewsPerPost: tag.postCount > 0 ? Math.round(totals.views / tag.postCount) : 0,
         };
     });
 
@@ -572,24 +557,14 @@ const getTagAnalytics = asyncHandler(async (req, res) => {
     });
 });
 
-// USER ANALYTICS   
+// USER ANALYTICS
 const getUserAnalytics = asyncHandler(async (req, res) => {
     const { startDate, endDate } = req.query;
     const { start, end } = getDateRange(startDate, endDate, 30);
 
-    const [
-        totalUsers,
-        newUsers,
-        activeUsers,
-        topContributors,
-        userRoles,
-    ] = await prisma.$transaction([
+    const [totalUsers, newUsers, commentGroups, postGroups, roleGroups] = await prisma.$transaction([
         prisma.user.count(),
-        prisma.user.count({
-            where: { createdAt: { gte: start, lte: end } },
-        }),
-        
-        // Active users (made comments or reactions in period)
+        prisma.user.count({ where: { createdAt: { gte: start, lte: end } } }),
         prisma.comment.groupBy({
             by: ["authorId"],
             where: {
@@ -597,9 +572,7 @@ const getUserAnalytics = asyncHandler(async (req, res) => {
                 authorId: { not: null },
             },
             _count: { authorId: true },
-        }).then((results) => results.length),
-        
-        // Top contributors
+        }),
         prisma.post.groupBy({
             by: ["authorId"],
             where: {
@@ -609,32 +582,33 @@ const getUserAnalytics = asyncHandler(async (req, res) => {
             _count: { authorId: true },
             orderBy: { _count: { authorId: "desc" } },
             take: 10,
-        }).then(async (results) => {
-            const users = await prisma.user.findMany({
-                where: { id: { in: results.map((r) => r.authorId) } },
-                select: { id: true, name: true, avatarUrl: true },
-            });
-            return results.map((r) => ({
-                ...r,
-                user: users.find((u) => u.id === r.authorId),
-            }));
         }),
-        
-        // Users by role
         prisma.user.groupBy({
             by: ["roleId"],
             _count: { roleId: true },
-        }).then(async (results) => {
-            const roles = await prisma.role.findMany({
-                where: { id: { in: results.map((r) => r.roleId).filter(Boolean) } },
-                select: { id: true, name: true },
-            });
-            return results.map((r) => ({
-                count: r._count.roleId,
-                role: roles.find((role) => role.id === r.roleId)?.name || "No Role",
-            }));
         }),
     ]);
+
+    // Process the results outside the transaction
+    const activeUsers = commentGroups.length;
+
+    const topContributors = await prisma.user.findMany({
+        where: { id: { in: postGroups.map((r) => r.authorId) } },
+        select: { id: true, name: true, avatarUrl: true },
+    });
+    const formattedTopContributors = postGroups.map((r) => ({
+        ...r,
+        user: topContributors.find((u) => u.id === r.authorId),
+    }));
+
+    const roles = await prisma.role.findMany({
+        where: { id: { in: roleGroups.map((r) => r.roleId).filter(Boolean) } },
+        select: { id: true, name: true },
+    });
+    const userRoles = roleGroups.map((r) => ({
+        count: r._count.roleId,
+        role: roles.find((role) => role.id === r.roleId)?.name || "No Role",
+    }));
 
     return apiResponse(res, 200, true, "User analytics fetched", {
         period: { start, end },
@@ -642,9 +616,7 @@ const getUserAnalytics = asyncHandler(async (req, res) => {
             totalUsers,
             newUsers,
             activeUsers,
-            activationRate: totalUsers > 0 
-                ? ((activeUsers / totalUsers) * 100).toFixed(1) 
-                : 0,
+            activationRate: totalUsers > 0 ? ((activeUsers / totalUsers) * 100).toFixed(1) : 0,
         },
         topContributors,
         userRoles,
@@ -692,12 +664,8 @@ const getRetentionAnalytics = asyncHandler(async (req, res) => {
         cohorts: monthlyCohorts.map((c) => ({
             month: c.cohort_month.toISOString().slice(0, 7),
             size: parseInt(c.cohort_size),
-            month0Retention: c.cohort_size > 0 
-                ? ((parseInt(c.month_0_active) / parseInt(c.cohort_size)) * 100).toFixed(1) 
-                : 0,
-            month1Retention: c.cohort_size > 0 
-                ? ((parseInt(c.month_1_active) / parseInt(c.cohort_size)) * 100).toFixed(1) 
-                : 0,
+            month0Retention: c.cohort_size > 0 ? ((parseInt(c.month_0_active) / parseInt(c.cohort_size)) * 100).toFixed(1) : 0,
+            month1Retention: c.cohort_size > 0 ? ((parseInt(c.month_1_active) / parseInt(c.cohort_size)) * 100).toFixed(1) : 0,
         })),
     });
 });
@@ -722,10 +690,10 @@ const exportAnalytics = asyncHandler(async (req, res) => {
                 orderBy: { createdAt: "desc" },
             });
             break;
-            
+
         case "posts":
             data = await prisma.post.findMany({
-                where: { 
+                where: {
                     createdAt: { gte: start, lte: end },
                     deletedAt: null,
                 },
@@ -741,7 +709,7 @@ const exportAnalytics = asyncHandler(async (req, res) => {
                 orderBy: { viewCount: "desc" },
             });
             break;
-            
+
         case "users":
             data = await prisma.user.findMany({
                 where: { createdAt: { gte: start, lte: end } },
@@ -753,20 +721,20 @@ const exportAnalytics = asyncHandler(async (req, res) => {
                 },
             });
             break;
-            
+
         default:
             throw new ApiError(400, "Invalid export type");
     }
 
     if (format === "csv") {
         const headers = Object.keys(data[0] || {}).join(",");
-        const rows = data.map((row) => 
-            Object.values(row).map((v) => 
-                typeof v === "object" ? JSON.stringify(v) : `"${v}"`
-            ).join(",")
+        const rows = data.map((row) =>
+            Object.values(row)
+                .map((v) => (typeof v === "object" ? JSON.stringify(v) : `"${v}"`))
+                .join(",")
         );
         const csv = [headers, ...rows].join("\n");
-        
+
         res.setHeader("Content-Type", "text/csv");
         res.setHeader("Content-Disposition", `attachment; filename=${type}-export.csv`);
         return res.send(csv);
@@ -782,10 +750,10 @@ const exportAnalytics = asyncHandler(async (req, res) => {
 // Generate automated report
 const generateReport = asyncHandler(async (req, res) => {
     const { period = "monthly" } = req.body;
-    
+
     let start, end;
     const now = new Date();
-    
+
     if (period === "weekly") {
         start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         end = now;
@@ -801,21 +769,14 @@ const generateReport = asyncHandler(async (req, res) => {
     }
 
     // Aggregate all metrics
-    const [
-        totalViews,
-        totalPosts,
-        totalComments,
-        totalUsers,
-        topContent,
-        trafficSources,
-    ] = await prisma.$transaction([
+    const [totalViews, totalPosts, totalComments, totalUsers, topContent, trafficSources] = await prisma.$transaction([
         prisma.postView.count({ where: { createdAt: { gte: start, lte: end } } }),
         prisma.post.count({ where: { createdAt: { gte: start, lte: end }, deletedAt: null } }),
         prisma.comment.count({ where: { createdAt: { gte: start, lte: end } } }),
         prisma.user.count({ where: { createdAt: { gte: start, lte: end } } }),
-        
+
         prisma.post.findMany({
-            where: { 
+            where: {
                 createdAt: { gte: start, lte: end },
                 deletedAt: null,
             },
@@ -828,7 +789,7 @@ const generateReport = asyncHandler(async (req, res) => {
                 likeCount: true,
             },
         }),
-        
+
         prisma.postView.groupBy({
             by: ["referrer"],
             where: { createdAt: { gte: start, lte: end } },
@@ -844,9 +805,7 @@ const generateReport = asyncHandler(async (req, res) => {
             totalPosts,
             totalComments,
             totalUsers,
-            avgEngagement: totalViews > 0 
-                ? ((totalComments + totalUsers) / totalViews * 100).toFixed(2) 
-                : 0,
+            avgEngagement: totalViews > 0 ? (((totalComments + totalUsers) / totalViews) * 100).toFixed(2) : 0,
         },
         highlights: {
             topContent,
@@ -868,7 +827,7 @@ const generateReport = asyncHandler(async (req, res) => {
 // Helper for recommendations
 const generateRecommendations = (metrics) => {
     const recommendations = [];
-    
+
     if (metrics.posts > 0 && metrics.views / metrics.posts < 100) {
         recommendations.push("Consider promoting your content more actively on social media");
     }
@@ -878,7 +837,7 @@ const generateRecommendations = (metrics) => {
     if (metrics.posts < 5) {
         recommendations.push("Increase publishing frequency to build audience");
     }
-    
+
     return recommendations;
 };
 
@@ -886,23 +845,23 @@ export {
     // Tracking
     trackPageView,
     updateEngagement,
-    
+
     // Dashboard
     getDashboardOverview,
 
     // Traffic
     getTrafficAnalytics,
-    
+
     // Content
     getContentAnalytics,
     getPostAnalytics,
     getCategoryAnalytics,
     getTagAnalytics,
-    
+
     // Users
     getUserAnalytics,
     getRetentionAnalytics,
-    
+
     // Export
     exportAnalytics,
     generateReport,

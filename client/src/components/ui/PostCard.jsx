@@ -2,249 +2,382 @@
 import { STYLES } from "@/app/styles/postgridStyles";
 import { formatDate, timeAgo } from "@/constants/helpers";
 import { Avatar, StatusBadge } from "@/constants/utils";
-import { BookOpen, Calendar, Clock, Edit3, Eye, FileText, FolderOpen, Hash, MoreHorizontal, Pin, Star, Trash2, X } from "lucide-react";
+import {
+  BookOpen,
+  Calendar,
+  Clock,
+  Edit3,
+  Eye,
+  FileText,
+  FolderOpen,
+  Hash,
+  MoreHorizontal,
+  Pin,
+  Star,
+  Trash2,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 /* ─────────────────────────────────────────────────────────────
    POST CARD (grid view)
 ───────────────────────────────────────────────────────────── */
-export function PostCard({ post, onDelete, showActions }) {
-    const [menuOpen, setMenuOpen] = useState(false);
-    const menuRef = useRef(null);
+export function PostCard({
+  post,
+  onDelete,
+  showActions,
+  showDate = true,
+  showTags = true,
+  showAuthor = true,
+  showCategories = true,
+  showStatus = true,
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
-    useEffect(() => {
-        const handler = (e) => {
-            if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
-        };
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
-    }, []);
+  useEffect(() => {
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target))
+        setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
-    const cats = post.categories?.map((c) => c.category) ?? [];
-    const tags = post.tags?.map((t) => t.tag) ?? [];
+  const cats = post.categories?.map((c) => c.category) ?? [];
+  const tags = post.tags?.map((t) => t.tag) ?? [];
 
-    return (
-        <>
-        <style>{STYLES}</style>
-        <article className="pg-card">
-            {/* Cover */}
-            <div className="pg-card-cover">
-                {post.coverImage?.url
-                    ? <img src={post.coverImage.url} alt={post.title} className="pg-card-img" />
-                    : <div className="pg-card-no-img">
-                        <FileText size={28} />
-                    </div>
-                }
-                <div className="pg-card-cover-badges">
-                    {post.isFeatured && (
-                        <span className="pg-badge pg-badge--featured"><Star size={9} />Featured</span>
-                    )}
-                    {post.isPinned && (
-                        <span className="pg-badge pg-badge--pinned"><Pin size={9} />Pinned</span>
-                    )}
-                </div>
-                <div className="pg-card-status-pos">
-                    <StatusBadge status={post.status} />
-                </div>
+  return (
+    <>
+      <style>{STYLES}</style>
+      <article className="pg-card">
+        {/* Cover */}
+        <div className="pg-card-cover">
+          {post.coverImage?.url ? (
+            <img
+              src={post.coverImage.url}
+              alt={post.title}
+              className="pg-card-img"
+            />
+          ) : (
+            <div className="pg-card-no-img">
+              <FileText size={28} />
             </div>
-
-            {/* Body */}
-            <div className="pg-card-body">
-                {/* Categories */}
-                {cats.length > 0 && (
-                    <div className="pg-card-cats">
-                        {cats.slice(0, 2).map((c) => (
-                            <span key={c.id} className="pg-cat-label">
-                                <FolderOpen size={9} />{c.name}
-                            </span>
-                        ))}
-                        {cats.length > 2 && <span className="pg-cat-label">+{cats.length - 2}</span>}
-                    </div>
-                )}
-
-                {/* Title */}
-                <h3 className="pg-card-title">
-                    <Link href={`blog/${post.slug}`}>{post.title}</Link>
-                </h3>
-
-                {/* Excerpt */}
-                {post.excerpt && (
-                    <p className="pg-card-excerpt">{post.excerpt}</p>
-                )}
-
-                {/* Tags */}
-                {tags.length > 0 && (
-                    <div className="pg-card-tags">
-                        {tags.slice(0, 3).map((t) => (
-                            <span key={t.id} className="pg-tag-chip"><Hash size={9} />{t.name}</span>
-                        ))}
-                        {tags.length > 3 && <span className="pg-tag-chip">+{tags.length - 3}</span>}
-                    </div>
-                )}
+          )}
+          <div className="pg-card-cover-badges">
+            {post.isFeatured && (
+              <span className="pg-badge pg-badge--featured">
+                <Star size={9} />
+                Featured
+              </span>
+            )}
+            {post.isPinned && (
+              <span className="pg-badge pg-badge--pinned">
+                <Pin size={9} />
+                Pinned
+              </span>
+            )}
+          </div>
+          {showStatus && post.status && (
+            <div className="pg-card-status-pos">
+              <StatusBadge status={post.status} />
             </div>
+          )}
+        </div>
 
-            {/* Footer */}
-            <div className="pg-card-footer">
-                <div className="pg-card-author">
-                    <Avatar author={post.author} size={22} />
-                    <span className="pg-card-author-name">{post.author?.name}</span>
-                </div>
-
-                <div className="pg-card-meta">
-                    {post.readingTime && (
-                        <span className="pg-meta-item"><Clock size={10} />{post.readingTime}m</span>
-                    )}
-                    <span className="pg-meta-item">
-                        <Calendar size={10} />
-                        {timeAgo(post.publishedAt ?? post.createdAt)}
+        {/* Body */}
+        <div className="pg-card-body">
+          {/* Categories */}
+          {showCategories && (
+            <>
+              {cats.length > 0 && (
+                <div className="pg-card-cats">
+                  {cats.slice(0, 2).map((c) => (
+                    <span key={c.id} className="pg-cat-label">
+                      <FolderOpen size={9} />
+                      {c.name}
                     </span>
+                  ))}
+                  {cats.length > 2 && (
+                    <span className="pg-cat-label">+{cats.length - 2}</span>
+                  )}
                 </div>
+              )}
+            </>
+          )}
 
-                {showActions && (
-                    <div ref={menuRef} className="pg-card-actions">
-                        <button
-                            type="button"
-                            className="pg-action-btn"
-                            onClick={() => setMenuOpen((v) => !v)}
-                        >
-                            <MoreHorizontal size={14} />
-                        </button>
-                        {menuOpen && (
-                            <div className="pg-action-menu">
-                                <Link
-                                    href={`posts/${post.id}/edit`}
-                                    className="pg-action-item"
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    <Edit3 size={13} />Edit
-                                </Link>
-                                <Link
-                                    href={`posts/${post.id}`}
-                                    className="pg-action-item"
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    <Eye size={13} />View
-                                </Link>
-                                <button
-                                    type="button"
-                                    className="pg-action-item pg-action-item--danger"
-                                    onClick={() => { setMenuOpen(false); onDelete(post); }}
-                                >
-                                    <Trash2 size={13} />Delete
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                )}
+          {/* Title */}
+          <h3 className="pg-card-title">
+            <Link href={`blog/${post.slug}`}>{post.title}</Link>
+          </h3>
+
+          {/* Excerpt */}
+          {post.excerpt && <p className="pg-card-excerpt">{post.excerpt}</p>}
+
+          {/* Tags */}
+          {showTags && (
+            <>
+              {tags.length > 0 && (
+                <div className="pg-card-tags">
+                  {tags.slice(0, 3).map((t) => (
+                    <span key={t.id} className="pg-tag-chip">
+                      <Hash size={9} />
+                      {t.name}
+                    </span>
+                  ))}
+                  {tags.length > 3 && (
+                    <span className="pg-tag-chip">+{tags.length - 3}</span>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="pg-card-footer">
+          {showAuthor && post.author && (
+            <div className="pg-card-author">
+              <Avatar author={post.author} size={22} />
+              <span className="pg-card-author-name">{post.author?.name}</span>
             </div>
-        </article>
-        </>
-    );
+          )}
+
+          <div className="pg-card-meta">
+            {post.readingTime && (
+              <span className="pg-meta-item">
+                <Clock size={10} />
+                {post.readingTime}m
+              </span>
+            )}
+            {post?.wordCount && (
+              <span className="pg-meta-item">
+                <BookOpen size={10} />
+                {post.wordCount} words
+              </span>
+            )}
+            {showDate && post.publishedAt && (
+              <span className="pg-meta-item">
+                <Calendar size={10} />
+                {timeAgo(post.publishedAt ?? post.createdAt)}
+              </span>
+            )}
+          </div>
+
+          {showActions && (
+            <div ref={menuRef} className="pg-card-actions">
+              <button
+                type="button"
+                className="pg-action-btn"
+                onClick={() => setMenuOpen((v) => !v)}
+              >
+                <MoreHorizontal size={14} />
+              </button>
+              {menuOpen && (
+                <div className="pg-action-menu">
+                  <Link
+                    href={`posts/${post.id}/edit`}
+                    className="pg-action-item"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <Edit3 size={13} />
+                    Edit
+                  </Link>
+                  <Link
+                    href={`posts/${post.id}`}
+                    className="pg-action-item"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <Eye size={13} />
+                    View
+                  </Link>
+                  <button
+                    type="button"
+                    className="pg-action-item pg-action-item--danger"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onDelete(post);
+                    }}
+                  >
+                    <Trash2 size={13} />
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </article>
+    </>
+  );
 }
 
 /* ─────────────────────────────────────────────────────────────
    POST ROW (list view)
 ───────────────────────────────────────────────────────────── */
-export function PostRow({ post, onDelete, showActions }) {
-    const cats = post.categories?.map((c) => c.category) ?? [];
-    const tags = post.tags?.map((t) => t.tag) ?? [];
+export function PostRow({
+  post,
+  onDelete,
+  showActions,
+  showDate = true,
+  showTags = true,
+  showAuthor = true,
+  showCategories = true,
+  showStatus = true,
+}) {
+  const cats = post.categories?.map((c) => c.category) ?? [];
+  const tags = post.tags?.map((t) => t.tag) ?? [];
 
-    return (
-        <div className="pg-row">
-            {/* Thumb */}
-            <div className="pg-row-thumb">
-                {post.coverImage?.url
-                    ? <img src={post.coverImage.url} alt="" className="pg-row-img" />
-                    : <div className="pg-row-no-img"><FileText size={16} /></div>
-                }
+  return (
+    <div className="pg-row">
+      {/* Thumb */}
+      <div className="pg-row-thumb">
+        {post.coverImage?.url ? (
+          <img src={post.coverImage.url} alt="" className="pg-row-img" />
+        ) : (
+          <div className="pg-row-no-img">
+            <FileText size={16} />
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="pg-row-info">
+        <div className="pg-row-top">
+          {showStatus && (
+            <div className="pg-row-badges">
+              <StatusBadge status={post.status} />
+              {post.isFeatured && (
+                <span className="pg-badge pg-badge--featured">
+                  <Star size={9} />
+                  Featured
+                </span>
+              )}
+              {post.isPinned && (
+                <span className="pg-badge pg-badge--pinned">
+                  <Pin size={9} />
+                  Pinned
+                </span>
+              )}
             </div>
-
-            {/* Info */}
-            <div className="pg-row-info">
-                <div className="pg-row-top">
-                    <div className="pg-row-badges">
-                        <StatusBadge status={post.status} />
-                        {post.isFeatured && <span className="pg-badge pg-badge--featured"><Star size={9} />Featured</span>}
-                        {post.isPinned   && <span className="pg-badge pg-badge--pinned"><Pin size={9} />Pinned</span>}
-                    </div>
-                </div>
-                <h3 className="pg-row-title">
-                    <Link href={`posts/${post.id}/edit`}>{post.title}</Link>
-                </h3>
-                {post.excerpt && <p className="pg-row-excerpt">{post.excerpt}</p>}
-
-                <div className="pg-row-bottom">
-                    <div className="pg-row-author">
-                        <Avatar author={post.author} size={18} />
-                        <span>{post.author?.name}</span>
-                    </div>
-
-                    {cats.slice(0, 2).map((c) => (
-                        <span key={c.id} className="pg-cat-label"><FolderOpen size={9} />{c.name}</span>
-                    ))}
-
-                    {tags.slice(0, 3).map((t) => (
-                        <span key={t.id} className="pg-tag-chip"><Hash size={9} />{t.name}</span>
-                    ))}
-
-                    {post?.readingTime && (
-                        <span className="pg-meta-item"><Clock size={10} />{post.readingTime} min read</span>
-                    )}
-                    {post?.wordCount && (
-                        <span className="pg-meta-item"><BookOpen size={10} />{post.wordCount} words</span>
-                    )}
-                    <span className="pg-meta-item">
-                        <Calendar size={10} />
-                        {formatDate(post.publishedAt ?? post.createdAt)}
-                    </span>
-                </div>
-            </div>
-
-            {/* Actions */}
-            {showActions && (
-                <div className="pg-row-actions">
-                    <Link href={`posts/${post.id}/edit`} className="btn btn-outline" style={{ padding: "5px 12px", fontSize: "var(--text-xs)" }}>
-                        <Edit3 size={12} style={{ marginRight: 4 }} />Edit
-                    </Link>
-                    <button
-                        type="button"
-                        className="btn"
-                        style={{ padding: "5px 12px", fontSize: "var(--text-xs)", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca" }}
-                        onClick={() => onDelete(post)}
-                    >
-                        <Trash2 size={12} style={{ marginRight: 4 }} />Delete
-                    </button>
-                </div>
-            )}
+          )}
         </div>
-    );
+        <h3 className="pg-row-title">
+          <Link href={`blog/${post.slug}`}>{post.title}</Link>
+        </h3>
+        {post.excerpt && <p className="pg-row-excerpt">{post.excerpt}</p>}
+
+        <div className="pg-row-bottom">
+          {showAuthor && (
+            <div className="pg-row-author">
+              <Avatar author={post.author} size={18} />
+              <span>{post.author?.name}</span>
+            </div>
+          )}
+          {showCategories && cats.length > 0 && (
+            <>
+              {cats.slice(0, 2).map((c) => (
+                <span key={c.id} className="pg-cat-label">
+                  <FolderOpen size={9} />
+                  {c.name}
+                </span>
+              ))}
+            </>
+          )}
+          {showTags && tags.length > 0 && (
+            <>
+              {tags.slice(0, 3).map((t) => (
+                <span key={t.id} className="pg-tag-chip">
+                  <Hash size={9} />
+                  {t.name}
+                </span>
+              ))}
+            </>
+          )}
+
+          {post?.readingTime && (
+            <span className="pg-meta-item">
+              <Clock size={10} />
+              {post.readingTime} min read
+            </span>
+          )}
+          {post?.wordCount && (
+            <span className="pg-meta-item">
+              <BookOpen size={10} />
+              {post.wordCount} words
+            </span>
+          )}
+          {showDate && (
+            <span className="pg-meta-item">
+              <Calendar size={10} />
+              {formatDate(post.publishedAt ?? post.createdAt)}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Actions */}
+      {showActions && (
+        <div className="pg-row-actions">
+          <Link
+            href={`posts/${post.id}/edit`}
+            className="btn btn-outline"
+            style={{ padding: "5px 12px", fontSize: "var(--text-xs)" }}
+          >
+            <Edit3 size={12} style={{ marginRight: 4 }} />
+            Edit
+          </Link>
+          <button
+            type="button"
+            className="btn"
+            style={{
+              padding: "5px 12px",
+              fontSize: "var(--text-xs)",
+              background: "#fef2f2",
+              color: "#dc2626",
+              border: "1px solid #fecaca",
+            }}
+            onClick={() => onDelete(post)}
+          >
+            <Trash2 size={12} style={{ marginRight: 4 }} />
+            Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
- /* ─────────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
    EMPTY STATE
 ───────────────────────────────────────────────────────────── */
 
 export function EmptyState({ hasFilters, onClear }) {
-    return (
-        <div className="pg-empty">
-            <div className="pg-empty-icon">
-                <FileText size={32} />
-            </div>
-            <p className="pg-empty-title">
-                {hasFilters ? "No posts match your filters" : "No posts yet"}
-            </p>
-            <p className="pg-empty-sub">
-                {hasFilters
-                    ? "Try adjusting your search or filters."
-                    : "Create your first post to get started."
-                }
-            </p>
-            {hasFilters && (
-                <button type="button" className="btn btn-outline" onClick={onClear} style={{ marginTop: 12 }}>
-                    <X size={13} style={{ marginRight: 5 }} />Clear filters
-                </button>
-            )}
-        </div>
-    );
+  return (
+    <div className="pg-empty">
+      <div className="pg-empty-icon">
+        <FileText size={32} />
+      </div>
+      <p className="pg-empty-title">
+        {hasFilters ? "No posts match your filters" : "No posts yet"}
+      </p>
+      <p className="pg-empty-sub">
+        {hasFilters
+          ? "Try adjusting your search or filters."
+          : "Create your first post to get started."}
+      </p>
+      {hasFilters && (
+        <button
+          type="button"
+          className="btn btn-outline"
+          onClick={onClear}
+          style={{ marginTop: 12 }}
+        >
+          <X size={13} style={{ marginRight: 5 }} />
+          Clear filters
+        </button>
+      )}
+    </div>
+  );
 }

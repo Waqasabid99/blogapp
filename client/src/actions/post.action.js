@@ -51,3 +51,45 @@ export const getRelatedPosts = async (categoryId, excludeId, limit) => {
     const data = await response.json()
     return data
 };
+
+export const getPublishedPosts = async() => {
+    const response = await fetch(`${base_url}/post/published`, {
+        method: "GET",
+        next: {
+            tags: ["posts"]
+        }
+    })
+    const data = await response.json()
+    return data
+};
+
+export const getLatestPosts = async() => {
+    const response = await fetch(`${base_url}/post/latest`, {
+        next: {
+            tags: ["posts"]
+        }
+    })
+    const data = await response.json()
+    return data
+};
+
+export const getFeaturedPosts = async() => {
+    const response = await fetch(`${base_url}/post/featured`, {
+        next: {
+            tags: ["posts"]
+        }
+    })
+    console.log(response)
+    const data = await response.json()
+    return data
+};
+
+export const getPinnedPosts = async() => {
+    const response = await fetch(`${base_url}/post/pinned`, {
+        next: {
+            tags: ["posts"]
+        }
+    })
+    const data = await response.json()
+    return data
+};

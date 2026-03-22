@@ -7,6 +7,10 @@ import {
     getSinglePost,
     getSinglePostById,
     getRelatedPosts,
+    getLatestPosts,
+    getFeaturedPosts,
+    getPinnedPosts,
+    getPublishedPosts,
 } from "../controllers/post.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 import { requirePermission } from "../middleware/permissions.middleware.js";
@@ -17,6 +21,10 @@ const postRouter = express.Router();
 
 // Public / Optional Auth Routes
 postRouter.get("/", optionalPermission(), getAllPosts);
+postRouter.get("/published", getPublishedPosts);
+postRouter.get("/latest", getLatestPosts);
+postRouter.get("/featured", getFeaturedPosts);
+postRouter.get("/pinned", getPinnedPosts);
 postRouter.get("/:slug", optionalPermission(), getSinglePost);
 postRouter.get("/postId/:id", verifyUser, optionalPermission(), getSinglePostById);
 postRouter.post("/relatedposts", getRelatedPosts);

@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { VP_STYLES } from "@/app/styles/viewpostStyles";
 import RenderBlock from "@/constants/RenderEditor";
 import { PostCard } from "../ui/PostCard";
@@ -105,7 +104,6 @@ const CopyLink = () => {
 };
 
 const ViewPost = ({ post, relatedPosts = [] }) => {
-    console.log(relatedPosts)
     const blocks = post?.content?.blocks ?? [];
 
     const formattedDate = post?.publishedAt

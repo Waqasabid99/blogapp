@@ -5,11 +5,15 @@ import { getAllSeries } from "@/actions/series.action";
 import { getAllTags } from "@/actions/tags.action";
 import EditPost from "@/components/dashboard/posts/EditPosts";
 import { notFound } from "next/navigation";
+import { generateSEO } from "@/constants/seo";
 
-export const metadata = {
+export const metadata = generateSEO({
     title: "Edit Post - Dashboard",
     description: "Edit an existing post",
-};
+    image: "/logo.png",
+    url: "/dashboard/posts/edit",
+    type: "website",
+});
 
 const page = async ({ params }) => {
     const { postId } = await params;
@@ -27,9 +31,9 @@ const page = async ({ params }) => {
     return (
         <EditPost
             post={postRes.data}
-            categories={catRes?.data   ?? []}
-            tags={tagRes?.data?.tags   ?? []}
-            series={seriesRes?.data?.series  ?? []}
+            categories={catRes?.data ?? []}
+            tags={tagRes?.data?.tags ?? []}
+            series={seriesRes?.data?.series ?? []}
         />
     );
 };

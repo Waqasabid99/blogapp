@@ -1,14 +1,19 @@
 import { getAllRoles } from "@/actions/role.action"
 import AddUser from "@/components/dashboard/users/AddUsers"
+import { generateSEO } from "@/constants/seo"
 
-export const metadata = {
-    title: "Create User - Dashboard",
-    description: "Create user",
-}
+export const metadata = generateSEO({
+  title: "Create User - Dashboard",
+  description: "Create user",
+  image: "/logo.png",
+  url: "/dashboard/users/new",
+  type: "website",
+})
+
 const page = async () => {
-    const {data} = await getAllRoles();
+  const { data } = await getAllRoles();
   return (
-    <AddUser roles={data}/>
+    <AddUser roles={data} />
   )
 }
 

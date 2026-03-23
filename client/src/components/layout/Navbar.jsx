@@ -36,7 +36,7 @@ const Navbar = ({ categories }) => {
   const visibleCategories = categories?.slice(0, 5) ?? [];
   const moreCategories = categories?.slice(5) ?? [];
   const { isAuthenticated, user, logout, avatar } = useAuthStore();
-  
+
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
 
@@ -112,7 +112,7 @@ const Navbar = ({ categories }) => {
 
   return (
     <header className="w-full bg-(--bg-primary) border-b border-(--border-light) sticky top-0 z-50">
-      <div className={`mx-auto flex items-center justify-between px-4 sm:px-6 py-3 transition-all ease-in-out duration-500 ${isDashboardPage ? "max-w-full" : "max-w-7xl"}`}>
+      <div className={`max-w-full mx-auto flex items-center justify-between px-4 sm:px-6 py-3 transition-all ease-in-out duration-500`}>
         {/* Logo */}
         <Link
           href="/"
@@ -128,7 +128,7 @@ const Navbar = ({ categories }) => {
               {visibleCategories?.map((category) => (
                 <li key={category?.id} className="relative group">
                   <div className="flex items-center gap-1 cursor-pointer">
-                    <Link className="link" href={`/${category?.slug}`}>
+                    <Link className="link" href={`/blog/${category?.slug}`}>
                       {category.name}
                     </Link>
                     {category?.children?.length > 0 && (
@@ -140,7 +140,7 @@ const Navbar = ({ categories }) => {
                     <ul className="min-w-52 w-auto absolute top-full left-0 bg-(--bg-tertiary) px-4 py-3 hidden group-hover:block rounded shadow-lg">
                       {category.children.map((child) => (
                         <li key={child?.id} className="py-2 border-b">
-                          <Link className="link wrap-normal" href={`/${child?.slug}`}>
+                          <Link className="link wrap-normal" href={`/blog/${child?.slug}`}>
                             {child.name}
                           </Link>
                         </li>
@@ -160,7 +160,7 @@ const Navbar = ({ categories }) => {
                   <ul className="absolute top-full left-0 bg-(--bg-tertiary) px-4 py-3 hidden group-hover:block w-52 rounded shadow-lg">
                     {moreCategories.map((category) => (
                       <li key={category?.id} className="py-1">
-                        <Link className="link" href={`/${category?.slug}`}>
+                        <Link className="link" href={`/blog/${category?.slug}`}>
                           {category.name}
                         </Link>
                       </li>
@@ -200,8 +200,8 @@ const Navbar = ({ categories }) => {
                 <span className="hidden sm:block text-sm font-medium text-(--text-primary) max-w-25 truncate">
                   {getDisplayName()}
                 </span>
-                <IoIosArrowDown 
-                  className={`w-4 h-4 text-(--text-secondary) transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`} 
+                <IoIosArrowDown
+                  className={`w-4 h-4 text-(--text-secondary) transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
@@ -229,16 +229,20 @@ const Navbar = ({ categories }) => {
                   </div>
 
                   {/* Menu items */}
-                  <div className="py-1">
-                    <Link
-                      href={`/dashboard/${user?.role}/${user?.id}`}
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-(--text-primary) hover:bg-(--bg-light) transition-colors"
-                    >
-                      <LayoutDashboard size={18} className="text-(--text-secondary)" />
-                      Dashboard
-                    </Link>
-                  </div>
+                  {isAuthenticated && user?.role === "user" ? (
+                    null
+                  ) : (
+                    <div className="py-1">
+                      <Link
+                        href={`/dashboard/${user?.role}/${user?.id}`}
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-(--text-primary) hover:bg-(--bg-light) transition-colors"
+                      >
+                        <LayoutDashboard size={18} className="text-(--text-secondary)" />
+                        Dashboard
+                      </Link>
+                    </div>
+                  )}
 
                   <div className="border-t border-(--border-light) py-1 mt-1">
                     <button
@@ -307,7 +311,7 @@ const Navbar = ({ categories }) => {
             {categories?.map((category) => (
               <li key={category?.id}>
                 <Link
-                  href={`/${category?.slug}`}
+                  href={`/blog/${category?.slug}`}
                   className="block py-3 text-sm font-medium text-(--text-primary) hover:text-(--brand-primary) transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
@@ -319,7 +323,7 @@ const Navbar = ({ categories }) => {
                     {category.children.map((child) => (
                       <li key={child?.id}>
                         <Link
-                          href={`/${child?.slug}`}
+                          href={`/blog/${child?.slug}`}
                           className="block pl-4 py-2 text-sm text-(--text-secondary) hover:text-(--brand-primary) transition-colors"
                           onClick={() => setMobileOpen(false)}
                         >

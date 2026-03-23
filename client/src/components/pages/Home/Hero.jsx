@@ -1,13 +1,11 @@
 "use client";
-import { STYLES } from '@/app/styles/postgridStyles';
 import { PostRow } from '@/components/ui/PostCard';
 import HeroSlider from '@/components/ui/Swiper';
 
 const Hero = ({ latestPosts, sliderPosts }) => {
   return (
     <>
-      <style>{STYLES}</style>
-      <section className="mx-auto px-6 py-12 max-w-7xl">
+      <section className="mx-auto px-6 pt-12">
         <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-none md:grid-rows-3 gap-4">
 
           {/* SLIDER */}

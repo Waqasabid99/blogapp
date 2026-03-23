@@ -6,7 +6,6 @@ export const getAllCategories = async () => {
       tags: ["categories"]
     }
   })
-  console.log(response)
   if (!response.ok) {
     throw new Error("Failed to fetch categories")
   }

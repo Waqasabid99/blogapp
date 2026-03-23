@@ -101,3 +101,15 @@ export function generateExcerpt(editorContent, maxLength = 160) {
     return "";
   }
 }
+
+// Helper function to calculate popularity Score
+export function calculatePopularityScore(viewCount, likeCount, clapCount, commentCount, bookmarkCount) {
+  const score =
+  viewCount * 1 +
+  likeCount * 3 +
+  clapCount * 2 +
+  commentCount * 4 +
+  bookmarkCount * 5;
+
+  return score;
+}

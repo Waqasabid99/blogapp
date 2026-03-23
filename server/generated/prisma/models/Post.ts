@@ -34,6 +34,7 @@ export type PostAvgAggregateOutputType = {
   clapCount: number | null
   commentCount: number | null
   bookmarkCount: number | null
+  popularityScore: number | null
 }
 
 export type PostSumAggregateOutputType = {
@@ -44,6 +45,7 @@ export type PostSumAggregateOutputType = {
   clapCount: number | null
   commentCount: number | null
   bookmarkCount: number | null
+  popularityScore: number | null
 }
 
 export type PostMinAggregateOutputType = {
@@ -61,6 +63,7 @@ export type PostMinAggregateOutputType = {
   clapCount: number | null
   commentCount: number | null
   bookmarkCount: number | null
+  popularityScore: number | null
   publishedAt: Date | null
   scheduledAt: Date | null
   isFeatured: boolean | null
@@ -89,6 +92,7 @@ export type PostMaxAggregateOutputType = {
   clapCount: number | null
   commentCount: number | null
   bookmarkCount: number | null
+  popularityScore: number | null
   publishedAt: Date | null
   scheduledAt: Date | null
   isFeatured: boolean | null
@@ -118,6 +122,7 @@ export type PostCountAggregateOutputType = {
   clapCount: number
   commentCount: number
   bookmarkCount: number
+  popularityScore: number
   publishedAt: number
   scheduledAt: number
   isFeatured: number
@@ -141,6 +146,7 @@ export type PostAvgAggregateInputType = {
   clapCount?: true
   commentCount?: true
   bookmarkCount?: true
+  popularityScore?: true
 }
 
 export type PostSumAggregateInputType = {
@@ -151,6 +157,7 @@ export type PostSumAggregateInputType = {
   clapCount?: true
   commentCount?: true
   bookmarkCount?: true
+  popularityScore?: true
 }
 
 export type PostMinAggregateInputType = {
@@ -168,6 +175,7 @@ export type PostMinAggregateInputType = {
   clapCount?: true
   commentCount?: true
   bookmarkCount?: true
+  popularityScore?: true
   publishedAt?: true
   scheduledAt?: true
   isFeatured?: true
@@ -196,6 +204,7 @@ export type PostMaxAggregateInputType = {
   clapCount?: true
   commentCount?: true
   bookmarkCount?: true
+  popularityScore?: true
   publishedAt?: true
   scheduledAt?: true
   isFeatured?: true
@@ -225,6 +234,7 @@ export type PostCountAggregateInputType = {
   clapCount?: true
   commentCount?: true
   bookmarkCount?: true
+  popularityScore?: true
   publishedAt?: true
   scheduledAt?: true
   isFeatured?: true
@@ -341,6 +351,7 @@ export type PostGroupByOutputType = {
   clapCount: number
   commentCount: number
   bookmarkCount: number
+  popularityScore: number
   publishedAt: Date | null
   scheduledAt: Date | null
   isFeatured: boolean
@@ -393,6 +404,7 @@ export type PostWhereInput = {
   clapCount?: Prisma.IntFilter<"Post"> | number
   commentCount?: Prisma.IntFilter<"Post"> | number
   bookmarkCount?: Prisma.IntFilter<"Post"> | number
+  popularityScore?: Prisma.FloatFilter<"Post"> | number
   publishedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   scheduledAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   isFeatured?: Prisma.BoolFilter<"Post"> | boolean
@@ -435,6 +447,7 @@ export type PostOrderByWithRelationInput = {
   clapCount?: Prisma.SortOrder
   commentCount?: Prisma.SortOrder
   bookmarkCount?: Prisma.SortOrder
+  popularityScore?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
@@ -480,6 +493,7 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   clapCount?: Prisma.IntFilter<"Post"> | number
   commentCount?: Prisma.IntFilter<"Post"> | number
   bookmarkCount?: Prisma.IntFilter<"Post"> | number
+  popularityScore?: Prisma.FloatFilter<"Post"> | number
   publishedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   scheduledAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   isFeatured?: Prisma.BoolFilter<"Post"> | boolean
@@ -522,6 +536,7 @@ export type PostOrderByWithAggregationInput = {
   clapCount?: Prisma.SortOrder
   commentCount?: Prisma.SortOrder
   bookmarkCount?: Prisma.SortOrder
+  popularityScore?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
@@ -559,6 +574,7 @@ export type PostScalarWhereWithAggregatesInput = {
   clapCount?: Prisma.IntWithAggregatesFilter<"Post"> | number
   commentCount?: Prisma.IntWithAggregatesFilter<"Post"> | number
   bookmarkCount?: Prisma.IntWithAggregatesFilter<"Post"> | number
+  popularityScore?: Prisma.FloatWithAggregatesFilter<"Post"> | number
   publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
   scheduledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
   isFeatured?: Prisma.BoolWithAggregatesFilter<"Post"> | boolean
@@ -586,6 +602,7 @@ export type PostCreateInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -626,6 +643,7 @@ export type PostUncheckedCreateInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -662,6 +680,7 @@ export type PostUpdateInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -702,6 +721,7 @@ export type PostUncheckedUpdateInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -740,6 +760,7 @@ export type PostCreateManyInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -767,6 +788,7 @@ export type PostUpdateManyMutationInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -794,6 +816,7 @@ export type PostUncheckedUpdateManyInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -833,6 +856,7 @@ export type PostCountOrderByAggregateInput = {
   clapCount?: Prisma.SortOrder
   commentCount?: Prisma.SortOrder
   bookmarkCount?: Prisma.SortOrder
+  popularityScore?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
@@ -854,6 +878,7 @@ export type PostAvgOrderByAggregateInput = {
   clapCount?: Prisma.SortOrder
   commentCount?: Prisma.SortOrder
   bookmarkCount?: Prisma.SortOrder
+  popularityScore?: Prisma.SortOrder
 }
 
 export type PostMaxOrderByAggregateInput = {
@@ -871,6 +896,7 @@ export type PostMaxOrderByAggregateInput = {
   clapCount?: Prisma.SortOrder
   commentCount?: Prisma.SortOrder
   bookmarkCount?: Prisma.SortOrder
+  popularityScore?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
@@ -899,6 +925,7 @@ export type PostMinOrderByAggregateInput = {
   clapCount?: Prisma.SortOrder
   commentCount?: Prisma.SortOrder
   bookmarkCount?: Prisma.SortOrder
+  popularityScore?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
@@ -920,6 +947,7 @@ export type PostSumOrderByAggregateInput = {
   clapCount?: Prisma.SortOrder
   commentCount?: Prisma.SortOrder
   bookmarkCount?: Prisma.SortOrder
+  popularityScore?: Prisma.SortOrder
 }
 
 export type PostScalarRelationFilter = {
@@ -1024,6 +1052,14 @@ export type NullableIntFieldUpdateOperationsInput = {
 }
 
 export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type FloatFieldUpdateOperationsInput = {
   set?: number
   increment?: number
   decrement?: number
@@ -1259,6 +1295,7 @@ export type PostCreateWithoutAuthorInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1297,6 +1334,7 @@ export type PostUncheckedCreateWithoutAuthorInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1343,6 +1381,7 @@ export type PostCreateWithoutLockedByInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1382,6 +1421,7 @@ export type PostUncheckedCreateWithoutLockedByInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1448,6 +1488,7 @@ export type PostScalarWhereInput = {
   clapCount?: Prisma.IntFilter<"Post"> | number
   commentCount?: Prisma.IntFilter<"Post"> | number
   bookmarkCount?: Prisma.IntFilter<"Post"> | number
+  popularityScore?: Prisma.FloatFilter<"Post"> | number
   publishedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   scheduledAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   isFeatured?: Prisma.BoolFilter<"Post"> | boolean
@@ -1491,6 +1532,7 @@ export type PostCreateWithoutRevisionsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1530,6 +1572,7 @@ export type PostUncheckedCreateWithoutRevisionsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1581,6 +1624,7 @@ export type PostUpdateWithoutRevisionsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1620,6 +1664,7 @@ export type PostUncheckedUpdateWithoutRevisionsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1655,6 +1700,7 @@ export type PostCreateWithoutSlugHistoryInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1694,6 +1740,7 @@ export type PostUncheckedCreateWithoutSlugHistoryInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1745,6 +1792,7 @@ export type PostUpdateWithoutSlugHistoryInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1784,6 +1832,7 @@ export type PostUncheckedUpdateWithoutSlugHistoryInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1819,6 +1868,7 @@ export type PostCreateWithoutSeoInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1858,6 +1908,7 @@ export type PostUncheckedCreateWithoutSeoInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -1909,6 +1960,7 @@ export type PostUpdateWithoutSeoInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1948,6 +2000,7 @@ export type PostUncheckedUpdateWithoutSeoInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1983,6 +2036,7 @@ export type PostCreateWithoutSeriesInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2022,6 +2076,7 @@ export type PostUncheckedCreateWithoutSeriesInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2083,6 +2138,7 @@ export type PostCreateWithoutCategoriesInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2122,6 +2178,7 @@ export type PostUncheckedCreateWithoutCategoriesInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2173,6 +2230,7 @@ export type PostUpdateWithoutCategoriesInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2212,6 +2270,7 @@ export type PostUncheckedUpdateWithoutCategoriesInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2247,6 +2306,7 @@ export type PostCreateWithoutTagsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2286,6 +2346,7 @@ export type PostUncheckedCreateWithoutTagsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2337,6 +2398,7 @@ export type PostUpdateWithoutTagsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2376,6 +2438,7 @@ export type PostUncheckedUpdateWithoutTagsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2411,6 +2474,7 @@ export type PostCreateWithoutCoverImageInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2449,6 +2513,7 @@ export type PostUncheckedCreateWithoutCoverImageInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2511,6 +2576,7 @@ export type PostCreateWithoutCommentsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2550,6 +2616,7 @@ export type PostUncheckedCreateWithoutCommentsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2601,6 +2668,7 @@ export type PostUpdateWithoutCommentsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2640,6 +2708,7 @@ export type PostUncheckedUpdateWithoutCommentsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2675,6 +2744,7 @@ export type PostCreateWithoutViewsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2714,6 +2784,7 @@ export type PostUncheckedCreateWithoutViewsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2765,6 +2836,7 @@ export type PostUpdateWithoutViewsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2804,6 +2876,7 @@ export type PostUncheckedUpdateWithoutViewsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2839,6 +2912,7 @@ export type PostCreateWithoutReactionsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2878,6 +2952,7 @@ export type PostUncheckedCreateWithoutReactionsInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -2929,6 +3004,7 @@ export type PostUpdateWithoutReactionsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2968,6 +3044,7 @@ export type PostUncheckedUpdateWithoutReactionsInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3003,6 +3080,7 @@ export type PostCreateWithoutBookmarksInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -3042,6 +3120,7 @@ export type PostUncheckedCreateWithoutBookmarksInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -3093,6 +3172,7 @@ export type PostUpdateWithoutBookmarksInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3132,6 +3212,7 @@ export type PostUncheckedUpdateWithoutBookmarksInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3168,6 +3249,7 @@ export type PostCreateManyAuthorInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -3197,6 +3279,7 @@ export type PostCreateManyLockedByInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -3223,6 +3306,7 @@ export type PostUpdateWithoutAuthorInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3261,6 +3345,7 @@ export type PostUncheckedUpdateWithoutAuthorInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3298,6 +3383,7 @@ export type PostUncheckedUpdateManyWithoutAuthorInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3325,6 +3411,7 @@ export type PostUpdateWithoutLockedByInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3364,6 +3451,7 @@ export type PostUncheckedUpdateWithoutLockedByInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3401,6 +3489,7 @@ export type PostUncheckedUpdateManyWithoutLockedByInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3429,6 +3518,7 @@ export type PostCreateManySeriesInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -3455,6 +3545,7 @@ export type PostUpdateWithoutSeriesInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3494,6 +3585,7 @@ export type PostUncheckedUpdateWithoutSeriesInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3531,6 +3623,7 @@ export type PostUncheckedUpdateManyWithoutSeriesInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3558,6 +3651,7 @@ export type PostCreateManyCoverImageInput = {
   clapCount?: number
   commentCount?: number
   bookmarkCount?: number
+  popularityScore?: number
   publishedAt?: Date | string | null
   scheduledAt?: Date | string | null
   isFeatured?: boolean
@@ -3585,6 +3679,7 @@ export type PostUpdateWithoutCoverImageInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3623,6 +3718,7 @@ export type PostUncheckedUpdateWithoutCoverImageInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3660,6 +3756,7 @@ export type PostUncheckedUpdateManyWithoutCoverImageInput = {
   clapCount?: Prisma.IntFieldUpdateOperationsInput | number
   commentCount?: Prisma.IntFieldUpdateOperationsInput | number
   bookmarkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  popularityScore?: Prisma.FloatFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3783,6 +3880,7 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   clapCount?: boolean
   commentCount?: boolean
   bookmarkCount?: boolean
+  popularityScore?: boolean
   publishedAt?: boolean
   scheduledAt?: boolean
   isFeatured?: boolean
@@ -3826,6 +3924,7 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   clapCount?: boolean
   commentCount?: boolean
   bookmarkCount?: boolean
+  popularityScore?: boolean
   publishedAt?: boolean
   scheduledAt?: boolean
   isFeatured?: boolean
@@ -3859,6 +3958,7 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   clapCount?: boolean
   commentCount?: boolean
   bookmarkCount?: boolean
+  popularityScore?: boolean
   publishedAt?: boolean
   scheduledAt?: boolean
   isFeatured?: boolean
@@ -3892,6 +3992,7 @@ export type PostSelectScalar = {
   clapCount?: boolean
   commentCount?: boolean
   bookmarkCount?: boolean
+  popularityScore?: boolean
   publishedAt?: boolean
   scheduledAt?: boolean
   isFeatured?: boolean
@@ -3905,7 +4006,7 @@ export type PostSelectScalar = {
   deletedAt?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "coverImageId" | "status" | "authorId" | "readingTime" | "wordCount" | "viewCount" | "likeCount" | "clapCount" | "commentCount" | "bookmarkCount" | "publishedAt" | "scheduledAt" | "isFeatured" | "isPinned" | "rejectionReason" | "lockedById" | "lockedAt" | "seriesId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "coverImageId" | "status" | "authorId" | "readingTime" | "wordCount" | "viewCount" | "likeCount" | "clapCount" | "commentCount" | "bookmarkCount" | "popularityScore" | "publishedAt" | "scheduledAt" | "isFeatured" | "isPinned" | "rejectionReason" | "lockedById" | "lockedAt" | "seriesId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   coverImage?: boolean | Prisma.Post$coverImageArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -3968,6 +4069,7 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     clapCount: number
     commentCount: number
     bookmarkCount: number
+    popularityScore: number
     publishedAt: Date | null
     scheduledAt: Date | null
     isFeatured: boolean
@@ -4430,6 +4532,7 @@ export interface PostFieldRefs {
   readonly clapCount: Prisma.FieldRef<"Post", 'Int'>
   readonly commentCount: Prisma.FieldRef<"Post", 'Int'>
   readonly bookmarkCount: Prisma.FieldRef<"Post", 'Int'>
+  readonly popularityScore: Prisma.FieldRef<"Post", 'Float'>
   readonly publishedAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly scheduledAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly isFeatured: Prisma.FieldRef<"Post", 'Boolean'>

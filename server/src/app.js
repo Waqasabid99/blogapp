@@ -88,6 +88,7 @@ app.use("/analytics", analyticsRouter);
 app.use("/users", userRouter);
 app.use("/role-permission", rolePermissionRouter);
 app.use("/media", mediaRouter);
+
 app.get("/", (req, res) => {
     res.send("Backend is running!");
 })

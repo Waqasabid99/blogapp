@@ -18,7 +18,7 @@ export const VP_STYLES = `
 
   /* ── Root ── */
   .vp-root {
-    max-width: 1200px;
+    max-width: 100vw;
     margin: 0 auto;
     padding: 0 24px 80px;
     font-family: 'DM Sans', sans-serif;
@@ -52,8 +52,7 @@ export const VP_STYLES = `
 
   /* ── Hero ── */
   .vp-hero {
-    max-width: 800px;
-    margin: 0 auto 40px;
+    max-width: 80%;
   }
 
   .vp-cat-row {

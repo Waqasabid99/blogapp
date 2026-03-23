@@ -1,10 +1,14 @@
 import { getAllCategories } from '@/actions/category.action';
 import AllCategories from '@/components/dashboard/categories/AllCategories'
+import { generateSEO } from '@/constants/seo'
 
-export const metadata = {
+export const metadata = generateSEO({
     title: "Categories - Dashboard",
     description: "View and manage categories and their sub-categories",
-}
+    image: "/logo.png",
+    url: "/dashboard/categories",
+    type: "website",
+});
 
 const page = async () => {
     const categories = await getAllCategories();

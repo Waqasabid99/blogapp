@@ -166,6 +166,7 @@ export const PostScalarFieldEnum = {
   clapCount: 'clapCount',
   commentCount: 'commentCount',
   bookmarkCount: 'bookmarkCount',
+  popularityScore: 'popularityScore',
   publishedAt: 'publishedAt',
   scheduledAt: 'scheduledAt',
   isFeatured: 'isFeatured',

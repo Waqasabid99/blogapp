@@ -11,7 +11,7 @@ import { base_url, SORT_OPTIONS, STATUS_CONFIG } from "@/constants/utils";
 import DeleteModal from "@/components/ui/DeleteModal";
 import { CardSkeleton, RowSkeleton } from "./Loadingskeletons/PostSkeleton";
 import { STYLES } from "@/app/styles/postgridStyles";
-import { EmptyState, PostCard, PostRow } from "./PostCard";
+import { EmptyState, Pagination, PostCard, PostRow } from "./PostCard";
 
 /* ─────────────────────────────────────────────────────────────
    CONSTANTS
@@ -19,112 +19,45 @@ import { EmptyState, PostCard, PostRow } from "./PostCard";
 
 const PER_PAGE_OPTIONS = [10, 20, 30, 50];
 
-/* ─────────────────────────────────────────────────────────────
-   PAGINATION
-───────────────────────────────────────────────────────────── */
-function Pagination({ pagination, onPageChange }) {
-    const { page, totalPages, total, limit } = pagination;
-    const from = (page - 1) * limit + 1;
-    const to   = Math.min(page * limit, total);
-
-    const pages = [];
-    const delta = 2;
-    for (let i = Math.max(1, page - delta); i <= Math.min(totalPages, page + delta); i++) {
-        pages.push(i);
-    }
-
-    return (
-        <div className="pg-pagination">
-            <span className="pg-pagination-info">
-                Showing <strong>{from}–{to}</strong> of <strong>{total}</strong> posts
-            </span>
-            <div className="pg-pagination-controls">
-                <button
-                    type="button"
-                    className="pg-page-btn"
-                    disabled={page <= 1}
-                    onClick={() => onPageChange(page - 1)}
-                >
-                    <ChevronLeft size={14} />
-                </button>
-
-                {pages[0] > 1 && (
-                    <>
-                        <button type="button" className="pg-page-btn" onClick={() => onPageChange(1)}>1</button>
-                        {pages[0] > 2 && <span className="pg-page-ellipsis">…</span>}
-                    </>
-                )}
-
-                {pages.map((p) => (
-                    <button
-                        key={p}
-                        type="button"
-                        className={`pg-page-btn${p === page ? " pg-page-btn--active" : ""}`}
-                        onClick={() => onPageChange(p)}
-                    >
-                        {p}
-                    </button>
-                ))}
-
-                {pages[pages.length - 1] < totalPages && (
-                    <>
-                        {pages[pages.length - 1] < totalPages - 1 && <span className="pg-page-ellipsis">…</span>}
-                        <button type="button" className="pg-page-btn" onClick={() => onPageChange(totalPages)}>{totalPages}</button>
-                    </>
-                )}
-
-                <button
-                    type="button"
-                    className="pg-page-btn"
-                    disabled={page >= totalPages}
-                    onClick={() => onPageChange(page + 1)}
-                >
-                    <ChevronRight size={14} />
-                </button>
-            </div>
-        </div>
-    );
-}
-
 const PostGrid = ({
-    initialData   = null,
-    categories    = [],
-    tags          = [],
-    showActions   = true,
+    initialData = null,
+    categories = [],
+    tags = [],
+    showActions = true,
     defaultLayout = "grid",
-    defaultLimit  = 10,
-    title         = "All Posts",
-    description   = "Manage and organise your content",
-    addHref       = "posts/new",
-    fixedStatus   = null,
-    className     = "",
+    defaultLimit = 10,
+    title = "All Posts",
+    description = "Manage and organise your content",
+    addHref = "posts/new",
+    fixedStatus = null,
+    className = "",
 }) => {
-    const router       = useRouter();
-    const pathname     = usePathname();
+    const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
 
     /* ── Filter state ── */
-    const [search,    setSearch]    = useState(searchParams.get("search") ?? "");
-    const [status,    setStatus]    = useState(fixedStatus ?? searchParams.get("status") ?? "");
-    const [category,  setCategory]  = useState(searchParams.get("category") ?? "");
-    const [tag,       setTag]       = useState(searchParams.get("tag") ?? "");
-    const [sortBy,    setSortBy]    = useState(searchParams.get("sortBy") ?? "createdAt");
-    const [order,     setOrder]     = useState(searchParams.get("order") ?? "desc");
-    const [page,      setPage]      = useState(Number(searchParams.get("page")) || 1);
-    const [limit,     setLimit]     = useState(Number(searchParams.get("limit")) || defaultLimit);
-    const [layout,    setLayout]    = useState(defaultLayout);
+    const [search, setSearch] = useState(searchParams.get("search") ?? "");
+    const [status, setStatus] = useState(fixedStatus ?? searchParams.get("status") ?? "");
+    const [category, setCategory] = useState(searchParams.get("category") ?? "");
+    const [tag, setTag] = useState(searchParams.get("tag") ?? "");
+    const [sortBy, setSortBy] = useState(searchParams.get("sortBy") ?? "createdAt");
+    const [order, setOrder] = useState(searchParams.get("order") ?? "desc");
+    const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
+    const [limit, setLimit] = useState(Number(searchParams.get("limit")) || defaultLimit);
+    const [layout, setLayout] = useState(defaultLayout);
     const [filtersOpen, setFiltersOpen] = useState(false);
 
     /* ── Data state ── */
-    const [posts,      setPosts]      = useState(initialData?.posts ?? []);
+    const [posts, setPosts] = useState(initialData?.posts ?? []);
     const [pagination, setPagination] = useState(initialData?.pagination ?? null);
-    const [loading,    setLoading]    = useState(!initialData);
-    const [error,      setError]      = useState(null);
+    const [loading, setLoading] = useState(!initialData);
+    const [error, setError] = useState(null);
 
     /* ── Delete state ── */
-    const [toDelete,     setToDelete]     = useState(null);
+    const [toDelete, setToDelete] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
-    const [deleteError,   setDeleteError]   = useState(null);
+    const [deleteError, setDeleteError] = useState(null);
 
     /* ── Search debounce ── */
     const searchTimer = useRef(null);
@@ -145,14 +78,14 @@ const PostGrid = ({
         setError(null);
         try {
             const params = new URLSearchParams();
-            params.set("page",   page);
-            params.set("limit",  limit);
+            params.set("page", page);
+            params.set("limit", limit);
             params.set("sortBy", sortBy);
-            params.set("order",  order);
-            if (debouncedSearch) params.set("search",   debouncedSearch);
-            if (status)          params.set("status",   status);
-            if (category)        params.set("category", category);
-            if (tag)             params.set("tag",      tag);
+            params.set("order", order);
+            if (debouncedSearch) params.set("search", debouncedSearch);
+            if (status) params.set("status", status);
+            if (category) params.set("category", category);
+            if (tag) params.set("tag", tag);
 
             const { data } = await axios.get(
                 `${base_url}/post?${params.toString()}`,
@@ -448,7 +381,7 @@ const PostGrid = ({
                             : posts.length === 0
                                 ? <div style={{ gridColumn: "1 / -1" }}>
                                     <EmptyState hasFilters={!!hasActiveFilters} onClear={clearFilters} />
-                                  </div>
+                                </div>
                                 : posts.map((post) => (
                                     <PostCard
                                         key={post.id}

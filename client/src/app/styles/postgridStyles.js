@@ -310,19 +310,10 @@ export const STYLES = `
 
   /* ════ CARD ════ */
   .pg-card {
-    background: var(--bg-primary);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
-  }
-
-  .pg-card:hover {
-    border-color: var(--border-medium);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
   }
 
   /* Cover */
@@ -340,9 +331,8 @@ export const STYLES = `
     object-fit: cover;
     display: block;
     transition: transform .4s ease;
+    cursor: pointer;
   }
-
-  .pg-card:hover .pg-card-img { transform: scale(1.03); }
 
   .pg-card-no-img {
     width: 100%;
@@ -370,7 +360,7 @@ export const STYLES = `
 
   /* Body */
   .pg-card-body {
-    padding: 16px 16px 12px;
+    padding: 16px 0 12px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -418,17 +408,15 @@ export const STYLES = `
 
   /* Footer */
   .pg-card-footer {
-    padding: 10px 16px;
-    border-top: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--bg-secondary);
+    
   }
 
   .pg-card-author {
     display: flex;
-    align-items: center;
+    align-items: start;
     gap: 6px;
     flex: 1;
     min-width: 0;

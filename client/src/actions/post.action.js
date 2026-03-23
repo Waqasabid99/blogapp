@@ -52,7 +52,7 @@ export const getRelatedPosts = async (categoryId, excludeId, limit) => {
     return data
 };
 
-export const getPublishedPosts = async() => {
+export const getPublishedPosts = async () => {
     const response = await fetch(`${base_url}/post/published`, {
         method: "GET",
         next: {
@@ -63,7 +63,7 @@ export const getPublishedPosts = async() => {
     return data
 };
 
-export const getLatestPosts = async() => {
+export const getLatestPosts = async () => {
     const response = await fetch(`${base_url}/post/latest`, {
         next: {
             tags: ["posts"]
@@ -73,19 +73,49 @@ export const getLatestPosts = async() => {
     return data
 };
 
-export const getFeaturedPosts = async() => {
+export const getFeaturedPosts = async () => {
     const response = await fetch(`${base_url}/post/featured`, {
         next: {
             tags: ["posts"]
         }
     })
-    console.log(response)
     const data = await response.json()
     return data
 };
 
-export const getPinnedPosts = async() => {
+export const getPinnedPosts = async () => {
     const response = await fetch(`${base_url}/post/pinned`, {
+        next: {
+            tags: ["posts"]
+        }
+    })
+    const data = await response.json()
+    return data
+};
+
+export const getPopularPosts = async () => {
+    const response = await fetch(`${base_url}/post/popular`, {
+        next: {
+            tags: ["posts"]
+        }
+    })
+    const data = await response.json()
+    return data
+};
+
+export const getTrendingPosts = async () => {
+    const response = await fetch(`${base_url}/post/trending`, {
+        next: {
+            tags: ["posts"]
+        }
+    })
+    const data = await response.json()
+    return data
+};
+
+export const getPostsByCategory = async (slug) => {
+    const response = await fetch(`${base_url}/post/category/${slug}`, {
+        method: "GET",
         next: {
             tags: ["posts"]
         }

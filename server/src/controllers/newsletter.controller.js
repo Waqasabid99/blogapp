@@ -8,12 +8,6 @@ const generateUnsubscribeToken = () => {
     return crypto.randomBytes(32).toString("hex");
 };
 
-// Helper function to validate email format
-const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-};
-
 // ==========================================
 // SUBSCRIBER MANAGEMENT
 // ==========================================
@@ -21,9 +15,9 @@ const isValidEmail = (email) => {
 // Subscribe to newsletter (Public)
 const subscribe = asyncHandler(async (req, res) => {
     const { email, userId } = req.body;
-
+    console.log(email, userId)
     // Validate email
-    if (!email || !isValidEmail(email)) {
+    if (!email) {
         throw new ApiError(400, "Valid email is required");
     }
 

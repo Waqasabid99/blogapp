@@ -92,94 +92,97 @@ const createPost = asyncHandler(async (req, res) => {
     }
 
     // Create post
-    const post = await prisma.$transaction(async (tx) => {
-        const createdPost = await tx.post.create({
-            data: {
-                title,
-                slug,
-                content,
-                excerpt: generatedExcerpt,
-                coverImageId: coverImageId ?? null,
-                authorId,
-                isFeatured: isFeatured ?? false,
-                isPinned: isPinned ?? false,
-                seriesId: seriesId ?? null,
-                readingTime,
-                wordCount,
-                status: postStatus,
-                publishedAt,
-                lockedById: authorId,
-                lockedAt: new Date(),
-                categories: {
-                    create: categories.map((categoryId) => ({
-                        categoryId,
-                    })),
-                },
-                tags: {
-                    create: tags.map((tagId) => ({
-                        tagId,
-                    })),
-                },
-            },
-            include: {
-                author: {
-                    select: {
-                        id: true,
-                        name: true,
-                        avatarUrl: true,
+    const post = await prisma.$transaction(
+        async (tx) => {
+            const createdPost = await tx.post.create({
+                data: {
+                    title,
+                    slug,
+                    content,
+                    excerpt: generatedExcerpt,
+                    coverImageId: coverImageId ?? null,
+                    authorId,
+                    isFeatured: isFeatured ?? false,
+                    isPinned: isPinned ?? false,
+                    seriesId: seriesId ?? null,
+                    readingTime,
+                    wordCount,
+                    status: postStatus,
+                    publishedAt,
+                    lockedById: authorId,
+                    lockedAt: new Date(),
+                    categories: {
+                        create: categories.map((categoryId) => ({
+                            categoryId,
+                        })),
+                    },
+                    tags: {
+                        create: tags.map((tagId) => ({
+                            tagId,
+                        })),
                     },
                 },
-                categories: {
-                    include: {
-                        category: true,
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            avatarUrl: true,
+                        },
+                    },
+                    categories: {
+                        include: {
+                            category: true,
+                        },
+                    },
+                    tags: {
+                        include: {
+                            tag: true,
+                        },
                     },
                 },
-                tags: {
-                    include: {
-                        tag: true,
+            });
+
+            await tx.postRevision.create({
+                data: {
+                    postId: createdPost.id,
+                    content,
+                    editorId: authorId,
+                },
+            });
+
+            await tx.tag.updateMany({
+                where: {
+                    id: {
+                        in: tags,
                     },
                 },
-            },
-        });
-
-        await tx.postRevision.create({
-            data: {
-                postId: createdPost.id,
-                content,
-                editorId: authorId,
-            },
-        });
-
-        await tx.tag.updateMany({
-            where: {
-                id: {
-                    in: tags,
+                data: {
+                    postCount: {
+                        increment: 1,
+                    },
                 },
-            },
-            data: {
-                postCount: {
-                    increment: 1,
+            });
+
+            await tx.slugHistory.create({
+                data: {
+                    postId: createdPost.id,
+                    oldSlug: slug,
                 },
-            },
-        });
+            });
 
-        await tx.slugHistory.create({
-            data: {
-                postId: createdPost.id,
-                oldSlug: slug,
-            },
-        });
+            await tx.postSEO.create({
+                data: {
+                    postId: createdPost.id,
+                    metaTitle: title,
+                    metaDescription: generatedExcerpt,
+                },
+            });
 
-        await tx.postSEO.create({
-            data: {
-                postId: createdPost.id,
-                metaTitle: title,
-                metaDescription: generatedExcerpt,
-            },
-        });
-
-        return createdPost;
-    }, { timeout: 10000 });
+            return createdPost;
+        },
+        { timeout: 10000 }
+    );
 
     if (!post) throw new ApiError(500, "Failed to create post");
     return apiResponse(res, 201, true, "Post created", post);
@@ -529,11 +532,16 @@ const getAllPosts = asyncHandler(async (req, res) => {
 const getSinglePost = asyncHandler(async (req, res) => {
     const { slug } = req.params;
     const user = req.user;
-
     // FIND POST
     let post = await prisma.post.findFirst({
         where: {
-            slug,
+            categories: {
+                some: {
+                    category: {
+                        slug,
+                    },
+                },
+            },
             deletedAt: null,
         },
         include: {
@@ -639,7 +647,7 @@ const getSinglePost = asyncHandler(async (req, res) => {
 const getSinglePostById = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const user = req.user;
-    
+
     // FIND POST
     let post = await prisma.post.findFirst({
         where: {
@@ -759,12 +767,22 @@ const getRelatedPosts = asyncHandler(async (req, res) => {
             id: {
                 not: excludeId,
             },
+            deletedAt: null,
+            status: "PUBLISHED",
         },
         orderBy: {
             createdAt: "desc",
         },
         include: {
-            author: true,
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatarUrl: true,
+                    bio: true,
+                },
+            },
+
             coverImage: {
                 select: {
                     id: true,
@@ -772,6 +790,33 @@ const getRelatedPosts = asyncHandler(async (req, res) => {
                     altText: true,
                 },
             },
+
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: true,
+            seo: true,
         },
         take: limit,
     });
@@ -780,19 +825,28 @@ const getRelatedPosts = asyncHandler(async (req, res) => {
     }
 
     return apiResponse(res, 200, true, "Related posts fetched", posts);
-})
+});
 
 // Get published posts
 const getPublishedPosts = asyncHandler(async (req, res) => {
     const posts = await prisma.post.findMany({
         where: {
             status: "PUBLISHED",
+            deletedAt: null,
         },
         orderBy: {
             createdAt: "desc",
         },
         include: {
-            author: true,
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatarUrl: true,
+                    bio: true,
+                },
+            },
+
             coverImage: {
                 select: {
                     id: true,
@@ -800,6 +854,33 @@ const getPublishedPosts = asyncHandler(async (req, res) => {
                     altText: true,
                 },
             },
+
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: true,
+            seo: true,
         },
     });
     if (!posts) {
@@ -807,19 +888,28 @@ const getPublishedPosts = asyncHandler(async (req, res) => {
     }
 
     return apiResponse(res, 200, true, "Published posts fetched", posts);
-})
+});
 
 // Get latest posts
 const getLatestPosts = asyncHandler(async (req, res) => {
     const posts = await prisma.post.findMany({
         where: {
             status: "PUBLISHED",
+            deletedAt: null,
         },
         orderBy: {
             createdAt: "desc",
         },
         include: {
-            author: true,
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatarUrl: true,
+                    bio: true,
+                },
+            },
+
             coverImage: {
                 select: {
                     id: true,
@@ -827,6 +917,33 @@ const getLatestPosts = asyncHandler(async (req, res) => {
                     altText: true,
                 },
             },
+
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: true,
+            seo: true,
         },
         take: 5,
     });
@@ -835,7 +952,7 @@ const getLatestPosts = asyncHandler(async (req, res) => {
     }
 
     return apiResponse(res, 200, true, "Latest posts fetched", posts);
-})
+});
 
 // Get Featured posts
 const getFeaturedPosts = asyncHandler(async (req, res) => {
@@ -843,12 +960,21 @@ const getFeaturedPosts = asyncHandler(async (req, res) => {
         where: {
             status: "PUBLISHED",
             isFeatured: true,
+            deletedAt: null,
         },
         orderBy: {
             createdAt: "desc",
         },
         include: {
-            author: true,
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatarUrl: true,
+                    bio: true,
+                },
+            },
+
             coverImage: {
                 select: {
                     id: true,
@@ -856,6 +982,33 @@ const getFeaturedPosts = asyncHandler(async (req, res) => {
                     altText: true,
                 },
             },
+
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: true,
+            seo: true,
         },
     });
     if (!posts) {
@@ -863,7 +1016,7 @@ const getFeaturedPosts = asyncHandler(async (req, res) => {
     }
 
     return apiResponse(res, 200, true, "Featured posts fetched", posts);
-})
+});
 
 // Get pinned posts
 const getPinnedPosts = asyncHandler(async (req, res) => {
@@ -871,6 +1024,215 @@ const getPinnedPosts = asyncHandler(async (req, res) => {
         where: {
             status: "PUBLISHED",
             isPinned: true,
+            deletedAt: null,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+        include: {
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatarUrl: true,
+                    bio: true,
+                },
+            },
+
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: true,
+            seo: true,
+        },
+    });
+    if (!posts) {
+        throw new ApiError(404, "No related posts found");
+    }
+
+    return apiResponse(res, 200, true, "Pinned posts fetched", posts);
+});
+
+// Get trending posts
+const getTrendingPosts = asyncHandler(async (req, res) => {
+    const posts = await prisma.post.findMany({
+        where: {
+            status: "PUBLISHED",
+            deletedAt: null,
+        },
+        include: {
+            _count: {
+                select: {
+                    views: {
+                        where: {
+                            createdAt: {
+                                gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                            },
+                        },
+                    },
+                },
+            },
+            author: true,
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: true,
+            seo: true,
+        },
+        orderBy: {
+            views: {
+                _count: "desc",
+            },
+        },
+    });
+    if (!posts) {
+        throw new ApiError(404, "No related posts found");
+    }
+
+    return apiResponse(res, 200, true, "Trending posts fetched", {
+        posts,
+        count: posts.length,
+    });
+});
+
+// Get popular posts
+const getPopularPosts = asyncHandler(async (req, res) => {
+    const posts = await prisma.post.findMany({
+        where: {
+            status: "PUBLISHED",
+            deletedAt: null,
+        },
+        orderBy: {
+            popularityScore: "desc",
+        },
+        take: 10,
+        include: {
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatarUrl: true,
+                    bio: true,
+                },
+            },
+            coverImage: {
+                select: {
+                    id: true,
+                    url: true,
+                    altText: true,
+                },
+            },
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: true,
+            seo: true,
+        },
+    });
+    if (!posts) {
+        throw new ApiError(404, "No related posts found");
+    }
+
+    return apiResponse(res, 200, true, "Popular posts fetched", posts);
+});
+
+// Get Post by category
+const getPostsByCategory = asyncHandler(async (req, res) => {
+    const { slug } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+    if (!slug) {
+        throw new ApiError(400, "Slug is required");
+    }
+    const skip = (page - 1) * limit;
+    const posts = await prisma.post.findMany({
+        where: {
+            categories: {
+                some: {
+                    category: {
+                        slug: slug,
+                    },
+                },
+            },
+            status: "PUBLISHED",
+            deletedAt: null,
         },
         orderBy: {
             createdAt: "desc",
@@ -884,13 +1246,48 @@ const getPinnedPosts = asyncHandler(async (req, res) => {
                     altText: true,
                 },
             },
+            categories: {
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                },
+            },
+
+            series: true,
+            seo: true,
+        },
+        skip,
+        take: limit,
+    });
+
+    if (posts.length === 0) return apiResponse(res, 404, false, "No related posts found", []);
+
+    return apiResponse(res, 200, true, "Posts fetched", {
+        posts,
+        pagination: {
+            page,
+            limit,
+            total: posts.length,
+            totalPages: Math.ceil(posts.length / limit),
         },
     });
-    if (!posts) {
-        throw new ApiError(404, "No related posts found");
-    }
-
-    return apiResponse(res, 200, true, "Pinned posts fetched", posts);
 })
 
 export {
@@ -904,5 +1301,8 @@ export {
     getPublishedPosts,
     getLatestPosts,
     getFeaturedPosts,
-    getPinnedPosts
+    getPinnedPosts,
+    getPopularPosts,
+    getTrendingPosts,
+    getPostsByCategory
 };

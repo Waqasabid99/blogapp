@@ -20,10 +20,9 @@ import useAuthStore from "@/store/authStore";
    MAIN COMPONENT
 ───────────────────────────────────────────────────────────── */
 const AddPost = ({ categories = [], tags = [], series = [] }) => {
-    console.log(series)
     const router = useRouter();
     const { user } = useAuthStore();
-    
+
     /* ── Form State ── */
     const [title, setTitle] = useState("");
     const [excerpt, setExcerpt] = useState("");

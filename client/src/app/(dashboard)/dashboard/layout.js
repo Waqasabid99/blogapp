@@ -1,9 +1,13 @@
 import Sidebar from "@/components/layout/Sidebar";
+import { generateSEO } from "@/constants/seo";
 
-export const metadata = {
+export const metadata = generateSEO({
     title: "Newszone",
-    description: "The newzone blog",
-};
+    description: "The Newszone blog - Your source for the latest news, insights, and stories.",
+    image: "/logo.png",
+    url: "/",
+    type: "website",
+});
 
 export default async function AdminLayout({ children }) {
     return (

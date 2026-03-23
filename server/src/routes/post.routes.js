@@ -11,6 +11,9 @@ import {
     getFeaturedPosts,
     getPinnedPosts,
     getPublishedPosts,
+    getPopularPosts,
+    getTrendingPosts,
+    getPostsByCategory,
 } from "../controllers/post.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
 import { requirePermission } from "../middleware/permissions.middleware.js";
@@ -25,8 +28,11 @@ postRouter.get("/published", getPublishedPosts);
 postRouter.get("/latest", getLatestPosts);
 postRouter.get("/featured", getFeaturedPosts);
 postRouter.get("/pinned", getPinnedPosts);
+postRouter.get("/popular", getPopularPosts);
+postRouter.get("/trending", getTrendingPosts);
 postRouter.get("/:slug", optionalPermission(), getSinglePost);
 postRouter.get("/postId/:id", verifyUser, optionalPermission(), getSinglePostById);
+postRouter.get("/category/:slug", getPostsByCategory);
 postRouter.post("/relatedposts", getRelatedPosts);
 
 // Protected Routes (Requires auth)

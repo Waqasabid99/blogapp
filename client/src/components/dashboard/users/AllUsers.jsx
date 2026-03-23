@@ -28,7 +28,6 @@ const AllUsers = ({ users }) => {
                 router.refresh();
             }
         } catch (error) {
-            console.log(error);
             setError(error.response.data.message);
         } finally {
             setDeleteLoading(false);

@@ -324,7 +324,6 @@ export function StatusBadge({ status }) {
    AVATAR
 ───────────────────────────────────────────────────────────── */
 export function Avatar({ author, size = 28 }) {
-    console.log(author)
     const [err, setErr] = useState(false);
     if (author?.avatarUrl && !err) {
         return (

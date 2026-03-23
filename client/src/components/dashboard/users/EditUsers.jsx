@@ -113,7 +113,6 @@ const EditUser = ({ user, roles = [] }) => {
             });
 
             if (!data.success) throw new Error(data?.message ?? "Upload failed.");
-            console.log(data)
             const url = data.data?.media?.url ?? data.data?.cloudinaryData?.url ?? data.url;
             setAvatarUrl(url);
             setAvatarUploaded(true);

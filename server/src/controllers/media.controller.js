@@ -3,6 +3,7 @@ import { apiResponse, asyncHandler } from "../lib/helpers.js";
 import { prisma } from "../lib/prisma.js";
 import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
+import sharp from "sharp"; // npm install sharp
 
 // CLOUDINARY CONFIGURATION
 cloudinary.config({
@@ -12,168 +13,218 @@ cloudinary.config({
   secure: true,
 });
 
-// UPLOAD MEDIA
+// ─────────────────────────────────────────────
+// IMAGE OPTIMIZATION PIPELINE
+// ─────────────────────────────────────────────
+const OPTIMIZATION_PRESETS = {
+  cover: { width: 1200, height: 630,  quality: 85 },
+  thumbnail: { width: 400,  height: 300,  quality: 80 },
+  og: { width: 1200, height: 630,  quality: 90 },
+  default: { width: 1920,             quality: 85 }, // max width, no height crop
+};
+
+/**
+ * Optimizes an image buffer using Sharp.
+ * - Converts to WebP for maximum compression
+ * - Strips EXIF/metadata
+ * - Resizes if wider than preset's max width
+ * - Applies quality setting
+ *
+ * @param {Buffer} buffer      - Raw file buffer from multer
+ * @param {string} preset      - Key from OPTIMIZATION_PRESETS
+ * @returns {{ buffer: Buffer, width: number, height: number, size: number, format: string }}
+ */
+async function optimizeImage(buffer, preset = "default") {
+  const settings = OPTIMIZATION_PRESETS[preset] ?? OPTIMIZATION_PRESETS.default;
+
+  let pipeline = sharp(buffer)
+    .rotate()           // auto-rotate based on EXIF orientation
+    .withMetadata(false); // strip all metadata (EXIF, GPS, etc.)
+
+  // Only resize if the image is wider than the preset limit
+  if (settings.width || settings.height) {
+    pipeline = pipeline.resize({
+      width: settings.width,
+      height: settings.height ?? undefined,
+      fit: settings.height ? "cover" : "inside", // crop if both dims given, else scale down
+      withoutEnlargement: true,                   // never upscale
+    });
+  }
+
+  // Convert to WebP
+  pipeline = pipeline.webp({ quality: settings.quality });
+
+  const { data, info } = await pipeline.toBuffer({ resolveWithObject: true });
+
+  return {
+    buffer: data,
+    width: info.width,
+    height: info.height,
+    size: info.size,
+    format: "webp",
+  };
+}
+
+/**
+ * Uploads a buffer to Cloudinary via stream.
+ * Accepts pre-optimized buffers — no further Cloudinary transformations needed.
+ */
+function uploadToCloudinary(buffer, folder, resourceType = "auto") {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: resourceType },
+      (error, result) => (error ? reject(error) : resolve(result))
+    );
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+}
+
+// ─────────────────────────────────────────────
+// UPLOAD SINGLE MEDIA
+// ─────────────────────────────────────────────
 const uploadMedia = asyncHandler(async (req, res) => {
   const user = req.user;
   const file = req.file;
-  const { altText, type: requestedType } = req.body;
+  const { altText, type: requestedType, preset = "default" } = req.body;
 
-  if (!file) {
-    throw new ApiError(400, "No file provided");
-  }
+  if (!file) throw new ApiError(400, "No file provided");
 
-  // Validate file size (max 10MB)
-  const maxSize = 10 * 1024 * 1024; // 10MB
-  if (file.size > maxSize) {
-    throw new ApiError(400, "File size exceeds 10MB limit");
-  }
+  const maxSize = 10 * 1024 * 1024;
+  if (file.size > maxSize) throw new ApiError(400, "File size exceeds 10MB limit");
 
-  // Determine media type
+  // ── Determine media type ──────────────────
   let mediaType = requestedType;
   if (!mediaType) {
-    if (file.mimetype.startsWith("image/")) {
-      mediaType = "IMAGE";
-    } else if (file.mimetype.startsWith("video/")) {
-      mediaType = "VIDEO";
-    } else if (
-      file.mimetype === "application/pdf" ||
-      file.mimetype === "application/msword" ||
-      file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ) {
-      mediaType = "DOCUMENT";
-    } else {
-      throw new ApiError(400, "Unsupported file type");
-    }
+    if (file.mimetype.startsWith("image/"))       mediaType = "IMAGE";
+    else if (file.mimetype.startsWith("video/"))  mediaType = "VIDEO";
+    else if (["application/pdf","application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ].includes(file.mimetype))                    mediaType = "DOCUMENT";
+    else throw new ApiError(400, "Unsupported file type");
   }
 
-  // Validate media type enum
   const validTypes = ["IMAGE", "VIDEO", "DOCUMENT"];
-  if (!validTypes.includes(mediaType)) {
-    throw new ApiError(400, "Invalid media type");
+  if (!validTypes.includes(mediaType)) throw new ApiError(400, "Invalid media type");
+
+  // ── Optimize if IMAGE, pass through otherwise ─
+  let uploadBuffer = file.buffer;
+  let optimizedMeta = { width: null, height: null, size: file.size };
+
+  if (mediaType === "IMAGE") {
+    const optimized = await optimizeImage(file.buffer, preset);
+    uploadBuffer    = optimized.buffer;
+    optimizedMeta   = optimized;
   }
 
-  // Upload to Cloudinary using stream
-  const uploadResult = await new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: `blog/${mediaType.toLowerCase()}s`,
-        resource_type: mediaType === "VIDEO" ? "video" : "auto",
-        transformation: mediaType === "IMAGE" ? [
-          { quality: "auto:good" },
-          { fetch_format: "auto" }
-        ] : undefined,
-      },
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      }
-    );
+  // ── Upload to Cloudinary ───────────────────
+  const folder       = `blog/${mediaType.toLowerCase()}s`;
+  const resourceType = mediaType === "VIDEO" ? "video" : "auto";
+  const uploadResult = await uploadToCloudinary(uploadBuffer, folder, resourceType);
 
-    streamifier.createReadStream(file.buffer).pipe(uploadStream);
-  });
-
-  // Create media record in database
+  // ── Persist to DB ─────────────────────────
   const media = await prisma.media.create({
     data: {
-      url: uploadResult.secure_url,
-      publicId: uploadResult.public_id,
-      type: mediaType,
-      width: uploadResult.width || null,
-      height: uploadResult.height || null,
-      size: uploadResult.bytes || file.size,
-      altText: altText?.trim() || null,
+      url:          uploadResult.secure_url,
+      publicId:     uploadResult.public_id,
+      type:         mediaType,
+      width:        optimizedMeta.width  ?? uploadResult.width  ?? null,
+      height:       optimizedMeta.height ?? uploadResult.height ?? null,
+      size:         optimizedMeta.size   ?? uploadResult.bytes  ?? file.size,
+      altText:      altText?.trim() || null,
       uploadedById: user?.id || null,
     },
   });
 
   return apiResponse(res, 201, true, "Media uploaded successfully", {
     media,
+    optimization: mediaType === "IMAGE"
+      ? {
+          originalSize:   file.size,
+          optimizedSize:  optimizedMeta.size,
+          savedBytes:     file.size - optimizedMeta.size,
+          savedPercent:   (((file.size - optimizedMeta.size) / file.size) * 100).toFixed(1) + "%",
+          format:         optimizedMeta.format,
+          dimensions:     `${optimizedMeta.width}×${optimizedMeta.height}`,
+        }
+      : null,
     cloudinaryData: {
       publicId: uploadResult.public_id,
-      url: uploadResult.secure_url,
-      width: uploadResult.width,
-      height: uploadResult.height,
-      format: uploadResult.format,
+      url:      uploadResult.secure_url,
+      format:   uploadResult.format,
     },
   });
 });
 
+// ─────────────────────────────────────────────
 // UPLOAD MULTIPLE MEDIA (Batch)
+// ─────────────────────────────────────────────
 const uploadMultipleMedia = asyncHandler(async (req, res) => {
   const user = req.user;
   const files = req.files;
-  const { altTexts } = req.body;
+  const { altTexts, preset = "default" } = req.body;
 
-  if (!files || files.length === 0) {
-    throw new ApiError(400, "No files provided");
-  }
-
-  if (files.length > 10) {
-    throw new ApiError(400, "Maximum 10 files allowed per batch");
-  }
+  if (!files || files.length === 0) throw new ApiError(400, "No files provided");
+  if (files.length > 10)            throw new ApiError(400, "Maximum 10 files allowed per batch");
 
   const parsedAltTexts = altTexts ? JSON.parse(altTexts) : [];
   const results = [];
-  const errors = [];
+  const errors  = [];
 
   for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+    const file    = files[i];
     const altText = parsedAltTexts[i] || null;
 
     try {
       let mediaType = "IMAGE";
-      if (file.mimetype.startsWith("video/")) {
-        mediaType = "VIDEO";
-      } else if (file.mimetype === "application/pdf") {
-        mediaType = "DOCUMENT";
+      if (file.mimetype.startsWith("video/"))       mediaType = "VIDEO";
+      else if (file.mimetype === "application/pdf") mediaType = "DOCUMENT";
+
+      // ── Optimize images ────────────────────
+      let uploadBuffer = file.buffer;
+      let optimizedMeta = { width: null, height: null, size: file.size };
+
+      if (mediaType === "IMAGE") {
+        const optimized = await optimizeImage(file.buffer, preset);
+        uploadBuffer    = optimized.buffer;
+        optimizedMeta   = optimized;
       }
 
-      const uploadResult = await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: `blog/${mediaType.toLowerCase()}s`,
-            resource_type: mediaType === "VIDEO" ? "video" : "auto",
-            transformation: mediaType === "IMAGE" ? [
-              { quality: "auto:good" },
-              { fetch_format: "auto" }
-            ] : undefined,
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-
-        streamifier.createReadStream(file.buffer).pipe(uploadStream);
-      });
+      const folder       = `blog/${mediaType.toLowerCase()}s`;
+      const resourceType = mediaType === "VIDEO" ? "video" : "auto";
+      const uploadResult = await uploadToCloudinary(uploadBuffer, folder, resourceType);
 
       const media = await prisma.media.create({
         data: {
-          url: uploadResult.secure_url,
-          publicId: uploadResult.public_id,
-          type: mediaType,
-          width: uploadResult.width || null,
-          height: uploadResult.height || null,
-          size: uploadResult.bytes || file.size,
-          altText: altText?.trim() || null,
+          url:          uploadResult.secure_url,
+          publicId:     uploadResult.public_id,
+          type:         mediaType,
+          width:        optimizedMeta.width  ?? uploadResult.width  ?? null,
+          height:       optimizedMeta.height ?? uploadResult.height ?? null,
+          size:         optimizedMeta.size   ?? uploadResult.bytes  ?? file.size,
+          altText:      altText?.trim() || null,
           uploadedById: user?.id || null,
         },
       });
 
-      results.push(media);
-    } catch (error) {
-      errors.push({
-        index: i,
-        filename: file.originalname,
-        error: error.message,
+      results.push({
+        ...media,
+        optimization: mediaType === "IMAGE"
+          ? {
+              originalSize:  file.size,
+              optimizedSize: optimizedMeta.size,
+              savedPercent:  (((file.size - optimizedMeta.size) / file.size) * 100).toFixed(1) + "%",
+            }
+          : null,
       });
+    } catch (error) {
+      errors.push({ index: i, filename: file.originalname, error: error.message });
     }
   }
 
   return apiResponse(res, 201, true, "Batch upload completed", {
     successful: results.length,
-    failed: errors.length,
-    media: results,
+    failed:     errors.length,
+    media:      results,
     errors,
   });
 });

@@ -471,6 +471,9 @@ const getAllPosts = asyncHandler(async (req, res) => {
                     select: {
                         id: true,
                         url: true,
+                        altText: true,
+                        width: true,
+                        height: true,
                     },
                 },
 
@@ -559,6 +562,8 @@ const getSinglePost = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
 
@@ -619,7 +624,7 @@ const getSinglePost = asyncHandler(async (req, res) => {
     }
 
     // STATUS VISIBILITY RULES
-
+    console.log(post)
     const isAuthor = user && user.id === post.authorId;
     const isAdmin = user && (user.role.toUpperCase() === "ADMIN" || user.role.toUpperCase() === "EDITOR");
 
@@ -669,6 +674,8 @@ const getSinglePostById = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
 
@@ -788,6 +795,8 @@ const getRelatedPosts = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
 
@@ -852,6 +861,8 @@ const getPublishedPosts = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
 
@@ -915,6 +926,8 @@ const getLatestPosts = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
 
@@ -980,6 +993,8 @@ const getFeaturedPosts = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
 
@@ -1044,6 +1059,8 @@ const getPinnedPosts = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
 
@@ -1107,6 +1124,8 @@ const getTrendingPosts = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
             categories: {
@@ -1177,6 +1196,8 @@ const getPopularPosts = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
             categories: {
@@ -1244,6 +1265,8 @@ const getPostsByCategory = asyncHandler(async (req, res) => {
                     id: true,
                     url: true,
                     altText: true,
+                    width: true,
+                    height: true,
                 },
             },
             categories: {

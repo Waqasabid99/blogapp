@@ -1,14 +1,5 @@
-// components/Loader.jsx
-
-/**
- * Reusable Loader Component
- *
- * Props:
- *  - size     : "sm" | "md" | "lg" (default: "md")
- *  - text     : string — optional label rendered below the spinner
- *  - fullPage : boolean — centers the loader in the full viewport (default: false)
- *  - className: string — extra utility classes for the wrapper
- */
+import animationData from "../../../public/blogLoading.json"
+import Lottie from "./Lottie";
 
 const sizeMap = {
   sm: {
@@ -34,6 +25,7 @@ export default function Loader({
   fullPage = false,
   className = "",
   isInline = true,
+  showSpinner = true
 }) {
   const { ring, text: textSize, gap } = sizeMap[size] ?? sizeMap.md;
 
@@ -44,6 +36,7 @@ export default function Loader({
       aria-label={text ?? "Loading"}
     >
       {/* Spinner ring */}
+      {showSpinner && (
       <span
         className={`
           ${ring}
@@ -54,6 +47,7 @@ export default function Loader({
           animate-spin
         `}
       />
+      )}
 
       {/* Optional label */}
       {text && (
@@ -70,9 +64,15 @@ export default function Loader({
   if (fullPage) {
     return (
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center"
-        style={{ background: "var(--bg-primary)" }}
+        className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-(--bg-primary)/50 backdrop-blur-sm"
       >
+        <Lottie
+          animationData={animationData}
+          loop={true}
+          autoPlay={true}
+          height={100}
+          width={100}
+        />
         {content}
       </div>
     );

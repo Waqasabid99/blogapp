@@ -9,7 +9,7 @@ import {
     Globe, Star, Pin, History, ExternalLink,
 } from "lucide-react";
 import ValidationToast from "@/components/ui/ValidationToast";
-import api from "@/api/api";
+import { updatePost } from "@/api/postApi";
 import useEditorJs from "@/constants/Editor";
 import { CategorySelector, SectionTitle, STATUS_META, TagSelector, ThumbnailUploader } from "@/constants/utils";
 import { STYLES } from "@/app/styles/postStyles";
@@ -120,17 +120,15 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
         }
         setSavingDraft(true);
         try {
-            const { data } = await api.put(`/post/${post.id}`, buildPayload("DRAFT"), {
-                withCredentials: true,
-            });
+            const data = await updatePost(post.id, buildPayload("DRAFT"));
             if (data.success) {
                 setToast({ type: "success", message: "Draft saved successfully." });
                 router.refresh();
             } else {
-                throw new Error(data?.message ?? "Failed to save draft.");
+                setToast({ type: "error", message: data?.message ?? "Failed to save draft." });
             }
         } catch (err) {
-            setToast({ type: "error", message: err?.response?.data?.message ?? err.message ?? "Failed to save draft." });
+            setToast({ type: "error", message: err?.message ?? "Failed to save draft." });
         } finally {
             setSavingDraft(false);
         }
@@ -145,9 +143,7 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
         setLoading(true);
 
         try {
-            const { data } = await api.put(`/post/${post.id}`, buildPayload(), {
-                withCredentials: true,
-            });
+            const data = await updatePost(post.id, buildPayload());
             if (data.success) {
                 setToast({
                     type: "success",
@@ -155,10 +151,10 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
                 });
                 setTimeout(() => router.push(`/dashboard/${user?.role}/${user?.id}/posts`), 1400);
             } else {
-                throw new Error(data?.message ?? "Failed to update post.");
+                setToast({ type: "error", message: data?.message ?? "Failed to update post." });
             }
         } catch (err) {
-            setToast({ type: "error", message: err?.response?.data?.message ?? err.message ?? "Something went wrong." });
+            setToast({ type: "error", message: err?.message ?? "Something went wrong." });
         } finally {
             setLoading(false);
         }

@@ -18,6 +18,7 @@ import DashboardBox from "@/components/ui/DashboardBox";
 import ValidationToast from "@/components/ui/ValidationToast";
 import Loader from "@/components/ui/Loader";
 import api from "@/api/api";
+import { updateUser } from "@/api/userApi";
 import useAuthStore from "@/store/authStore";
 
 const EditUser = ({ user, roles = [] }) => {
@@ -168,17 +169,17 @@ const EditUser = ({ user, roles = [] }) => {
 
             if (isAdmin && roleId) payload.roleId = roleId;
 
-            const { data } = await api.patch(`/users/update/${user.id}`, payload, {
-                withCredentials: true,
-            });
+            const data = await updateUser(user.id, payload);
 
-            if (!data.success) throw new Error(data?.message ?? "Update failed.");
-
-            setToast({ type: "success", message: "User updated successfully." });
-            router.refresh();
-            setTimeout(() => router.back(), 1500);
+            if (data.success) {
+                setToast({ type: "success", message: "User updated successfully." });
+                router.refresh();
+                setTimeout(() => router.back(), 1500);
+            } else {
+                setToast({ type: "error", message: data?.message ?? "Update failed." });
+            }
         } catch (err) {
-            setToast({ type: "error", message: err?.response?.data?.message ?? err.message });
+            setToast({ type: "error", message: err?.message ?? "Update failed." });
         } finally {
             setLoading(false);
         }

@@ -37,7 +37,7 @@ mediaRouter.get("/", getAllMedia);
 mediaRouter.use(verifyUser);
 
 // Upload routes
-mediaRouter.post("/upload", requirePermission("media.create"), upload.single("file"), uploadMedia);
+mediaRouter.post("/upload", requirePermission("media.create", "media.upload"), upload.single("file"), uploadMedia);
 
 mediaRouter.post("/upload/batch", requirePermission("media.create"), upload.array("files", 10), uploadMultipleMedia);
 

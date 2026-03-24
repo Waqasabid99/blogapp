@@ -127,13 +127,6 @@ export function generateSEO({
         creator: siteMetadata.author,
         publisher: siteMetadata.author,
 
-        // Icons & Manifest
-        icons: {
-            icon: "/favicon.ico",
-            apple: "/apple-touch-icon.png",
-        },
-        manifest: "/site.webmanifest",
-
         // Open Graph
         openGraph: {
             title: seoTitle,

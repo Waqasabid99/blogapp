@@ -9,7 +9,7 @@ import {
     Globe, Star, Pin
 } from "lucide-react";
 import ValidationToast from "@/components/ui/ValidationToast";
-import api from "@/api/api";
+import { createPost } from "@/api/postApi";
 import useEditorJs from "@/constants/Editor";
 import { CategorySelector, SectionTitle, STATUS_META, TagSelector, ThumbnailUploader } from "@/constants/utils";
 import { STYLES } from "@/app/styles/postStyles";
@@ -101,13 +101,15 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
         }
         setSavingDraft(true);
         try {
-            const { data } = await api.post("/post", buildPayload("DRAFT"), { withCredentials: true });
+            const data = await createPost(buildPayload("DRAFT"));
             if (data.success) {
                 setToast({ type: "success", message: "Draft saved successfully." });
                 setTimeout(() => router.push(`posts/${data.data.id}/edit`), 1200);
+            } else {
+                setToast({ type: "error", message: data?.message ?? "Failed to save draft." });
             }
         } catch (err) {
-            setToast({ type: "error", message: err?.response?.data?.message ?? "Failed to save draft." });
+            setToast({ type: "error", message: err?.message ?? "Failed to save draft." });
         } finally {
             setSavingDraft(false);
         }
@@ -122,15 +124,15 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
         setLoading(true);
 
         try {
-            const { data } = await api.post("/post", buildPayload(), { withCredentials: true });
+            const data = await createPost(buildPayload());
             if (data.success) {
                 setToast({ type: "success", message: status === "DRAFT" ? "Post saved as draft." : "Post published!" });
                 setTimeout(() => router.push(`/dashboard/${user?.role}/${user?.id}/posts`), 1400);
             } else {
-                throw new Error(data?.message ?? "Failed to create post.");
+                setToast({ type: "error", message: data?.message ?? "Failed to create post." });
             }
         } catch (err) {
-            setToast({ type: "error", message: err?.response?.data?.message ?? err.message ?? "Something went wrong." });
+            setToast({ type: "error", message: err?.message ?? "Something went wrong." });
         } finally {
             setLoading(false);
         }

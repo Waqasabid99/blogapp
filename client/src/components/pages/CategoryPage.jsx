@@ -1,8 +1,6 @@
 "use client";
-
 import { useState } from "react";
 import { Pagination, PostCard } from "../ui/PostCard";
-
 const CategoryPage = ({ posts, category, pagination }) => {
     const [page, setPage] = useState(1)
     return (

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, AlertCircle } from "lucide-react";
 import DashboardBox from "@/components/ui/DashboardBox";
 import ValidationToast from "@/components/ui/ValidationToast";
-import api from "@/api/api";
+import { createCategory } from "@/api/categoryApi";
 import Loader from "@/components/ui/Loader";
 
 /* Main Component */
@@ -37,22 +37,20 @@ const AddCategory = ({ categories }) => {
         setLoading(true);
 
         try {
-            const { data } = await api.post("/category/create", {
+            const data = await createCategory({
                 name: name.trim(),
                 description: description.trim(),
                 parentId: parentId || null,
-            }, { withCredentials: true });
+            });
             if (data.success) {
                 router.refresh();
+                setToast({ type: "success", message: "Category created successfully." });
+                setTimeout(() => router.back(), 1500);
+            } else {
+                setToast({ type: "error", message: data?.message ?? "Failed to create category." });
             }
-            if (!data.success) {
-                throw new Error(data?.message ?? "Failed to create category.");
-            }
-
-            setToast({ type: "success", message: "Category created successfully." });
-            setTimeout(() => router.back(), 1500);
         } catch (err) {
-            setToast({ type: "error", message: err.message });
+            setToast({ type: "error", message: err?.message ?? "Failed to create category." });
         } finally {
             setLoading(false);
         }

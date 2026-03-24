@@ -20,6 +20,7 @@ import DashboardBox from "@/components/ui/DashboardBox";
 import ValidationToast from "@/components/ui/ValidationToast";
 import Loader from "@/components/ui/Loader";
 import api from "@/api/api";
+import { createUser } from "@/api/userApi";
 import useAuthStore from "@/store/authStore";
 
 const AddUser = ({ roles = [] }) => {
@@ -198,16 +199,17 @@ const AddUser = ({ roles = [] }) => {
 
             if (isAdmin && roleId) payload.roleId = roleId;
 
-            const { data } = await api.post("/users", payload, {
-                withCredentials: true,
-            });
+            const data = await createUser(payload);
 
-            if (!data.success) throw new Error(data?.message ?? "User creation failed.");
-
-            setToast({ type: "success", message: "User created successfully." });
-            setTimeout(() => router.back(), 1500);
+            if (data.success) {
+                setToast({ type: "success", message: "User created successfully." });
+                router.refresh();
+                setTimeout(() => router.back(), 1500);
+            } else {
+                setToast({ type: "error", message: data?.message ?? "User creation failed." });
+            }
         } catch (err) {
-            setToast({ type: "error", message: err?.response?.data?.message ?? err.message });
+            setToast({ type: "error", message: err?.message ?? "User creation failed." });
         } finally {
             setLoading(false);
         }

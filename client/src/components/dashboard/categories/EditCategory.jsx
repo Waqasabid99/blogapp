@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, Loader2, AlertCircle } from "lucide-react";
 import DashboardBox from "@/components/ui/DashboardBox";
 import ValidationToast from "@/components/ui/ValidationToast";
-import api from "@/api/api";
+import { updateCategory } from "@/api/categoryApi";
 
 /* Main Component  */
 const EditCategory = ({ category, allCategories = [] }) => {
@@ -50,22 +50,20 @@ const EditCategory = ({ category, allCategories = [] }) => {
         setLoading(true);
 
         try {
-            const { data } = await api.patch(`/category/update/${category.id}`, {
+            const data = await updateCategory(category.id, {
                 name: name.trim(),
                 description: description.trim(),
                 parentId: parentId || null,
-            }, { withCredentials: true });
+            });
             if (data.success) {
                 router.refresh();
+                setToast({ type: "success", message: "Category updated successfully." });
+                setTimeout(() => router.back(), 1500);
+            } else {
+                setToast({ type: "error", message: data?.message ?? "Update failed." });
             }
-            if (!data.success) {
-                throw new Error(data?.message ?? "Update failed.");
-            }
-
-            setToast({ type: "success", message: "Category updated successfully." });
-            setTimeout(() => router.back(), 1500);
         } catch (err) {
-            setToast({ type: "error", message: err.message });
+            setToast({ type: "error", message: err?.message ?? "Update failed." });
         } finally {
             setLoading(false);
         }

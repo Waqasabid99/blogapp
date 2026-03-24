@@ -1,5 +1,4 @@
 "use client";
-
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { PostCard } from "./PostCard";
@@ -15,12 +14,9 @@ const HeroSlider = ({ posts }) => {
         slidesPerView={1}
         loop={true}
         navigation={true}
-        pagination={{ clickable: true }}
-        autoplay={{
-          delay: 5000,
-          disableOnInteraction: false,
-        }}
-        className="w-full"
+        pagination={false}
+        autoplay={false}
+        className="w-full h-[400]"
       >
         {posts?.map((post) => (
           <SwiperSlide key={post.id}>
@@ -29,6 +25,7 @@ const HeroSlider = ({ posts }) => {
               showStatus={false}
               showAuthor={false}
               showActions={false}
+              isHero={true}
             />
           </SwiperSlide>
         ))}

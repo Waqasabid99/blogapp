@@ -1,10 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import DashboardBox from "@/components/ui/DashboardBox";
 import ValidationToast from "@/components/ui/ValidationToast";
-import api from "@/api/api";
+import { createTag } from "@/api/tagApi";
 import Loader from "@/components/ui/Loader";
 
 /* Main Component */
@@ -36,21 +36,19 @@ const AddTag = ({ tags }) => {
         setLoading(true);
 
         try {
-            const { data } = await api.post("/tag/create", {
+            const data = await createTag({
                 name: name.trim(),
                 description: description.trim(),
-            }, { withCredentials: true });
+            });
             if (data.success) {
                 router.refresh();
+                setToast({ type: "success", message: "tag created successfully." });
+                setTimeout(() => router.back(), 1500);
+            } else {
+                setToast({ type: "error", message: data?.message ?? "Failed to create tag." });
             }
-            if (!data.success) {
-                throw new Error(data?.message ?? "Failed to create tag.");
-            }
-
-            setToast({ type: "success", message: "tag created successfully." });
-            setTimeout(() => router.back(), 1500);
         } catch (err) {
-            setToast({ type: "error", message: err.message });
+            setToast({ type: "error", message: err?.message ?? "Failed to create tag." });
         } finally {
             setLoading(false);
         }

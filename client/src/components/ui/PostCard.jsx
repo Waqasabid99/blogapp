@@ -19,6 +19,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -34,6 +35,7 @@ export function PostCard({
   showAuthor = true,
   showCategories = true,
   showStatus = true,
+  isHero = false
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -49,6 +51,7 @@ export function PostCard({
 
   const cats = post?.categories?.map((c) => c.category) ?? [];
   const tags = post?.tags?.map((t) => t.tag) ?? [];
+  console.log(post)
   return (
     <>
       <style>{STYLES}</style>
@@ -56,9 +59,13 @@ export function PostCard({
         {/* Cover */}
         <div className="pg-card-cover">
           {post?.coverImage?.url ? (
-            <img
+            <Image
               src={post?.coverImage?.url}
               alt={post?.title}
+              fill
+              loading={isHero ? "eager" : "lazy"}
+              priority={isHero}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="pg-card-img"
             />
           ) : (
@@ -234,7 +241,7 @@ export function PostRow({
       {/* Thumb */}
       <div className="pg-row-thumb">
         {post?.coverImage?.url ? (
-          <img src={post?.coverImage?.url} alt="" className="pg-row-img" />
+          <Image src={post?.coverImage?.url} width={post?.coverImage?.width ?? 100} height={post?.coverImage?.height ?? 100} alt="" className="pg-row-img" />
         ) : (
           <div className="pg-row-no-img">
             <FileText size={16} />
@@ -353,11 +360,11 @@ export function PostRow({
    EMPTY STATE
 ───────────────────────────────────────────────────────────── */
 
-export function EmptyState({ hasFilters, onClear, text, subText }) {
+export function EmptyState({ hasFilters, onClear, text, subText, className = "" }) {
   return (
     <>
       <style>{STYLES}</style>
-      <div className="pg-empty">
+      <div className={`pg-empty ${className}`}>
         <div className="pg-empty-icon">
           <FileText size={32} />
         </div>

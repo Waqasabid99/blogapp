@@ -24,7 +24,7 @@ const page = async function page({ params }) {
     if (!posts?.data?.posts?.length) {
         return (
             <>
-                <EmptyState text="No posts found" subText="No posts found in this category" className="h-[calc(100vh-100px)]" />
+                <EmptyState text="No posts found" subText="No posts found in this category" className="h-2/3" />
             </>
         )
     }

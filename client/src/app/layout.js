@@ -44,7 +44,7 @@ export default async function RootLayout({ children }) {
       <body className={`${inter.variable} ${serif.variable} antialiased`}>
         <Providers>
           <CheckAuth>
-            <div className="flex flex-col justify-between min-h-full">
+            <div className="flex flex-col justify-between min-h-screen">
               <Navbar categories={categories?.data} />
               <ToastContainer />
               {children}

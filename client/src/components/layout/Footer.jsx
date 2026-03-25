@@ -5,7 +5,7 @@ const Footer = ({ categories }) => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-(--bg-primary) border-t border-(--border-light) pt-16 pb-8 mt-auto">
+        <footer className="bg-(--bg-primary) border-t border-(--border-light) pt-16 pb-8">
             <div className="max-w-full mx-auto px-4 sm:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-12">
 
@@ -51,7 +51,7 @@ const Footer = ({ categories }) => {
 
                     {/* Quick Links */}
                     <div>
-                        <h3 className="heading-4 text-base font-semibold text-(--text-primary) mb-6">Quick Links</h3>
+                        <h3 className="text-[17px] text-base font-semibold text-(--text-primary) mb-6">Quick Links</h3>
                         <ul className="flex flex-col gap-3">
                             <li><Link href="/" className="text-sm text-(--text-muted) hover:text-(--brand-primary) transition-colors">Home</Link></li>
                             <li><Link href="/about" className="text-sm text-(--text-muted) hover:text-(--brand-primary) transition-colors">About Us</Link></li>

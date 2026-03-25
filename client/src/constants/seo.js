@@ -185,8 +185,6 @@ export function generateSEO({
             ...rest.robots,
         },
 
-        // Viewport & Theme
-        viewport: "width=device-width, initial-scale=1",
         // Structured Data (custom field, inject manually)
         other: {
             ...(jsonLd && {

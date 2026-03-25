@@ -29,6 +29,14 @@ export const metadata = generateSEO({
   description: "The newzone blog - Your source for the latest news and insights",
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#ffffff",
+};
+
 export default async function RootLayout({ children }) {
   const categories = await getAllCategories();
   return (

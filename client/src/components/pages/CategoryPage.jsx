@@ -6,7 +6,7 @@ const CategoryPage = ({ posts, category, pagination }) => {
     return (
         <section className="py-12 px-6">
             <div className="mb-12">
-                <h1 className="heading-2 font-serif uppercase">{category}</h1>
+                <h2 className="heading-2 font-serif uppercase">{category}</h2>
             </div>
             <div className="pg-grid">
                 {posts?.map((post) => (

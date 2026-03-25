@@ -30,7 +30,7 @@ const page = async function page({ params }) {
     }
     return (
         <Suspense fallback={<CategorySkeleton />}>
-            <CategoryPage posts={posts?.data?.posts} pagination={posts?.data?.pagination} category={category} />
+            <CategoryPage className="min-h-2/3" posts={posts?.data?.posts} pagination={posts?.data?.pagination} category={category} />
         </Suspense>
     );
 }

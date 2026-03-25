@@ -12,6 +12,7 @@ import DeleteModal from "@/components/ui/DeleteModal";
 import { CardSkeleton, RowSkeleton } from "./Loadingskeletons/PostSkeleton";
 import { STYLES } from "@/app/styles/postgridStyles";
 import { EmptyState, Pagination, PostCard, PostRow } from "./PostCard";
+import api from "@/api/api";
 
 /* ─────────────────────────────────────────────────────────────
    CONSTANTS
@@ -31,6 +32,7 @@ const PostGrid = ({
     addHref = "posts/new",
     fixedStatus = null,
     className = "",
+    role = null
 }) => {
     const router = useRouter();
     const pathname = usePathname();
@@ -87,15 +89,21 @@ const PostGrid = ({
             if (category) params.set("category", category);
             if (tag) params.set("tag", tag);
 
-            const { data } = await axios.get(
-                `${base_url}/post?${params.toString()}`,
-                { withCredentials: true }
-            );
-
-            if (data.success) {
+            if (role === "admin" || role === "editor") {
+                const { data } = await api.get(`/post?${params.toString()}`);
+                if (data.success) {
                 setPosts(data.data.posts);
                 setPagination(data.data.pagination);
             }
+            } else {
+                const { data } = await api.get(`/post/all/my-posts?${params.toString()}`);
+
+                if (data.success) {
+                setPosts(data.data.posts);
+                setPagination(data.data.pagination);
+            }
+            }
+
         } catch (err) {
             setError(err?.response?.data?.message ?? "Failed to load posts.");
         } finally {

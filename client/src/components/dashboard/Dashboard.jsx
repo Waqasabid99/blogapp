@@ -1,1067 +1,1109 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
-    AreaChart, Area, BarChart, Bar, LineChart, Line,
-    XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    PieChart, Pie, Cell, Legend, RadarChart, Radar, PolarGrid,
-    PolarAngleAxis, PolarRadiusAxis,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from "recharts";
 import {
-    Eye, Users, MessageSquare, TrendingUp, TrendingDown,
-    FileText, Layers, Activity,
-    RefreshCw, ArrowUpRight,
-    Heart, Globe, Monitor, Smartphone,
-    UserCheck, UserPlus, Zap, Award,
-    AlertCircle,
+  Eye,
+  FileText,
+  Users,
+  TrendingUp,
+  Clock,
+  Star,
+  MessageSquare,
+  Bookmark,
+  ThumbsUp,
+  HandMetal,
+  Mail,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  CalendarDays,
+  BarChart2,
+  ArrowUpRight,
+  ArrowDownRight,
+  Layers,
 } from "lucide-react";
-import api from "@/api/api";
 
-/* ─────────────────────────────────────────
-   Constants
-   Fix #3: COLORS uses real hex values — CSS vars like var(--brand-primary)
-   are not supported in SVG fill/stroke attributes used by Recharts.
-───────────────────────────────────────── */
-const COLORS = ["#6d50e8", "#6366f1", "#0ea5e9", "#10b981", "#f59e0b", "#ec4899"];
+// ─────────────────────────────────────────────
+// CONSTANTS
+// ─────────────────────────────────────────────
 
-/* ─────────────────────────────────────────
-   Helpers
-───────────────────────────────────────── */
-const fmt = (n) =>
-    n >= 1_000_000
-        ? (n / 1_000_000).toFixed(1) + "M"
-        : n >= 1_000
-        ? (n / 1_000).toFixed(1) + "K"
-        : String(n ?? 0);
+const BRAND = "#ff6a00";
+const BRAND_LIGHT = "rgba(255,106,0,0.12)";
+const CHART_COLORS = ["#ff6a00", "#ff9e4f", "#ffcca0", "#e64e00", "#994000", "#cc7a33", "#ff5500", "#ffa366"];
 
-const fmtPct = (n) =>
-    n !== undefined && n !== null ? `${parseFloat(n).toFixed(1)}%` : "—";
-
-const trendColor = (t) => {
-    const v = parseFloat(t);
-    if (isNaN(v)) return "var(--text-muted)";
-    return v >= 0 ? "#16a34a" : "#dc2626";
+const STATUS_COLORS = {
+  PUBLISHED: "#22c55e",
+  DRAFT: "#94a3b8",
+  PENDING: "#f59e0b",
+  REJECTED: "#ef4444",
+  SCHEDULED: "#3b82f6",
+  APPROVED: "#8b5cf6",
+  ARCHIVED: "#6b7280",
 };
 
-const trendBg = (t) => {
-    const v = parseFloat(t);
-    if (isNaN(v)) return "var(--bg-tertiary)";
-    return v >= 0 ? "#f0fdf4" : "#fef2f2";
+const STATUS_LABELS = {
+  PUBLISHED: "Published",
+  DRAFT: "Draft",
+  PENDING: "Pending",
+  REJECTED: "Rejected",
+  SCHEDULED: "Scheduled",
+  APPROVED: "Approved",
+  ARCHIVED: "Archived",
 };
 
-/* ─────────────────────────────────────────
-   Skeleton loader
-───────────────────────────────────────── */
-const Skeleton = ({ w = "100%", h = 20, radius = 6 }) => (
-    <div
-        style={{
-            width: w, height: h, borderRadius: radius,
-            background: "var(--bg-tertiary)",
-            animation: "pulse 1.6s ease-in-out infinite",
-        }}
-    />
+const RANGES = [
+  { label: "7 days", value: 7 },
+  { label: "14 days", value: 14 },
+  { label: "30 days", value: 30 },
+  { label: "90 days", value: 90 },
+];
+
+// ─────────────────────────────────────────────
+// TINY SHARED COMPONENTS
+// ─────────────────────────────────────────────
+
+const StatusBadge = ({ status }) => (
+  <span
+    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide"
+    style={{
+      background: `${STATUS_COLORS[status] ?? "#6b7280"}22`,
+      color: STATUS_COLORS[status] ?? "#6b7280",
+    }}
+  >
+    {STATUS_LABELS[status] ?? status}
+  </span>
 );
 
-/* ─────────────────────────────────────────
-   Error Banner
-───────────────────────────────────────── */
-const ErrorBanner = ({ message, onRetry }) => (
-    <div style={{
-        display: "flex", alignItems: "center", gap: 12,
-        padding: "12px 16px", borderRadius: "var(--radius-md)",
-        background: "#fef2f2", border: "1px solid #fecaca",
-        marginBottom: 24,
-    }}>
-        <AlertCircle size={16} style={{ color: "#dc2626", flexShrink: 0 }} />
-        <span style={{ flex: 1, fontSize: "var(--text-sm)", color: "#dc2626" }}>{message}</span>
-        <button
-            onClick={onRetry}
-            style={{
-                fontSize: "var(--text-xs)", fontWeight: "var(--font-semibold)",
-                color: "#dc2626", background: "transparent", border: "1px solid #fca5a5",
-                borderRadius: "var(--radius-md)", padding: "4px 10px", cursor: "pointer",
-            }}
-        >
-            Retry
-        </button>
-    </div>
+const SectionHeading = ({ children, sub }) => (
+  <div className="mb-5">
+    <h2
+      className="text-lg font-semibold"
+      style={{ color: "var(--text-primary)" }}
+    >
+      {children}
+    </h2>
+    {sub && (
+      <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+        {sub}
+      </p>
+    )}
+  </div>
 );
 
-/* ─────────────────────────────────────────
-   Stat Card
-───────────────────────────────────────── */
-const StatCard = ({ icon: Icon, label, value, trend, sub, color = "#6d50e8", loading }) => (
-    <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{
-                width: 40, height: 40, borderRadius: "var(--radius-md)",
-                background: color + "18",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                color,
-            }}>
-                <Icon size={18} />
-            </div>
-            {trend !== undefined && !loading && (
-                <span style={{
-                    fontSize: "var(--text-xs)", fontWeight: "var(--font-semibold)",
-                    color: trendColor(trend),
-                    background: trendBg(trend),
-                    padding: "3px 8px", borderRadius: 99,
-                    display: "flex", alignItems: "center", gap: 3,
-                }}>
-                    {parseFloat(trend) >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
-                    {trend}
-                </span>
-            )}
-        </div>
-        {loading ? (
-            <>
-                <Skeleton h={28} w="60%" radius={4} />
-                <div style={{ marginTop: 6 }}><Skeleton h={14} w="80%" radius={4} /></div>
-            </>
-        ) : (
-            <>
-                <p style={{ fontSize: "var(--text-2xl)", fontWeight: "var(--font-bold)", color: "var(--text-primary)", lineHeight: 1.2 }}>
-                    {fmt(value)}
-                </p>
-                <p style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", marginTop: 4 }}>
-                    {label}
-                    {sub && <span style={{ marginLeft: 6, color: "var(--text-secondary)" }}>{sub}</span>}
-                </p>
-            </>
-        )}
-    </div>
-);
-
-/* ─────────────────────────────────────────
-   Section header
-───────────────────────────────────────── */
-const SectionHeader = ({ title, description, right }) => (
-    <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 16 }}>
-        <div>
-            <h2 style={{ fontSize: "var(--text-lg)", fontWeight: "var(--font-semibold)", color: "var(--text-primary)" }}>{title}</h2>
-            {description && <p style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", marginTop: 2 }}>{description}</p>}
-        </div>
-        {right}
-    </div>
-);
-
-/* ─────────────────────────────────────────
-   Custom recharts tooltip
-───────────────────────────────────────── */
+/** Recharts custom tooltip — matches site card style */
 const ChartTooltip = ({ active, payload, label }) => {
-    if (!active || !payload?.length) return null;
-    return (
-        <div style={{
-            background: "var(--bg-primary)", border: "1px solid var(--border-light)",
-            borderRadius: "var(--radius-md)", padding: "10px 14px",
-            boxShadow: "var(--shadow-md)", fontSize: "var(--text-xs)",
-        }}>
-            <p style={{ color: "var(--text-muted)", marginBottom: 6, fontWeight: "var(--font-medium)" }}>{label}</p>
-            {payload.map((p) => (
-                <p key={p.name} style={{ color: p.color, fontWeight: "var(--font-semibold)" }}>
-                    {p.name}: {fmt(p.value)}
-                </p>
-            ))}
-        </div>
-    );
+  if (!active || !payload?.length) return null;
+  return (
+    <div
+      className="px-3 py-2 rounded border text-xs shadow-lg"
+      style={{
+        background: "var(--bg-primary)",
+        borderColor: "var(--border-light)",
+        color: "var(--text-primary)",
+      }}
+    >
+      <p className="font-semibold mb-1">{label}</p>
+      {payload.map((p, i) => (
+        <p key={i} style={{ color: p.color ?? BRAND }}>
+          {p.name}: <span className="font-bold">{p.value?.toLocaleString()}</span>
+        </p>
+      ))}
+    </div>
+  );
 };
 
-/* ─────────────────────────────────────────
-   Empty State
-───────────────────────────────────────── */
-const EmptyState = ({ label }) => (
-    <div style={{ textAlign: "center", padding: "32px 0", color: "var(--text-muted)", fontSize: "var(--text-sm)" }}>
-        {label}
-    </div>
-);
-
-/* ─────────────────────────────────────────
-   Post Stat inline
-───────────────────────────────────────── */
-const PostStat = ({ icon: Icon, val }) => (
-    <span style={{ display: "flex", alignItems: "center", gap: 3, fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>
-        <Icon size={10} /> {fmt(val)}
-    </span>
-);
-
-/* ─────────────────────────────────────────
-   Status Badge
-───────────────────────────────────────── */
-const StatusBadge = ({ status }) => {
-    const map = {
-        PUBLISHED: { bg: "#f0fdf4", color: "#16a34a", label: "Published" },
-        DRAFT: { bg: "#fffbeb", color: "#d97706", label: "Draft" },
-        ARCHIVED: { bg: "var(--bg-tertiary)", color: "var(--text-muted)", label: "Archived" },
-    };
-    const s = map[status] ?? map.ARCHIVED;
-    return (
-        <span style={{
-            fontSize: 10, fontWeight: "var(--font-semibold)", padding: "2px 7px",
-            borderRadius: 99, background: s.bg, color: s.color, flexShrink: 0,
-        }}>
-            {s.label}
-        </span>
-    );
+/** XAxis tick date formatter — shortens "2025-01-15" → "Jan 15" */
+const fmtAxisDate = (d) => {
+  if (!d) return "";
+  const [, m, day] = d.split("-");
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${months[parseInt(m) - 1]} ${parseInt(day)}`;
 };
 
-/* ─────────────────────────────────────────
-   Metric Row (used in user analytics table)
-───────────────────────────────────────── */
-const MetricRow = ({ icon: Icon, label, value, color, loading }) => (
-    <div style={{
-        display: "flex", alignItems: "center", gap: 12,
-        padding: "12px 0", borderBottom: "1px solid var(--border-light)",
-    }}>
-        <div style={{
-            width: 34, height: 34, borderRadius: "var(--radius-md)",
-            background: color + "18", display: "flex", alignItems: "center",
-            justifyContent: "center", color, flexShrink: 0,
-        }}>
-            <Icon size={15} />
+// ─────────────────────────────────────────────
+// KPI CARD
+// ─────────────────────────────────────────────
+
+const KpiCard = ({ icon: Icon, label, value, sub, accent = false, href }) => {
+  const inner = (
+    <div
+      className="card rounded-lg p-5 flex flex-col gap-3 transition-all group"
+      style={accent ? { borderColor: BRAND, background: `${BRAND}08` } : {}}
+    >
+      <div className="flex items-start justify-between">
+        <div
+          className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
+          style={{
+            background: accent ? BRAND_LIGHT : "var(--bg-secondary)",
+            color: accent ? BRAND : "var(--text-muted)",
+          }}
+        >
+          <Icon size={18} />
         </div>
-        <span style={{ flex: 1, fontSize: "var(--text-sm)", color: "var(--text-secondary)" }}>{label}</span>
-        {loading
-            ? <Skeleton w={48} h={16} radius={4} />
-            : <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-semibold)", color: "var(--text-primary)" }}>{value}</span>
-        }
+        {href && (
+          <ArrowUpRight
+            size={14}
+            className="opacity-0 group-hover:opacity-60 transition-opacity"
+            style={{ color: "var(--text-muted)" }}
+          />
+        )}
+      </div>
+      <div>
+        <p
+          className="text-2xl font-bold tracking-tight"
+          style={{ color: "var(--text-primary)" }}
+        >
+          {typeof value === "number" ? value.toLocaleString() : value ?? "—"}
+        </p>
+        <p className="text-xs font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>
+          {label}
+        </p>
+      </div>
+      {sub && (
+        <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+          {sub}
+        </p>
+      )}
     </div>
+  );
+  return href ? <Link href={href}>{inner}</Link> : inner;
+};
+
+// ─────────────────────────────────────────────
+// CHART WRAPPER
+// ─────────────────────────────────────────────
+
+const ChartCard = ({ title, sub, children, className = "" }) => (
+  <div
+    className={`card rounded-lg p-5 ${className}`}
+    style={{ background: "var(--bg-primary)", borderColor: "var(--border-light)" }}
+  >
+    {(title || sub) && (
+      <div className="mb-4">
+        {title && (
+          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+            {title}
+          </p>
+        )}
+        {sub && (
+          <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+            {sub}
+          </p>
+        )}
+      </div>
+    )}
+    {children}
+  </div>
 );
 
-/* ─────────────────────────────────────────
-   MAIN PAGE
-───────────────────────────────────────── */
-export default function AnalyticsDashboard() {
-    const [overview, setOverview] = useState(null);
-    const [traffic, setTraffic] = useState(null);
-    const [contentData, setContentData] = useState(null);
-    const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null); // Fix #4: track fetch errors
-    const [period, setPeriod] = useState(30);
-    const [activeTab, setActiveTab] = useState("overview");
+// ─────────────────────────────────────────────
+// RANGE PICKER
+// ─────────────────────────────────────────────
 
-    // Fix #1 & #3: Memoize date strings so they're stable across renders.
-    // Without this, new Date() on every render produces a new string reference,
-    // causing useCallback to recreate fetchAll, which triggers the useEffect
-    // infinitely.
-    const { startDate, endDate } = useMemo(() => ({
-        startDate: new Date(Date.now() - period * 24 * 60 * 60 * 1000).toISOString(),
-        endDate: new Date().toISOString(),
-    }), [period]);
-
-    const fetchAll = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const [ov, tr, ct, ud] = await Promise.allSettled([
-                api.get(`/analytics/dashboard`, { params: { startDate, endDate } }),
-                api.get(`/analytics/traffic`, { params: { startDate, endDate, granularity: "day" } }),
-                api.get(`/analytics/content`, { params: { limit: 10, sortBy: "views" } }),
-                api.get(`/analytics/users`, { params: { startDate, endDate } }),
-            ]);
-
-            // Fix #4: surface error to the user if all requests fail
-            const allFailed = [ov, tr, ct, ud].every((r) => r.status === "rejected");
-            if (allFailed) {
-                setError("Failed to load analytics data. Please check your connection and try again.");
-            } else {
-                if (ov.status === "fulfilled") setOverview(ov.value.data.data);
-                if (tr.status === "fulfilled") setTraffic(tr.value.data.data);
-                if (ct.status === "fulfilled") setContentData(ct.value.data.data);
-                if (ud.status === "fulfilled") setUserData(ud.value.data.data);
-            }
-        } catch (err) {
-            // Fix #4: catch unexpected errors and surface them
-            setError("An unexpected error occurred while loading analytics.");
-            console.error("Analytics fetch error:", err);
-        } finally {
-            setLoading(false);
+const RangePicker = ({ current, onChange }) => (
+  <div
+    className="flex items-center gap-1 p-1 rounded-lg border"
+    style={{ borderColor: "var(--border-light)", background: "var(--bg-secondary)" }}
+  >
+    {RANGES.map((r) => (
+      <button
+        key={r.value}
+        onClick={() => onChange(r.value)}
+        className="px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer"
+        style={
+          current === r.value
+            ? { background: BRAND, color: "#fff" }
+            : { color: "var(--text-secondary)" }
         }
-    }, [startDate, endDate]);
+      >
+        {r.label}
+      </button>
+    ))}
+  </div>
+);
 
-    useEffect(() => { fetchAll(); }, [fetchAll]);
+// ─────────────────────────────────────────────
+// RECENT POSTS TABLE (shared)
+// ─────────────────────────────────────────────
 
-    /* ── Derived data — Fix #8: memoize so these don't recompute on every render ── */
-    const trafficSeries = useMemo(() =>
-        traffic?.timeSeries?.map((d) => ({
-            date: new Date(d.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-            Views: d.views,
-            Visitors: d.uniqueVisitors,
-        })) ?? [],
-    [traffic]);
-
-    const referrerData = useMemo(() =>
-        traffic?.referrers?.slice(0, 6).map((r) => ({ name: r.domain, value: r.count })) ?? [],
-    [traffic]);
-
-    const deviceData = useMemo(() =>
-        traffic?.devices
-            ? [
-                  { name: "Desktop", value: traffic.devices.desktop },
-                  { name: "Mobile", value: traffic.devices.mobile },
-              ]
-            : [],
-    [traffic]);
-
-    const allPosts = useMemo(() => contentData?.posts ?? [], [contentData]);
-
-    const topPosts = useMemo(() =>
-        contentData?.posts?.slice(0, 5) ?? overview?.topPosts ?? [],
-    [contentData, overview]);
-
-    const recentActivity = useMemo(() => overview?.recentActivity ?? [], [overview]);
-
-    const userRoleData = useMemo(() =>
-        userData?.userRoles?.map((r) => ({ name: r.role, value: r.count })) ?? [],
-    [userData]);
-
-    const topContributors = useMemo(() => userData?.topContributors ?? [], [userData]);
-
-    // Fix #8: memoize engagement radar derived data
-    const engagementRadar = useMemo(() =>
-        allPosts.slice(0, 6).map((p) => ({
-            post: p.title.length > 14 ? p.title.slice(0, 14) + "…" : p.title,
-            Views: Math.min(p.viewCount, 9999),
-            Likes: p.likeCount * 10,
-            Comments: p.commentCount * 20,
-            Bookmarks: (p.bookmarkCount ?? 0) * 30,
-        })),
-    [allPosts]);
-
-    /* ── Tab config ── */
-    const tabs = [
-        { key: "overview", label: "Overview" },
-        { key: "traffic", label: "Traffic" },
-        { key: "content", label: "Content" },
-        { key: "users", label: "Users" },
-    ];
-
+const PostsTable = ({ posts = [], showAuthor = true, showRejection = false, emptyText = "No posts yet" }) => {
+  if (!posts.length)
     return (
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 0 64px" }}>
+      <p className="text-sm py-6 text-center" style={{ color: "var(--text-muted)" }}>
+        {emptyText}
+      </p>
+    );
 
-            {/* ── Page Header ── */}
-            <div style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                marginBottom: 24,
-            }}>
-                <div>
-                    <h1 style={{ fontSize: "var(--text-2xl)", fontWeight: "var(--font-bold)", color: "var(--text-primary)" }}>
-                        Analytics Dashboard
-                    </h1>
-                    <p style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)", marginTop: 2 }}>
-                        Monitor performance and audience insights
-                    </p>
-                </div>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {/* Fix #6: aria-label on period buttons for screen readers */}
-                    {[7, 30, 90].map((d) => (
-                        <button
-                            key={d}
-                            onClick={() => setPeriod(d)}
-                            aria-label={`Last ${d} days`}
-                            aria-pressed={period === d}
-                            className="btn"
-                            style={{
-                                padding: "6px 14px",
-                                fontSize: "var(--text-xs)",
-                                fontWeight: "var(--font-medium)",
-                                background: period === d ? "var(--brand-primary)" : "var(--bg-primary)",
-                                color: period === d ? "#fff" : "var(--text-secondary)",
-                                border: `1px solid ${period === d ? "var(--brand-primary)" : "var(--border-light)"}`,
-                                borderRadius: "var(--radius-md)",
-                                cursor: "pointer",
-                            }}
-                        >
-                            {d}d
-                        </button>
-                    ))}
-                    {/* Fix #7 (refresh button): disabled styling made explicit */}
-                    <button
-                        className="btn btn-outline"
-                        style={{
-                            padding: "6px 12px",
-                            fontSize: "var(--text-xs)",
-                            display: "flex", alignItems: "center", gap: 6,
-                            cursor: loading ? "not-allowed" : "pointer",
-                            opacity: loading ? 0.5 : 1,
-                        }}
-                        onClick={fetchAll}
-                        disabled={loading}
-                        aria-label="Refresh analytics data"
-                    >
-                        <RefreshCw size={13} style={{ animation: loading ? "spin 1s linear infinite" : "none" }} />
-                        Refresh
-                    </button>
-                </div>
-            </div>
-
-            {/* Fix #4: Show error banner when data fetch fails */}
-            {error && <ErrorBanner message={error} onRetry={fetchAll} />}
-
-            {/* Fix #5: role="tablist" + role="tab" + aria-selected on tab buttons */}
-            <div
-                role="tablist"
-                aria-label="Analytics sections"
-                style={{
-                    display: "flex", gap: 4, marginBottom: 24,
-                    borderBottom: "1px solid var(--border-light)", paddingBottom: 0,
-                }}
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr style={{ borderBottom: "1px solid var(--border-light)" }}>
+            <th className="text-left py-2 pr-4 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+              Title
+            </th>
+            {showAuthor && (
+              <th className="text-left py-2 pr-4 text-xs font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: "var(--text-muted)" }}>
+                Author
+              </th>
+            )}
+            <th className="text-left py-2 pr-4 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+              Status
+            </th>
+            <th className="text-right py-2 text-xs font-semibold uppercase tracking-wider hidden sm:table-cell" style={{ color: "var(--text-muted)" }}>
+              Views
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {posts.map((p) => (
+            <tr
+              key={p.id}
+              className="group border-b transition-colors"
+              style={{ borderColor: "var(--border-light)" }}
             >
-                {tabs.map((t) => (
-                    <button
-                        key={t.key}
-                        role="tab"
-                        aria-selected={activeTab === t.key}
-                        aria-controls={`panel-${t.key}`}
-                        id={`tab-${t.key}`}
-                        onClick={() => setActiveTab(t.key)}
-                        style={{
-                            padding: "8px 16px",
-                            fontSize: "var(--text-sm)",
-                            fontWeight: activeTab === t.key ? "var(--font-semibold)" : "var(--font-medium)",
-                            color: activeTab === t.key ? "var(--brand-primary)" : "var(--text-muted)",
-                            background: "transparent",
-                            border: "none",
-                            borderBottom: `2px solid ${activeTab === t.key ? "var(--brand-primary)" : "transparent"}`,
-                            cursor: "pointer",
-                            marginBottom: -1,
-                            transition: "color 0.15s, border-color 0.15s",
-                        }}
-                    >
-                        {t.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* ══════════════════════════════════════════
-                OVERVIEW TAB
-            ══════════════════════════════════════════ */}
-            {activeTab === "overview" && (
-                <div
-                    role="tabpanel"
-                    id="panel-overview"
-                    aria-labelledby="tab-overview"
+              <td className="py-3 pr-4">
+                <Link
+                  href={`/blog/${p.slug}`}
+                  className="font-medium line-clamp-1 hover:underline transition-colors"
+                  style={{ color: "var(--text-primary)" }}
                 >
-                    {/* ── Stat Cards ── */}
-                    <div style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-                        gap: 16, marginBottom: 24,
-                    }}>
-                        <StatCard
-                            icon={Eye} label="Total Views" color={COLORS[0]}
-                            value={overview?.engagement?.totalViews}
-                            trend={overview?.engagement?.trends?.views}
-                            sub={`${fmt(overview?.engagement?.uniqueVisitors)} unique`}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={Users} label="Total Users" color={COLORS[1]}
-                            value={overview?.users?.total}
-                            trend={overview?.users?.trend}
-                            sub={`+${fmt(overview?.users?.new)} new`}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={MessageSquare} label="Comments" color={COLORS[2]}
-                            value={overview?.engagement?.totalComments}
-                            trend={overview?.engagement?.trends?.comments}
-                            sub={`${fmt(overview?.engagement?.newComments)} new`}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={FileText} label="Published Posts" color={COLORS[3]}
-                            value={overview?.content?.publishedPosts}
-                            sub={`${fmt(overview?.content?.draftPosts)} drafts`}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={Heart} label="Total Likes" color={COLORS[5]}
-                            value={overview?.engagement?.totalLikes}
-                            trend={overview?.engagement?.trends?.likes}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={Layers} label="Categories" color={COLORS[4]}
-                            value={overview?.content?.totalCategories}
-                            sub={`${fmt(overview?.content?.totalTags)} tags`}
-                            loading={loading}
-                        />
-                    </div>
+                  {p.title}
+                </Link>
+                {showRejection && p.rejectionReason && (
+                  <p className="text-xs mt-0.5 text-red-400 line-clamp-1">
+                    ↳ {p.rejectionReason}
+                  </p>
+                )}
+              </td>
+              {showAuthor && (
+                <td className="py-3 pr-4 hidden md:table-cell">
+                  <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                    {p.author?.name ?? "—"}
+                  </span>
+                </td>
+              )}
+              <td className="py-3 pr-4">
+                <StatusBadge status={p.status} />
+              </td>
+              <td className="py-3 text-right hidden sm:table-cell">
+                <span className="text-xs font-medium tabular-nums" style={{ color: "var(--text-secondary)" }}>
+                  {p.viewCount?.toLocaleString() ?? "—"}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
-                    {/* ── Traffic Chart (area) ── */}
-                    <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)", marginBottom: 24 }}>
-                        <SectionHeader
-                            title="Traffic Overview"
-                            description={`Views & unique visitors — last ${period} days`}
-                        />
-                        {loading ? (
-                            <Skeleton h={260} radius={8} />
-                        ) : trafficSeries.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={260}>
-                                <AreaChart data={trafficSeries} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="gViews" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor={COLORS[0]} stopOpacity={0.18} />
-                                            <stop offset="95%" stopColor={COLORS[0]} stopOpacity={0} />
-                                        </linearGradient>
-                                        <linearGradient id="gVisitors" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor={COLORS[1]} stopOpacity={0.14} />
-                                            <stop offset="95%" stopColor={COLORS[1]} stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
-                                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                                    <Tooltip content={<ChartTooltip />} />
-                                    <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
-                                    <Area type="monotone" dataKey="Views" stroke={COLORS[0]} strokeWidth={2} fill="url(#gViews)" dot={false} />
-                                    <Area type="monotone" dataKey="Visitors" stroke={COLORS[1]} strokeWidth={2} fill="url(#gVisitors)" dot={false} />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        ) : <EmptyState label="No traffic data for this period" />}
-                    </div>
+// ─────────────────────────────────────────────
+// TOP POSTS TABLE (with full engagement cols)
+// ─────────────────────────────────────────────
 
-                    {/* ── 2-col: Top Posts + Recent Activity ── */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 24 }}>
-                        {/* Top Posts */}
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                            <SectionHeader title="Top Posts" description="Most viewed content" />
-                            {loading ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                                    {[...Array(4)].map((_, i) => <Skeleton key={i} h={52} radius={6} />)}
-                                </div>
-                            ) : topPosts.length > 0 ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                    {topPosts.map((post, i) => (
-                                        <div key={post.id} style={{
-                                            display: "flex", alignItems: "center", gap: 12, padding: "10px 0",
-                                            borderBottom: i < topPosts.length - 1 ? "1px solid var(--border-light)" : "none",
-                                        }}>
-                                            <span style={{
-                                                width: 24, height: 24, borderRadius: 4,
-                                                background: i === 0 ? COLORS[0] : "var(--bg-tertiary)",
-                                                color: i === 0 ? "#fff" : "var(--text-muted)",
-                                                display: "flex", alignItems: "center", justifyContent: "center",
-                                                fontSize: "var(--text-xs)", fontWeight: "var(--font-bold)",
-                                                flexShrink: 0,
-                                            }}>{i + 1}</span>
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <p style={{
-                                                    fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)",
-                                                    color: "var(--text-primary)",
-                                                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                                                }}>{post.title}</p>
-                                                <div style={{ display: "flex", gap: 10, marginTop: 2 }}>
-                                                    <PostStat icon={Eye} val={post.viewCount} />
-                                                    <PostStat icon={MessageSquare} val={post.commentCount} />
-                                                    <PostStat icon={Heart} val={post.likeCount} />
-                                                </div>
-                                            </div>
-                                            <ArrowUpRight size={14} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : <EmptyState label="No published posts yet" />}
-                        </div>
-
-                        {/* Recent Activity */}
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                            <SectionHeader title="Recent Activity" description="Latest content updates" />
-                            {loading ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                                    {[...Array(4)].map((_, i) => <Skeleton key={i} h={52} radius={6} />)}
-                                </div>
-                            ) : recentActivity.length > 0 ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                    {recentActivity.map((item, i) => (
-                                        <div key={item.id} style={{
-                                            display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 0",
-                                            borderBottom: i < recentActivity.length - 1 ? "1px solid var(--border-light)" : "none",
-                                        }}>
-                                            <div style={{
-                                                width: 8, height: 8, borderRadius: "50%", marginTop: 5, flexShrink: 0,
-                                                background: item.status === "PUBLISHED" ? "#16a34a"
-                                                    : item.status === "DRAFT" ? "#f59e0b" : "var(--text-muted)",
-                                            }} />
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <p style={{
-                                                    fontSize: "var(--text-sm)", color: "var(--text-primary)",
-                                                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                                                }}>{item.title}</p>
-                                                <p style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", marginTop: 2 }}>
-                                                    by {item.author?.name} · {new Date(item.updatedAt).toLocaleDateString()}
-                                                </p>
-                                            </div>
-                                            <StatusBadge status={item.status} />
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : <EmptyState label="No recent activity" />}
-                        </div>
-                    </div>
-
-                    {/* ── Content Performance Bar Chart ── */}
-                    {!loading && allPosts.length > 0 ? (
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                            <SectionHeader title="Content Performance" description="Views, comments & likes across top posts" />
-                            <ResponsiveContainer width="100%" height={240}>
-                                <BarChart
-                                    data={allPosts.slice(0, 8).map((p) => ({
-                                        name: p.title.length > 22 ? p.title.slice(0, 22) + "…" : p.title,
-                                        Views: p.viewCount,
-                                        Comments: p.commentCount,
-                                        Likes: p.likeCount,
-                                    }))}
-                                    margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
-                                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                                    <Tooltip content={<ChartTooltip />} />
-                                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                                    <Bar dataKey="Views" fill={COLORS[0]} radius={[4, 4, 0, 0]} maxBarSize={36} />
-                                    <Bar dataKey="Comments" fill={COLORS[1]} radius={[4, 4, 0, 0]} maxBarSize={36} />
-                                    <Bar dataKey="Likes" fill={COLORS[3]} radius={[4, 4, 0, 0]} maxBarSize={36} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    ) : loading ? (
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                            <Skeleton h={240} radius={8} />
-                        </div>
-                    ) : null}
-                </div>
-            )}
-
-            {/* ══════════════════════════════════════════
-                TRAFFIC TAB
-            ══════════════════════════════════════════ */}
-            {activeTab === "traffic" && (
-                <div
-                    role="tabpanel"
-                    id="panel-traffic"
-                    aria-labelledby="tab-traffic"
-                >
-                    {/* Traffic summary cards */}
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
-                        <StatCard
-                            icon={Eye} label="Total Views" color={COLORS[0]}
-                            value={traffic?.summary?.totalViews}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={Users} label="Unique Visitors" color={COLORS[1]}
-                            value={traffic?.summary?.uniqueVisitors}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={Activity} label="Avg Views / Day" color={COLORS[2]}
-                            value={traffic?.summary?.avgViewsPerBucket}
-                            loading={loading}
-                        />
-                    </div>
-
-                    {/* Line chart for traffic */}
-                    <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)", marginBottom: 24 }}>
-                        <SectionHeader
-                            title="Views Over Time"
-                            description={`Daily breakdown — last ${period} days`}
-                        />
-                        {loading ? <Skeleton h={280} radius={8} /> : trafficSeries.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={280}>
-                                <LineChart data={trafficSeries} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
-                                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                                    <Tooltip content={<ChartTooltip />} />
-                                    <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
-                                    <Line type="monotone" dataKey="Views" stroke={COLORS[0]} strokeWidth={2.5} dot={false} activeDot={{ r: 4 }} />
-                                    <Line type="monotone" dataKey="Visitors" stroke={COLORS[1]} strokeWidth={2} dot={false} strokeDasharray="5 3" activeDot={{ r: 4 }} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        ) : <EmptyState label="No traffic data available" />}
-                    </div>
-
-                    {/* 2-col: Referrers + Device Split */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                        {/* Referrers */}
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                            <SectionHeader title="Top Referrers" description="Where your visitors come from" />
-                            {loading ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                                    {[...Array(6)].map((_, i) => <Skeleton key={i} h={36} radius={6} />)}
-                                </div>
-                            ) : referrerData.length > 0 ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                                    {referrerData.map((r, i) => {
-                                        const maxVal = referrerData[0]?.value || 1;
-                                        return (
-                                            <div key={r.name}>
-                                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                                                    <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "var(--text-xs)", color: "var(--text-secondary)", fontWeight: "var(--font-medium)" }}>
-                                                        <Globe size={11} style={{ color: COLORS[i % COLORS.length] }} />
-                                                        {r.name}
-                                                    </span>
-                                                    <span style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>{fmt(r.value)}</span>
-                                                </div>
-                                                <div style={{ height: 5, background: "var(--bg-tertiary)", borderRadius: 99, overflow: "hidden" }}>
-                                                    <div style={{
-                                                        height: "100%",
-                                                        width: `${(r.value / maxVal) * 100}%`,
-                                                        background: COLORS[i % COLORS.length],
-                                                        borderRadius: 99,
-                                                        transition: "width 0.6s ease",
-                                                    }} />
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            ) : <EmptyState label="No referrer data yet" />}
-                        </div>
-
-                        {/* Devices */}
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                            <SectionHeader title="Device Split" description="Desktop vs mobile visitors" />
-                            {loading ? (
-                                <Skeleton h={200} radius={8} />
-                            ) : deviceData.length > 0 ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                                    <ResponsiveContainer width="100%" height={160}>
-                                        <PieChart>
-                                            <Pie
-                                                data={deviceData} cx="50%" cy="50%"
-                                                innerRadius={48} outerRadius={72}
-                                                dataKey="value" paddingAngle={3}
-                                            >
-                                                {deviceData.map((_, i) => (
-                                                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip content={<ChartTooltip />} />
-                                            <Legend />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                                        {deviceData.map((d, i) => {
-                                            const total = deviceData.reduce((a, b) => a + b.value, 0);
-                                            const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
-                                            const DevIcon = d.name === "Desktop" ? Monitor : Smartphone;
-                                            return (
-                                                <div key={d.name} style={{
-                                                    display: "flex", alignItems: "center", gap: 10,
-                                                    padding: "8px 12px", borderRadius: "var(--radius-md)",
-                                                    background: "var(--bg-secondary)",
-                                                }}>
-                                                    <DevIcon size={14} style={{ color: COLORS[i] }} />
-                                                    <span style={{ flex: 1, fontSize: "var(--text-sm)", color: "var(--text-secondary)" }}>{d.name}</span>
-                                                    <span style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>{fmt(d.value)}</span>
-                                                    <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-semibold)", color: "var(--text-primary)", minWidth: 38, textAlign: "right" }}>{pct}%</span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ) : <EmptyState label="No device data yet" />}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* ══════════════════════════════════════════
-                CONTENT TAB
-            ══════════════════════════════════════════ */}
-            {activeTab === "content" && (
-                <div
-                    role="tabpanel"
-                    id="panel-content"
-                    aria-labelledby="tab-content"
-                >
-                    {/* Engagement Radar */}
-                    {!loading && engagementRadar.length > 0 && (
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)", marginBottom: 24 }}>
-                            <SectionHeader title="Engagement Radar" description="Multi-dimensional engagement across top posts" />
-                            <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-                                <ResponsiveContainer width="50%" height={280}>
-                                    <RadarChart data={engagementRadar}>
-                                        <PolarGrid stroke="var(--border-light)" />
-                                        <PolarAngleAxis dataKey="post" tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
-                                        <PolarRadiusAxis tick={false} axisLine={false} />
-                                        <Radar name="Views" dataKey="Views" stroke={COLORS[0]} fill={COLORS[0]} fillOpacity={0.15} />
-                                        <Radar name="Likes (×10)" dataKey="Likes" stroke={COLORS[5]} fill={COLORS[5]} fillOpacity={0.1} />
-                                        <Radar name="Comments (×20)" dataKey="Comments" stroke={COLORS[1]} fill={COLORS[1]} fillOpacity={0.1} />
-                                        <Legend wrapperStyle={{ fontSize: 11 }} />
-                                        <Tooltip content={<ChartTooltip />} />
-                                    </RadarChart>
-                                </ResponsiveContainer>
-                                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
-                                    <p style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", marginBottom: 8 }}>Engagement score by post</p>
-                                    {allPosts.slice(0, 6).map((p, i) => (
-                                        <div key={p.id} style={{
-                                            display: "flex", alignItems: "center", gap: 10,
-                                            padding: "8px 12px", borderRadius: "var(--radius-md)",
-                                            background: "var(--bg-secondary)",
-                                        }}>
-                                            <span style={{
-                                                width: 20, height: 20, borderRadius: 4, flexShrink: 0,
-                                                background: COLORS[i % COLORS.length] + "22",
-                                                color: COLORS[i % COLORS.length],
-                                                display: "flex", alignItems: "center", justifyContent: "center",
-                                                fontSize: 10, fontWeight: "var(--font-bold)",
-                                            }}>{i + 1}</span>
-                                            <span style={{
-                                                flex: 1, fontSize: "var(--text-xs)", color: "var(--text-secondary)",
-                                                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                                            }}>{p.title}</span>
-                                            <span style={{ fontSize: "var(--text-xs)", fontWeight: "var(--font-semibold)", color: "var(--text-primary)" }}>
-                                                {p.engagementScore ?? "—"}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* CTR + Engagement table */}
-                    <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)", marginBottom: 24 }}>
-                        <SectionHeader title="Content Analytics Table" description="Detailed stats for all posts" />
-                        {loading ? (
-                            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                                {[...Array(6)].map((_, i) => <Skeleton key={i} h={44} radius={6} />)}
-                            </div>
-                        ) : allPosts.length > 0 ? (
-                            <div style={{ overflowX: "auto" }}>
-                                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--text-xs)" }}>
-                                    <thead>
-                                        <tr style={{ borderBottom: "1px solid var(--border-light)" }}>
-                                            {["Title", "Status", "Views", "Comments", "Likes", "Bookmarks", "CTR", "Score", "Read Time"].map((h) => (
-                                                <th key={h} style={{
-                                                    padding: "8px 12px", textAlign: "left",
-                                                    color: "var(--text-muted)", fontWeight: "var(--font-semibold)",
-                                                    whiteSpace: "nowrap",
-                                                }}>{h}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {allPosts.map((post, i) => (
-                                            <tr key={post.id} style={{
-                                                borderBottom: "1px solid var(--border-light)",
-                                                background: i % 2 === 0 ? "transparent" : "var(--bg-secondary)",
-                                            }}>
-                                                <td style={{ padding: "10px 12px", color: "var(--text-primary)", fontWeight: "var(--font-medium)", maxWidth: 220 }}>
-                                                    <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                                        {post.title}
-                                                    </span>
-                                                </td>
-                                                <td style={{ padding: "10px 12px" }}><StatusBadge status={post.status} /></td>
-                                                <td style={{ padding: "10px 12px", color: "var(--text-secondary)" }}>{fmt(post.viewCount)}</td>
-                                                <td style={{ padding: "10px 12px", color: "var(--text-secondary)" }}>{fmt(post.commentCount)}</td>
-                                                <td style={{ padding: "10px 12px", color: "var(--text-secondary)" }}>{fmt(post.likeCount)}</td>
-                                                <td style={{ padding: "10px 12px", color: "var(--text-secondary)" }}>{fmt(post.bookmarkCount ?? 0)}</td>
-                                                <td style={{ padding: "10px 12px", color: post.ctr > 5 ? "#16a34a" : "var(--text-secondary)" }}>
-                                                    {fmtPct(post.ctr)}
-                                                </td>
-                                                <td style={{ padding: "10px 12px" }}>
-                                                    <span style={{
-                                                        fontWeight: "var(--font-semibold)",
-                                                        color: post.engagementScore > 50 ? "#16a34a" : "var(--text-primary)",
-                                                    }}>
-                                                        {post.engagementScore ?? "—"}
-                                                    </span>
-                                                </td>
-                                                <td style={{ padding: "10px 12px", color: "var(--text-muted)" }}>{post.readingTime ?? "—"} min</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ) : <EmptyState label="No content data yet" />}
-                    </div>
-
-                    {/* Performance bar chart */}
-                    {!loading && allPosts.length > 0 && (
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                            <SectionHeader title="Content Performance" description="Views, comments & likes — top 8 posts" />
-                            <ResponsiveContainer width="100%" height={240}>
-                                <BarChart
-                                    data={allPosts.slice(0, 8).map((p) => ({
-                                        name: p.title.length > 18 ? p.title.slice(0, 18) + "…" : p.title,
-                                        Views: p.viewCount,
-                                        Comments: p.commentCount,
-                                        Likes: p.likeCount,
-                                    }))}
-                                    margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
-                                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                                    <Tooltip content={<ChartTooltip />} />
-                                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                                    <Bar dataKey="Views" fill={COLORS[0]} radius={[4, 4, 0, 0]} maxBarSize={32} />
-                                    <Bar dataKey="Comments" fill={COLORS[1]} radius={[4, 4, 0, 0]} maxBarSize={32} />
-                                    <Bar dataKey="Likes" fill={COLORS[3]} radius={[4, 4, 0, 0]} maxBarSize={32} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* ══════════════════════════════════════════
-                USERS TAB
-            ══════════════════════════════════════════ */}
-            {activeTab === "users" && (
-                <div
-                    role="tabpanel"
-                    id="panel-users"
-                    aria-labelledby="tab-users"
-                >
-                    {/* User stat cards */}
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
-                        <StatCard
-                            icon={Users} label="Total Users" color={COLORS[0]}
-                            value={userData?.overview?.totalUsers}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={UserPlus} label="New Users" color={COLORS[1]}
-                            value={userData?.overview?.newUsers}
-                            sub={`last ${period}d`}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={UserCheck} label="Active Users" color={COLORS[3]}
-                            value={userData?.overview?.activeUsers}
-                            loading={loading}
-                        />
-                        <StatCard
-                            icon={Zap} label="Activation Rate" color={COLORS[4]}
-                            value={userData?.overview?.activationRate}
-                            loading={loading}
-                        />
-                    </div>
-
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 24 }}>
-                        {/* User Roles Pie */}
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                            <SectionHeader title="Users by Role" description="Role distribution across all users" />
-                            {loading ? (
-                                <Skeleton h={220} radius={8} />
-                            ) : userRoleData.length > 0 ? (
-                                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                                    <ResponsiveContainer width={180} height={180}>
-                                        <PieChart>
-                                            <Pie
-                                                data={userRoleData} cx="50%" cy="50%"
-                                                innerRadius={50} outerRadius={75}
-                                                dataKey="value" paddingAngle={3}
-                                            >
-                                                {userRoleData.map((_, i) => (
-                                                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip content={<ChartTooltip />} />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-                                        {userRoleData.map((r, i) => {
-                                            const total = userRoleData.reduce((a, b) => a + b.value, 0);
-                                            const pct = total > 0 ? ((r.value / total) * 100).toFixed(1) : 0;
-                                            return (
-                                                <div key={r.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                                    <span style={{ width: 10, height: 10, borderRadius: 2, background: COLORS[i % COLORS.length], flexShrink: 0 }} />
-                                                    <span style={{ flex: 1, fontSize: "var(--text-xs)", color: "var(--text-secondary)" }}>{r.name}</span>
-                                                    <span style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>{fmt(r.value)}</span>
-                                                    <span style={{ fontSize: "var(--text-xs)", fontWeight: "var(--font-semibold)", color: "var(--text-primary)", minWidth: 36, textAlign: "right" }}>{pct}%</span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ) : <EmptyState label="No role data available" />}
-                        </div>
-
-                        {/* User overview metrics */}
-                        <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                            <SectionHeader title="User Metrics" description={`Period: last ${period} days`} />
-                            <MetricRow icon={Users} label="Total Users" value={fmt(userData?.overview?.totalUsers)} color={COLORS[0]} loading={loading} />
-                            <MetricRow icon={UserPlus} label="New Signups" value={fmt(userData?.overview?.newUsers)} color={COLORS[1]} loading={loading} />
-                            <MetricRow icon={UserCheck} label="Active Users" value={fmt(userData?.overview?.activeUsers)} color={COLORS[3]} loading={loading} />
-                            <MetricRow icon={Zap} label="Activation Rate" value={fmtPct(userData?.overview?.activationRate)} color={COLORS[4]} loading={loading} />
-                        </div>
-                    </div>
-
-                    {/* Top Contributors */}
-                    <div className="card" style={{ borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                        <SectionHeader title="Top Contributors" description="Most active post authors this period" />
-                        {loading ? (
-                            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                                {[...Array(5)].map((_, i) => <Skeleton key={i} h={52} radius={6} />)}
-                            </div>
-                        ) : topContributors.length > 0 ? (
-                            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                {topContributors.map((c, i) => (
-                                    <div key={c.authorId} style={{
-                                        display: "flex", alignItems: "center", gap: 12, padding: "10px 0",
-                                        borderBottom: i < topContributors.length - 1 ? "1px solid var(--border-light)" : "none",
-                                    }}>
-                                        {c.user?.avatarUrl ? (
-                                            <img
-                                                src={c.user.avatarUrl}
-                                                alt={c.user.name}
-                                                style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
-                                            />
-                                        ) : (
-                                            <div style={{
-                                                width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
-                                                background: COLORS[i % COLORS.length] + "22",
-                                                color: COLORS[i % COLORS.length],
-                                                display: "flex", alignItems: "center", justifyContent: "center",
-                                                fontSize: "var(--text-sm)", fontWeight: "var(--font-bold)",
-                                            }}>
-                                                {c.user?.name?.charAt(0)?.toUpperCase() ?? "?"}
-                                            </div>
-                                        )}
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <p style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)", color: "var(--text-primary)" }}>
-                                                {c.user?.name ?? "Unknown"}
-                                            </p>
-                                            <p style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>
-                                                {c._count?.authorId ?? 0} posts this period
-                                            </p>
-                                        </div>
-                                        {i < 3 && (
-                                            <Award size={14} style={{ color: i === 0 ? "#f59e0b" : i === 1 ? COLORS[1] : COLORS[2], flexShrink: 0 }} />
-                                        )}
-                                        <span style={{
-                                            fontSize: "var(--text-xs)", fontWeight: "var(--font-semibold)",
-                                            color: "var(--text-primary)", background: "var(--bg-tertiary)",
-                                            padding: "3px 8px", borderRadius: 99,
-                                        }}>
-                                            #{i + 1}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : <EmptyState label="No contributors this period" />}
-                    </div>
-                </div>
-            )}
-
-            <style>{`
-                @keyframes pulse {
-                    0%, 100% { opacity: 1; }
-                    50% { opacity: 0.4; }
-                }
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-            `}</style>
-        </div>
+const TopPostsTable = ({ posts = [] }) => {
+  if (!posts.length)
+    return (
+      <p className="text-sm py-6 text-center" style={{ color: "var(--text-muted)" }}>
+        No published posts yet
+      </p>
     );
-}
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr style={{ borderBottom: "1px solid var(--border-light)" }}>
+            {["Title", "Views", "Likes", "Comments", "Bookmarks"].map((h) => (
+              <th
+                key={h}
+                className={`py-2 text-xs font-semibold uppercase tracking-wider ${h === "Title" ? "text-left pr-4" : "text-right pl-4 hidden sm:table-cell"}`}
+                style={{ color: "var(--text-muted)" }}
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {posts.map((p, i) => (
+            <tr
+              key={p.id}
+              className="border-b"
+              style={{ borderColor: "var(--border-light)" }}
+            >
+              <td className="py-3 pr-4">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="text-xs font-bold w-5 shrink-0 tabular-nums"
+                    style={{ color: i === 0 ? BRAND : "var(--text-muted)" }}
+                  >
+                    {i + 1}
+                  </span>
+                  <Link
+                    href={`/blog/${p.slug}`}
+                    className="font-medium line-clamp-1 hover:underline"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {p.title}
+                  </Link>
+                </div>
+              </td>
+              <td className="py-3 pl-4 text-right hidden sm:table-cell tabular-nums text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
+                {p.viewCount?.toLocaleString() ?? 0}
+              </td>
+              <td className="py-3 pl-4 text-right hidden sm:table-cell tabular-nums text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
+                {p.likeCount?.toLocaleString() ?? 0}
+              </td>
+              <td className="py-3 pl-4 text-right hidden sm:table-cell tabular-nums text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
+                {p.commentCount?.toLocaleString() ?? 0}
+              </td>
+              <td className="py-3 pl-4 text-right hidden sm:table-cell tabular-nums text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
+                {p.bookmarkCount?.toLocaleString() ?? 0}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────
+// REVIEW QUEUE (Editor only)
+// ─────────────────────────────────────────────
+
+const ReviewQueue = ({ posts = [] }) => {
+  if (!posts.length)
+    return (
+      <div
+        className="flex flex-col items-center justify-center py-10 gap-2"
+        style={{ color: "var(--text-muted)" }}
+      >
+        <CheckCircle size={28} />
+        <p className="text-sm font-medium">All clear — no posts pending review</p>
+      </div>
+    );
+
+  return (
+    <div className="flex flex-col gap-3">
+      {posts.map((p) => (
+        <div
+          key={p.id}
+          className="flex items-start gap-3 p-3 rounded-lg border transition-colors"
+          style={{
+            borderColor: "var(--border-light)",
+            background: "var(--bg-secondary)",
+          }}
+        >
+          <div
+            className="w-8 h-8 rounded flex items-center justify-center shrink-0 mt-0.5"
+            style={{ background: "#f59e0b22", color: "#f59e0b" }}
+          >
+            <Clock size={14} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <Link
+              href={`/dashboard/review/${p.id}`}
+              className="text-sm font-semibold line-clamp-1 hover:underline"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {p.title}
+            </Link>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                by {p.author?.name}
+              </span>
+              {p.readingTime && (
+                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  · {p.readingTime} min read
+                </span>
+              )}
+              {p.categories?.slice(0, 2).map(({ category }) => (
+                <span
+                  key={category.id}
+                  className="text-xs px-1.5 py-0.5 rounded"
+                  style={{
+                    background: "var(--brand-primary-light)",
+                    color: "var(--brand-primary)",
+                  }}
+                >
+                  {category.name}
+                </span>
+              ))}
+            </div>
+          </div>
+          <Link
+            href={`/dashboard/review/${p.id}`}
+            className="btn btn-outline text-xs px-2 py-1 shrink-0"
+          >
+            Review
+          </Link>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────
+// PIE CHART — post statuses
+// ─────────────────────────────────────────────
+
+const StatusPieChart = ({ data = [] }) => {
+  const colored = data.map((d) => ({
+    ...d,
+    fill: STATUS_COLORS[d.status] ?? "#6b7280",
+    name: STATUS_LABELS[d.status] ?? d.status,
+  }));
+
+  const total = colored.reduce((s, d) => s + d.count, 0);
+
+  return (
+    <div className="flex flex-col sm:flex-row items-center gap-6">
+      <ResponsiveContainer width="100%" height={180}>
+        <PieChart>
+          <Pie
+            data={colored}
+            cx="50%"
+            cy="50%"
+            innerRadius={50}
+            outerRadius={80}
+            paddingAngle={3}
+            dataKey="count"
+          >
+            {colored.map((d, i) => (
+              <Cell key={i} fill={d.fill} />
+            ))}
+          </Pie>
+          <Tooltip content={<ChartTooltip />} />
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="flex flex-col gap-2 shrink-0">
+        {colored.map((d) => (
+          <div key={d.status} className="flex items-center gap-2">
+            <span
+              className="w-2.5 h-2.5 rounded-full shrink-0"
+              style={{ background: d.fill }}
+            />
+            <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
+              {d.name}
+            </span>
+            <span
+              className="text-xs font-bold tabular-nums ml-auto pl-3"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {d.count}
+            </span>
+            <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+              ({total ? Math.round((d.count / total) * 100) : 0}%)
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────
+// AREA CHART wrapper
+// ─────────────────────────────────────────────
+
+const SimpleAreaChart = ({ data = [], dataKey = "count", color = BRAND, label = "Count", height = 200 }) => (
+  <ResponsiveContainer width="100%" height={height}>
+    <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+      <defs>
+        <linearGradient id={`grad-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor={color} stopOpacity={0.25} />
+          <stop offset="95%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
+      <XAxis
+        dataKey="date"
+        tickFormatter={fmtAxisDate}
+        tick={{ fontSize: 10, fill: "var(--text-muted)" }}
+        axisLine={false}
+        tickLine={false}
+        interval="preserveStartEnd"
+      />
+      <YAxis
+        tick={{ fontSize: 10, fill: "var(--text-muted)" }}
+        axisLine={false}
+        tickLine={false}
+        allowDecimals={false}
+      />
+      <Tooltip content={<ChartTooltip />} />
+      <Area
+        type="monotone"
+        dataKey={dataKey}
+        name={label}
+        stroke={color}
+        strokeWidth={2}
+        fill={`url(#grad-${dataKey})`}
+        dot={false}
+        activeDot={{ r: 4, fill: color }}
+      />
+    </AreaChart>
+  </ResponsiveContainer>
+);
+
+// ─────────────────────────────────────────────
+// BAR CHART wrapper
+// ─────────────────────────────────────────────
+
+const SimpleBarchart = ({ data = [], dataKey = "postCount", nameKey = "name", color = BRAND, label = "Posts", height = 220 }) => (
+  <ResponsiveContainer width="100%" height={height}>
+    <BarChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }} barSize={18}>
+      <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
+      <XAxis
+        dataKey={nameKey}
+        tick={{ fontSize: 10, fill: "var(--text-muted)" }}
+        axisLine={false}
+        tickLine={false}
+        interval={0}
+        angle={-25}
+        textAnchor="end"
+        height={40}
+      />
+      <YAxis
+        tick={{ fontSize: 10, fill: "var(--text-muted)" }}
+        axisLine={false}
+        tickLine={false}
+        allowDecimals={false}
+      />
+      <Tooltip content={<ChartTooltip />} />
+      <Bar dataKey={dataKey} name={label} fill={color} radius={[3, 3, 0, 0]}>
+        {data.map((_, i) => (
+          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+        ))}
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+);
+
+// ─────────────────────────────────────────────
+// MULTI-LINE CHART (views + posts together)
+// ─────────────────────────────────────────────
+
+const MultiLineChart = ({ views = [], posts = [], height = 220 }) => {
+  // Merge both arrays on date key
+  const merged = views.map((v) => {
+    const match = posts.find((p) => p.date === v.date);
+    return { date: v.date, views: v.count, posts: match?.count ?? 0 };
+  });
+
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <LineChart data={merged} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
+        <XAxis
+          dataKey="date"
+          tickFormatter={fmtAxisDate}
+          tick={{ fontSize: 10, fill: "var(--text-muted)" }}
+          axisLine={false}
+          tickLine={false}
+          interval="preserveStartEnd"
+        />
+        <YAxis
+          yAxisId="left"
+          tick={{ fontSize: 10, fill: "var(--text-muted)" }}
+          axisLine={false}
+          tickLine={false}
+          allowDecimals={false}
+        />
+        <YAxis
+          yAxisId="right"
+          orientation="right"
+          tick={{ fontSize: 10, fill: "var(--text-muted)" }}
+          axisLine={false}
+          tickLine={false}
+          allowDecimals={false}
+        />
+        <Tooltip content={<ChartTooltip />} />
+        <Legend
+          wrapperStyle={{ fontSize: "11px", color: "var(--text-muted)", paddingTop: "8px" }}
+        />
+        <Line
+          yAxisId="left"
+          type="monotone"
+          dataKey="views"
+          name="Views"
+          stroke={BRAND}
+          strokeWidth={2}
+          dot={false}
+          activeDot={{ r: 4 }}
+        />
+        <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="posts"
+          name="Published"
+          stroke="#3b82f6"
+          strokeWidth={2}
+          dot={false}
+          activeDot={{ r: 4 }}
+          strokeDasharray="4 4"
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+};
+
+// ─────────────────────────────────────────────
+// PENDING COMMENTS LIST
+// ─────────────────────────────────────────────
+
+const PendingCommentsList = ({ comments = [] }) => {
+  if (!comments.length)
+    return (
+      <p className="text-sm py-6 text-center" style={{ color: "var(--text-muted)" }}>
+        No pending comments
+      </p>
+    );
+
+  return (
+    <div className="flex flex-col gap-3">
+      {comments.map((c) => (
+        <div
+          key={c.id}
+          className="p-3 rounded-lg border text-sm"
+          style={{
+            borderColor: "var(--border-light)",
+            background: "var(--bg-secondary)",
+          }}
+        >
+          <p className="line-clamp-2" style={{ color: "var(--text-primary)" }}>
+            {c.content}
+          </p>
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+              {c.author?.name ?? "Anonymous"}
+            </span>
+            <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+              on
+            </span>
+            <Link
+              href={`/blog/${c.post?.slug}`}
+              className="text-xs underline underline-offset-2 truncate max-w-40"
+              style={{ color: "var(--brand-primary)" }}
+            >
+              {c.post?.title}
+            </Link>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────
+// ROLE-SPECIFIC DASHBOARD VIEWS
+// ─────────────────────────────────────────────
+
+// ── ADMIN DASHBOARD ──────────────────────────
+const AdminDashboard = ({ analytics, range }) => {
+  const { kpis, charts, tables } = analytics;
+
+  return (
+    <div className="flex flex-col gap-8">
+
+      {/* KPI Row 1 — Posts + Users */}
+      <div>
+        <SectionHeading sub={`Site-wide stats for the last ${range} days`}>Overview</SectionHeading>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <KpiCard icon={FileText} label="Total Posts" value={kpis.posts.total} />
+          <KpiCard icon={CheckCircle} label="Published" value={kpis.posts.published} accent />
+          <KpiCard icon={Clock} label="Pending Review" value={kpis.posts.pending}
+            sub={kpis.posts.pending > 0 ? "Awaiting editorial approval" : undefined}
+          />
+          <KpiCard icon={Users} label="Total Users" value={kpis.users.total}
+            sub={`+${kpis.users.newInRange} in last ${range}d`}
+          />
+          <KpiCard icon={Eye} label="Total Views" value={kpis.views.allTime}
+            sub={`${kpis.views.inRange?.toLocaleString()} in last ${range}d`}
+          />
+        </div>
+      </div>
+
+      {/* KPI Row 2 — Engagement */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <KpiCard icon={MessageSquare} label="Approved Comments" value={kpis.comments.approved} />
+        <KpiCard
+          icon={AlertCircle}
+          label="Pending Comments"
+          value={kpis.comments.pending}
+          accent={kpis.comments.pending > 0}
+        />
+        <KpiCard icon={Mail} label="Active Subscribers" value={kpis.newsletter.active}
+          sub={`+${kpis.newsletter.newInRange} new`}
+        />
+        <KpiCard icon={FileText} label="Drafts" value={kpis.posts.drafts} />
+      </div>
+
+      {/* Views + Published Posts — big area chart */}
+      <ChartCard title="Views & Publishing Activity" sub="Daily page views vs. posts published">
+        <MultiLineChart
+          views={charts.viewsOverTime}
+          posts={charts.postsOverTime}
+          height={240}
+        />
+      </ChartCard>
+
+      {/* User growth + Newsletter */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard title="New Users" sub="Daily registrations">
+          <SimpleAreaChart
+            data={charts.usersOverTime}
+            color="#3b82f6"
+            label="Users"
+            height={180}
+          />
+        </ChartCard>
+        <ChartCard title="Newsletter Sign-ups" sub="Daily new subscribers">
+          <SimpleAreaChart
+            data={charts.subscribersOverTime}
+            color="#8b5cf6"
+            label="Subscribers"
+            height={180}
+          />
+        </ChartCard>
+      </div>
+
+      {/* Post Status Breakdown + Top Categories */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard title="Content by Status" sub="Distribution of all posts">
+          <StatusPieChart data={charts.postsByStatus} />
+        </ChartCard>
+        <ChartCard title="Top Categories" sub="By number of posts">
+          <SimpleBarchart
+            data={charts.topCategories}
+            dataKey="postCount"
+            nameKey="name"
+            label="Posts"
+          />
+        </ChartCard>
+      </div>
+
+      {/* Top Tags */}
+      <ChartCard title="Top Tags" sub="Most-used tags across all posts">
+        <SimpleBarchart
+          data={charts.topTags}
+          dataKey="postCount"
+          nameKey="name"
+          label="Posts"
+          height={200}
+        />
+      </ChartCard>
+
+      {/* Top Posts Table */}
+      <ChartCard title="Top Performing Posts" sub="Ranked by all-time views">
+        <TopPostsTable posts={tables.topPosts} />
+      </ChartCard>
+
+      {/* Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard title="Recent Posts" sub="Latest created">
+          <PostsTable posts={tables.recentPosts} showAuthor />
+        </ChartCard>
+        <ChartCard title="Pending Comments" sub="Awaiting moderation">
+          <PendingCommentsList comments={tables.pendingComments} />
+        </ChartCard>
+      </div>
+    </div>
+  );
+};
+
+// ── EDITOR DASHBOARD ─────────────────────────
+const EditorDashboard = ({ analytics, range }) => {
+  const { kpis, charts, tables } = analytics;
+
+  return (
+    <div className="flex flex-col gap-8">
+
+      {/* KPIs */}
+      <div>
+        <SectionHeading sub="Content pipeline at a glance">Content Overview</SectionHeading>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <KpiCard icon={CheckCircle} label="Published" value={kpis.published} accent />
+          <KpiCard
+            icon={Clock}
+            label="Pending Review"
+            value={kpis.pendingReview}
+            accent={kpis.pendingReview > 0}
+            sub={kpis.pendingReview > 0 ? "Needs attention" : "All clear"}
+          />
+          <KpiCard icon={XCircle} label="Rejected" value={kpis.rejected} />
+          <KpiCard icon={CalendarDays} label="Scheduled" value={kpis.scheduled} />
+          <KpiCard icon={MessageSquare} label="Pending Comments" value={kpis.pendingComments} />
+          <KpiCard icon={MessageSquare} label="Approved Comments" value={kpis.totalComments} />
+        </div>
+      </div>
+
+      {/* Views over time */}
+      <ChartCard title="Site Views" sub={`Daily views over last ${range} days`}>
+        <SimpleAreaChart data={charts.viewsOverTime} height={220} label="Views" />
+      </ChartCard>
+
+      {/* Status pie + Categories */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard title="Content Pipeline" sub="Posts by status">
+          <StatusPieChart data={charts.postsByStatus} />
+        </ChartCard>
+        <ChartCard title="Top Categories" sub="By post count">
+          <SimpleBarchart
+            data={charts.topCategories}
+            dataKey="postCount"
+            nameKey="name"
+            label="Posts"
+          />
+        </ChartCard>
+      </div>
+
+      {/* Review Queue — priority card */}
+      <div
+        className="card rounded-lg p-5"
+        style={{ borderColor: kpis.pendingReview > 0 ? "#f59e0b66" : "var(--border-light)" }}
+      >
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+              Review Queue
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+              {kpis.pendingReview} post{kpis.pendingReview !== 1 ? "s" : ""} awaiting your approval
+            </p>
+          </div>
+          {kpis.pendingReview > 0 && (
+            <span
+              className="text-xs font-bold px-2 py-1 rounded-full"
+              style={{ background: "#f59e0b22", color: "#f59e0b" }}
+            >
+              {kpis.pendingReview} pending
+            </span>
+          )}
+        </div>
+        <ReviewQueue posts={tables.pendingReviewQueue} />
+      </div>
+
+      {/* Top posts + recently published */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard title="Top Performing Posts" sub="By views">
+          <TopPostsTable posts={tables.topPosts} />
+        </ChartCard>
+        <ChartCard title="Recently Published" sub={`Last ${range} days`}>
+          <PostsTable posts={tables.recentlyPublished} showAuthor />
+        </ChartCard>
+      </div>
+    </div>
+  );
+};
+
+// ── WRITER DASHBOARD ─────────────────────────
+const WriterDashboard = ({ analytics, range }) => {
+  const { kpis, charts, tables } = analytics;
+  const eng = kpis.engagement;
+
+  return (
+    <div className="flex flex-col gap-8">
+
+      {/* Post status KPIs */}
+      <div>
+        <SectionHeading sub="Your content at a glance">My Posts</SectionHeading>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <KpiCard icon={FileText} label="Total" value={kpis.posts.total} />
+          <KpiCard icon={CheckCircle} label="Published" value={kpis.posts.published} accent />
+          <KpiCard icon={FileText} label="Drafts" value={kpis.posts.drafts} />
+          <KpiCard icon={Clock} label="Pending" value={kpis.posts.pending} />
+          <KpiCard icon={XCircle} label="Rejected" value={kpis.posts.rejected}
+            accent={kpis.posts.rejected > 0}
+          />
+        </div>
+      </div>
+
+      {/* Engagement KPIs */}
+      <div>
+        <SectionHeading sub="Across all your published posts">Engagement</SectionHeading>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <KpiCard icon={Eye} label="Total Views" value={eng.totalViews} accent
+            sub={`${eng.viewsInRange?.toLocaleString()} in last ${range}d`}
+          />
+          <KpiCard icon={TrendingUp} label="Views (Period)" value={eng.viewsInRange} />
+          <KpiCard icon={ThumbsUp} label="Likes" value={eng.totalLikes} />
+          <KpiCard icon={HandMetal} label="Claps" value={eng.totalClaps} />
+          <KpiCard icon={MessageSquare} label="Comments" value={eng.totalComments} />
+          <KpiCard icon={Bookmark} label="Bookmarks" value={eng.totalBookmarks} />
+        </div>
+      </div>
+
+      {/* Views over time */}
+      <ChartCard title="Views on Your Posts" sub={`Daily traffic over last ${range} days`}>
+        <SimpleAreaChart data={charts.viewsOverTime} height={220} label="Views" />
+      </ChartCard>
+
+      {/* Posts published + status breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard title="Your Publishing Frequency" sub="Posts published per day">
+          <SimpleAreaChart
+            data={charts.postsOverTime}
+            color="#3b82f6"
+            label="Posts"
+            height={180}
+          />
+        </ChartCard>
+        <ChartCard title="Your Content Status" sub="Breakdown of all posts">
+          <StatusPieChart data={charts.postStatusBreakdown} />
+        </ChartCard>
+      </div>
+
+      {/* Top posts */}
+      <ChartCard title="Your Top Posts" sub="Best performing published posts">
+        <TopPostsTable posts={tables.topPosts} />
+      </ChartCard>
+
+      {/* Recent posts — with rejection reasons */}
+      <ChartCard title="Recent Activity" sub="Your latest posts">
+        <PostsTable posts={tables.recentPosts} showAuthor={false} showRejection />
+      </ChartCard>
+    </div>
+  );
+};
+
+// ── GUEST WRITER DASHBOARD ───────────────────
+const GuestWriterDashboard = ({ analytics, range }) => {
+  const { kpis, charts, tables } = analytics;
+
+  return (
+    <div className="flex flex-col gap-8">
+
+      {/* KPIs */}
+      <div>
+        <SectionHeading sub="Your submission stats">My Submissions</SectionHeading>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <KpiCard icon={FileText} label="Total" value={kpis.total} />
+          <KpiCard icon={CheckCircle} label="Published" value={kpis.published} accent />
+          <KpiCard icon={FileText} label="Drafts" value={kpis.drafts} />
+          <KpiCard icon={Clock} label="Pending Review" value={kpis.pendingReview} />
+          <KpiCard icon={Eye} label="Total Views" value={kpis.totalViews} accent />
+          <KpiCard icon={TrendingUp} label={`Views (${range}d)`} value={kpis.viewsInRange} />
+        </div>
+      </div>
+
+      {/* Views chart */}
+      <ChartCard title="Views on Your Posts" sub={`Last ${range} days`}>
+        <SimpleAreaChart data={charts.viewsOverTime} height={200} label="Views" />
+      </ChartCard>
+
+      {/* All posts with status tracking */}
+      <ChartCard title="My Posts" sub="Track your submission status">
+        <PostsTable posts={tables.myPosts} showAuthor={false} showRejection />
+      </ChartCard>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────
+// MAIN DASHBOARD CLIENT
+// ─────────────────────────────────────────────
+
+const ROLE_LABELS = {
+  admin: "Admin",
+  editor: "Editor",
+  writer: "Writer",
+  guest_writer: "Guest Writer",
+};
+
+const DashboardClient = ({ analytics, range }) => {
+  const router = useRouter();
+  const role = analytics?.role;
+
+  const handleRangeChange = (newRange) => {
+    router.push(`?range=${newRange}`);
+  };
+
+  const renderDashboard = () => {
+    switch (role) {
+      case "admin":
+        return <AdminDashboard analytics={analytics} range={range} />;
+      case "editor":
+        return <EditorDashboard analytics={analytics} range={range} />;
+      case "writer":
+        return <WriterDashboard analytics={analytics} range={range} />;
+      case "guest_writer":
+        return <GuestWriterDashboard analytics={analytics} range={range} />;
+      default:
+        return (
+          <div
+            className="flex flex-col items-center justify-center py-24 gap-3"
+            style={{ color: "var(--text-muted)" }}
+          >
+            <BarChart2 size={36} />
+            <p className="text-sm">No dashboard available for your role.</p>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div
+      className="min-h-screen"
+      style={{ background: "var(--bg-light)" }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+
+        {/* Page header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span
+                className="text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-widest"
+                style={{
+                  background: "var(--brand-primary-light)",
+                  color: "var(--brand-primary)",
+                }}
+              >
+                {ROLE_LABELS[role] ?? role}
+              </span>
+            </div>
+            <h1
+              className="heading-2 font-serif"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Dashboard
+            </h1>
+            <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
+              {role === "admin" || role === "editor"
+                ? "Site-wide analytics and content management"
+                : "Your personal writing analytics"}
+            </p>
+          </div>
+          <RangePicker current={range} onChange={handleRangeChange} />
+        </div>
+
+        {/* Dashboard content */}
+        {renderDashboard()}
+      </div>
+    </div>
+  );
+};
+
+export default DashboardClient;

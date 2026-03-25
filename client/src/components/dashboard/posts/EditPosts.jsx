@@ -37,7 +37,7 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
     const [thumbnail,          setThumbnail]          = useState(initialThumbnail);
     const [selectedCategories, setSelectedCategories] = useState(initialCategoryIds);
     const [selectedTags,       setSelectedTags]       = useState(initialTagIds);
-    const [selectedSeries,     setSelectedSeries]     = useState(post?.seriesId     ?? "");
+    // const [selectedSeries,     setSelectedSeries]     = useState(post?.seriesId     ?? "");
     const [status,             setStatus]             = useState(post?.status        ?? "DRAFT");
     const [isFeatured,         setIsFeatured]         = useState(post?.isFeatured    ?? false);
     const [isPinned,           setIsPinned]           = useState(post?.isPinned      ?? false);
@@ -105,7 +105,7 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
         coverImageId: thumbnail?.id  ?? null,
         categories:   selectedCategories,
         tags:         selectedTags,
-        seriesId:     selectedSeries || null,
+        seriesId:     null,
         status:       overrideStatus ?? status,
         isFeatured,
         isPinned,
@@ -386,7 +386,9 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
                                                     >
                                                         <option value="DRAFT">Draft</option>
                                                         <option value="PENDING">Submit for Review</option>
+                                                        {user?.role === "admin" || user?.role === "editor" ? (
                                                         <option value="PUBLISHED">Published</option>
+                                                        ): null}
                                                         <option value="SCHEDULED">Scheduled</option>
                                                     </select>
                                                     <ChevronDown size={13} className="uc-chevron" />
@@ -480,7 +482,7 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
                                         </div>
 
                                         {/* ── Series ── */}
-                                        {series.length > 0 && (
+                                        {/* {series.length > 0 && (
                                             <div className="pc-sidebar-section">
                                                 <SectionTitle icon={BookOpen}>Series</SectionTitle>
                                                 <div className="uc-select-wrap">
@@ -500,7 +502,7 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
                                                     Group this post with a series.
                                                 </p>
                                             </div>
-                                        )}
+                                        )} */}
                                     </>
                                 )}
 

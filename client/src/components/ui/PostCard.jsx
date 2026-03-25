@@ -51,7 +51,6 @@ export function PostCard({
 
   const cats = post?.categories?.map((c) => c.category) ?? [];
   const tags = post?.tags?.map((t) => t.tag) ?? [];
-  console.log(post)
   return (
     <>
       <style>{STYLES}</style>

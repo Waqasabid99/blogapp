@@ -69,7 +69,13 @@ const createPost = asyncHandler(async (req, res) => {
     // Generate Status
     let postStatus = "DRAFT";
 
-    if (author.role === "ADMIN" || author.role === "EDITOR") {
+    if (author.role.toUpperCase() === "WRITER" || author.role.toUpperCase() === "GUEST_WRITER") {
+        if (status === "PUBLISHED") {
+            throw new ApiError(403, "You don't have permission to publish this post");
+        }
+    }
+
+    if (author.role.toUpperCase() === "ADMIN" || author.role.toUpperCase() === "EDITOR") {
         postStatus = status ?? "PUBLISHED";
     }
 
@@ -176,6 +182,7 @@ const createPost = asyncHandler(async (req, res) => {
                     postId: createdPost.id,
                     metaTitle: title,
                     metaDescription: generatedExcerpt,
+                    ogImageId: coverImageId ?? null,
                 },
             });
 
@@ -531,6 +538,173 @@ const getAllPosts = asyncHandler(async (req, res) => {
     });
 });
 
+// Get Own posts
+const getOwnPosts = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10, search, status, category, tag, author, featured, pinned, sortBy = "createdAt", order = "desc" } = req.query;
+    const userId = req.user?.id;
+    const pageNumber = Math.max(parseInt(page), 1);
+    const pageSize = Math.min(parseInt(limit), 50);
+
+    const skip = (pageNumber - 1) * pageSize;
+
+    // BUILD FILTERS
+
+    const where = {
+        authorId: userId,
+        deletedAt: null,
+    };
+
+    // Status filter
+    if (status) {
+        where.status = status;
+    }
+
+    // Author filter
+    if (author) {
+        where.authorId = author;
+    }
+
+    // Featured
+    if (featured === "true") {
+        where.isFeatured = true;
+    }
+
+    // Pinned
+    if (pinned === "true") {
+        where.isPinned = true;
+    }
+
+    // Search (title + excerpt)
+    if (search) {
+        where.OR = [
+            {
+                title: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+            },
+            {
+                excerpt: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+            },
+        ];
+    }
+
+    // Category filter
+    if (category) {
+        where.categories = {
+            some: {
+                categoryId: category,
+            },
+        };
+    }
+
+    // Tag filter
+    if (tag) {
+        where.tags = {
+            some: {
+                tagId: tag,
+            },
+        };
+    }
+
+    // SORTING
+
+    const allowedSortFields = ["createdAt", "updatedAt", "publishedAt", "readingTime", "wordCount", "title"];
+
+    const sortField = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
+
+    const sortOrder = order === "asc" ? "asc" : "desc";
+
+    // QUERY
+
+    const [posts, total] = await Promise.all([
+        prisma.post.findMany({
+            where,
+            skip,
+            take: pageSize,
+            orderBy: {
+                [sortField]: sortOrder,
+            },
+            select: {
+                id: true,
+                title: true,
+                slug: true,
+                excerpt: true,
+                status: true,
+                readingTime: true,
+                wordCount: true,
+                isFeatured: true,
+                isPinned: true,
+                publishedAt: true,
+                createdAt: true,
+
+                coverImage: {
+                    select: {
+                        id: true,
+                        url: true,
+                        altText: true,
+                        width: true,
+                        height: true,
+                    },
+                },
+
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        avatarUrl: true,
+                    },
+                },
+
+                categories: {
+                    select: {
+                        category: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                            },
+                        },
+                    },
+                },
+
+                tags: {
+                    select: {
+                        tag: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                            },
+                        },
+                    },
+                },
+            },
+        }),
+
+        prisma.post.count({
+            where,
+        }),
+    ]);
+
+    // PAGINATION META
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    return apiResponse(res, 200, true, "Posts fetched", {
+        posts,
+        pagination: {
+            total,
+            page: pageNumber,
+            limit: pageSize,
+            totalPages,
+        },
+    });
+});
+
 // Get single post
 const getSinglePost = asyncHandler(async (req, res) => {
     const { slug } = req.params;
@@ -624,7 +798,6 @@ const getSinglePost = asyncHandler(async (req, res) => {
     }
 
     // STATUS VISIBILITY RULES
-    console.log(post)
     const isAuthor = user && user.id === post.authorId;
     const isAdmin = user && (user.role.toUpperCase() === "ADMIN" || user.role.toUpperCase() === "EDITOR");
 
@@ -1327,5 +1500,6 @@ export {
     getPinnedPosts,
     getPopularPosts,
     getTrendingPosts,
-    getPostsByCategory
+    getPostsByCategory,
+    getOwnPosts
 };

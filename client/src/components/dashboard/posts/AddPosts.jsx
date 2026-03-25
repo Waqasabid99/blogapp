@@ -30,7 +30,7 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
     const [thumbnail, setThumbnail] = useState(null); // { id, url, name }
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
-    const [selectedSeries, setSelectedSeries] = useState("");
+    // const [selectedSeries, setSelectedSeries] = useState("");
     const [status, setStatus] = useState("DRAFT");
     const [isFeatured, setIsFeatured] = useState(false);
     const [isPinned, setIsPinned] = useState(false);
@@ -86,7 +86,7 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
         coverImageId: thumbnail?.id ?? null,
         categories: selectedCategories,
         tags: selectedTags,
-        seriesId: selectedSeries || null,
+        seriesId: null,
         status: overrideStatus ?? status,
         isFeatured,
         isPinned,
@@ -310,7 +310,9 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
                                                     >
                                                         <option value="DRAFT">Draft</option>
                                                         <option value="PENDING">Submit for Review</option>
-                                                        <option value="PUBLISHED">Published</option>
+                                                        {user?.role === "admin" || user?.role === "editor" ? (
+                                                            <option value="PUBLISHED">Published</option>
+                                                        ) : null}
                                                         <option value="SCHEDULED">Scheduled</option>
                                                     </select>
                                                     <ChevronDown size={13} className="uc-chevron" />
@@ -404,7 +406,7 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
                                         </div>
 
                                         {/* ── Series ── */}
-                                        {series.length > 0 && (
+                                        {/* {series.length > 0 && (
                                             <div className="pc-sidebar-section">
                                                 <SectionTitle icon={BookOpen}>Series</SectionTitle>
                                                 <div className="uc-select-wrap">
@@ -424,7 +426,7 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
                                                     Group this post with a series.
                                                 </p>
                                             </div>
-                                        )}
+                                        )} */}
                                     </>
                                 )}
 

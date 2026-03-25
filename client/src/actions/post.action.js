@@ -12,6 +12,21 @@ export const getAllPosts = async () => {
     return data
 };
 
+export const getOwnerPosts = async () => {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+    const response = await fetch(`${base_url}/post/owner`, {
+        headers: {
+            Cookie: `accessToken=${accessToken}`
+        },
+        next: {
+            tags: ["posts"]
+        }
+    })
+    const data = await response.json()
+    return data
+};
+
 export const getSinglePost = async (slug) => {
     const response = await fetch(`${base_url}/post/${slug}`, {
         next: {

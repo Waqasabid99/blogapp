@@ -19,7 +19,7 @@ export const requirePostOwnership = async (req, res, next) => {
     //////////////////////////////////////////////////////
 
     if (
-      req.user.role === "ADMIN" ||
+      req.user.role.toUpperCase() === "ADMIN" ||
       req.user.permissions.includes("post.update") ||
       req.user.permissions.includes("post.delete")
     ) {

@@ -13,6 +13,6 @@ authRouter.post('/refresh-token', refreshToken);
 authRouter.patch('/update', verifyUser, updateUser);
 authRouter.post('/forget-password', forgotPasswordLimiter, forgetPassword);
 authRouter.post('/change-password', verifyUser, changePassword);
-authRouter.post("/verify", verifyUser, (req, res) => { apiResponse(res, 200, true, "Verified"); });
+authRouter.post("/verify", verifyUser, (req, res) => { apiResponse(res, 200, true, "Verified", req.user); });
 
 export default authRouter;

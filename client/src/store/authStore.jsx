@@ -136,11 +136,20 @@ const useAuthStore = create(
           const { data } = await api.get("/auth");
           if (data?.success && data?.data?.user) {
             get().setAuthUser(data.data.user);
+            return {
+              success: true
+            }
           } else {
             get().forceLogout();
+            return {
+              success: false
+            }
           }
         } catch (error) {
           get().forceLogout();
+          return {
+            success: false
+          }
         }
       },
 

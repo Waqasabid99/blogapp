@@ -234,7 +234,7 @@ const Navbar = ({ categories }) => {
                   ) : (
                     <div className="py-1">
                       <Link
-                        href={`/dashboard/${user?.role}/${user?.id}`}
+                        href={user?.role === "guest_writer" ? `/dashboard/${user?.role}/${user?.id}/posts` : `/dashboard/${user?.role}/${user?.id}`}
                         onClick={() => setProfileOpen(false)}
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-(--text-primary) hover:bg-(--bg-light) transition-colors"
                       >

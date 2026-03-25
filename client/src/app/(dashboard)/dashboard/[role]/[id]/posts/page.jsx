@@ -11,7 +11,8 @@ export const metadata = generateSEO({
   type: "website",
 });
 
-const page = async function page() {
+const page = async function page({ params }) {
+  const { role } = await params;
   const [{ data: catData }, { data: tagData }] = await Promise.all([
     getFlatCategories(),
     getAllTags(),
@@ -21,6 +22,7 @@ const page = async function page() {
     <PostGrid
       categories={catData?.data ?? []}
       tags={tagData?.data?.tags ?? []}
+      role={role}
     />
   );
 }

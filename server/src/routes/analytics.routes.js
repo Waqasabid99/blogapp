@@ -1,42 +1,51 @@
-import express from "express";
+import { Router } from "express";
 import {
-    trackPageView,
-    updateEngagement,
-    getDashboardOverview,
-    getTrafficAnalytics,
-    getContentAnalytics,
-    getPostAnalytics,
-    getCategoryAnalytics,
-    getTagAnalytics,
-    getUserAnalytics,
-    getRetentionAnalytics,
-    exportAnalytics,
-    generateReport,
+  getDashboardAnalytics,
+  getPostAnalytics,
+  getSiteOverview,
 } from "../controllers/analytics.controller.js";
 import { verifyUser } from "../middleware/auth.middleware.js";
-import { requirePermissionWithAdmin } from "../middleware/permissions.middleware.js";
+import { requirePermission } from "../middleware/permissions.middleware.js";
 
-const analyticsRouter = express.Router();
+const analyticsRouter = Router();
 
-// Public Tracking Routes
-analyticsRouter.post("/view", trackPageView);
-analyticsRouter.post("/engagement", updateEngagement);
-
-// Protected Analytics Routes
+// All analytics routes require authentication
 analyticsRouter.use(verifyUser);
 
-// Apply admin or specific permission requirement for analytics access
-const requireAnalyticsView = requirePermissionWithAdmin("analytics.view");
+/**
+ * GET /api/analytics/dashboard?range=30
+ *
+ * Returns role-scoped dashboard data.
+ * Every authenticated role gets a tailored payload:
+ *   - admin       → full site overview, user growth, content pipeline
+ *   - editor      → content pipeline, review queue, top posts
+ *   - writer      → personal post stats & engagement
+ *   - guest_writer → basic personal post stats
+ *
+ * Query params:
+ *   range  7 | 14 | 30 (default) | 90  — time window in days
+ */
+analyticsRouter.get("/dashboard", getDashboardAnalytics);
 
-analyticsRouter.get("/dashboard", requireAnalyticsView, getDashboardOverview);
-analyticsRouter.get("/traffic", requireAnalyticsView, getTrafficAnalytics);
-analyticsRouter.get("/content", requireAnalyticsView, getContentAnalytics);
-analyticsRouter.get("/posts/:id", requireAnalyticsView, getPostAnalytics);
-analyticsRouter.get("/categories", requireAnalyticsView, getCategoryAnalytics);
-analyticsRouter.get("/tags", requireAnalyticsView, getTagAnalytics);
-analyticsRouter.get("/users", requireAnalyticsView, getUserAnalytics);
-analyticsRouter.get("/retention", requireAnalyticsView, getRetentionAnalytics);
-analyticsRouter.get("/export", requireAnalyticsView, exportAnalytics);
-analyticsRouter.post("/report", requireAnalyticsView, generateReport);
+/**
+ * GET /api/analytics/post/:postId?range=30
+ *
+ * Deep analytics for a single post.
+ * Admin / Editor can view any post.
+ * Writer / Guest can only view their own posts.
+ */
+analyticsRouter.get("/post/:postId", getPostAnalytics);
+
+/**
+ * GET /api/analytics/overview
+ *
+ * Quick site-wide KPI snapshot (Admin only).
+ * Suitable for a compact header stat bar.
+ */
+analyticsRouter.get(
+  "/overview",
+  requirePermission("admin"),
+  getSiteOverview
+);
 
 export default analyticsRouter;

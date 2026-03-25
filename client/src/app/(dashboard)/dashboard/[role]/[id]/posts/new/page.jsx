@@ -12,7 +12,7 @@ export const metadata = generateSEO({
     type: "website",
 });
 
-export default async function CreatePostPage() {
+export default async function CreatePostPage({ params }) {
     const [categories, tags, series] = await Promise.all([
         getFlatCategories(),
         getAllTags(),

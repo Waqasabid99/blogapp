@@ -8,6 +8,7 @@ export function Providers({ children }) {
       attribute="class"
       defaultTheme="system"
       enableSystem
+      storageKey="theme-store"
     >
       {children}
     </ThemeProvider>

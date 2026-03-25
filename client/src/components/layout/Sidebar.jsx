@@ -12,7 +12,8 @@ import {
     Settings,
     LogOut,
     Menu,
-    X
+    X,
+    BookOpenTextIcon
 } from "lucide-react";
 import useAuthStore from "@/store/authStore";
 
@@ -53,6 +54,20 @@ const Sidebar = () => {
                 "post.view_drafts"
             ],
         },
+        // {
+        //     label: "Series",
+        //     icon: BookOpenTextIcon,
+        //     href: `/dashboard/${user?.role}/${user?.id}/series`,
+        //     requiredPermissions: [
+        //         "series.create",
+        //         "series.update",
+        //         "series.delete",
+        //         "series.publish",
+        //         "series.approve",
+        //         "series.reject",
+        //         "series.view_drafts"
+        //     ],
+        // },
         {
             label: "Categories",
             icon: FolderOpen,
@@ -73,17 +88,17 @@ const Sidebar = () => {
                 "tag.delete"
             ],
         },
-        {
-            label: "Comments",
-            icon: MessageSquare,
-            href: `/dashboard/${user?.role}/${user?.id}/comments`,
-            requiredPermissions: [
-                "comment.moderate",
-                "comment.approve",
-                "comment.reject",
-                "comment.spam"
-            ],
-        },
+        // {
+        //     label: "Comments",
+        //     icon: MessageSquare,
+        //     href: `/dashboard/${user?.role}/${user?.id}/comments`,
+        //     requiredPermissions: [
+        //         "comment.moderate",
+        //         "comment.approve",
+        //         "comment.reject",
+        //         "comment.spam"
+        //     ],
+        // },
         {
             label: "Users",
             icon: Users,

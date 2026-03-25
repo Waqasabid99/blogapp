@@ -16,7 +16,7 @@ const HeroSlider = ({ posts }) => {
         navigation={true}
         pagination={false}
         autoplay={false}
-        className="w-full h-[400]"
+        className="w-full min-h-full"
       >
         {posts?.map((post) => (
           <SwiperSlide key={post.id}>

@@ -15,13 +15,12 @@ export const metadata = generateSEO({
 
 export default async function AdminLayout({ children }) {
   return (
-    <CheckAdminAuth>
       <section className="flex">
         <Suspense fallback={<SidebarSkeleton />}>
           <Sidebar />
         </Suspense>
         <section className="flex-1 p-3">{children}</section>
       </section>
-    </CheckAdminAuth>
+  
   );
 }

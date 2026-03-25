@@ -54,12 +54,12 @@ app.use(
     })
 );
 
-// app.use(
-//     rateLimit({
-//         windowMs: 15 * 60 * 1000,
-//         max: 200,
-//     })
-// );
+app.use(
+    rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 200,
+    })
+);
 
 app.use(
     cors({

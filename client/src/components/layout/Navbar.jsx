@@ -177,10 +177,11 @@ const Navbar = ({ categories }) => {
           {/* Theme Toggle */}
           <button
             onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
+            aria-label="switch-theme"
             className="relative flex items-center w-16 h-8 px-1 rounded-full bg-(--bg-tertiary) transition-colors duration-300 cursor-pointer"
           >
-            <Moon className="w-4 h-4 text-(--text-secondary)" />
-            <Sun className="w-4 h-4 ml-auto text-(--text-secondary)" />
+            <Moon className="w-4 h-4 text-(--text-secondary)" aria-label="Dark mode" />
+            <Sun className="w-4 h-4 ml-auto text-(--text-secondary)" aria-label="Light mode" />
             <span
               className={`absolute w-6 h-6 bg-(--bg-primary) rounded-full shadow-md transform transition-transform duration-300
               ${currentTheme === "dark" ? "translate-x-8" : "translate-x-0"}`}

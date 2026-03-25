@@ -178,7 +178,6 @@ export function ThumbnailUploader({ value, onChange }) {
                 headers: { "Content-Type": "multipart/form-data" },
                 withCredentials: true,
             });
-            console.log(data)
             onChange({ id: data?.data?.media?.id, url: data?.data?.cloudinaryData?.url, name: file.name });
         } catch (e) {
             setError(e?.response?.data?.message ?? "Upload failed.");

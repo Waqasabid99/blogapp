@@ -15,7 +15,6 @@ const generateUnsubscribeToken = () => {
 // Subscribe to newsletter (Public)
 const subscribe = asyncHandler(async (req, res) => {
     const { email, userId } = req.body;
-    console.log(email, userId)
     // Validate email
     if (!email) {
         throw new ApiError(400, "Valid email is required");

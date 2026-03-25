@@ -1036,6 +1036,8 @@ const DashboardClient = ({ analytics, range }) => {
   const router = useRouter();
   const role = analytics?.role;
 
+  console.log(analytics)
+
   const handleRangeChange = (newRange) => {
     router.push(`?range=${newRange}`);
   };

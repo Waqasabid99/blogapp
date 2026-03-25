@@ -53,7 +53,6 @@ const register = asyncHandler(async (req, res) => {
         },
     });
     if (!user) throw new ApiError(500, "Failed to create user");
-    console.log(user);
     // Get SafeUser
     const safeUser = getSafeUser(user);
 
@@ -100,7 +99,6 @@ const login = asyncHandler(async (req, res) => {
     });
 
     if (!user) throw new ApiError(401, "User not found");   
-    console.log(user)
     // Check if password is correct
     const isPasswordCorrect = await verifyPassword(password, user.passwordHash);
 

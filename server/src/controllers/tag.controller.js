@@ -247,7 +247,6 @@ const getTag = asyncHandler(async (req, res) => {
 // GET TAG BY ID (Internal/Admin use)
 const getTagById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log(id);
   const tag = await prisma.tag.findUnique({
     where: { id },
     include: {

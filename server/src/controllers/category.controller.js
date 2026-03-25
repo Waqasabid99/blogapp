@@ -155,7 +155,6 @@ const deleteCategory = asyncHandler(async (req, res) => {
   const { id } = req.query;
 
   const category = await prisma.category.findUnique({ where: { id }, include: { children: true } });
-  console.log(category);
   if (!category) throw new ApiError(404, "Category not found");
 
   if (category?.children.length > 0) throw new ApiError(400, "Category has children, cannot delete");

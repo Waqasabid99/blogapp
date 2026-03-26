@@ -61,6 +61,7 @@ const Footer = ({ categories }) => {
                     </div>
 
                     {/* Categories */}
+                    {categories ? (
                     <div>
                         <h4 className="text-base font-semibold text-(--text-primary) mb-6">Categories</h4>
                         <ul className="flex flex-col gap-3">
@@ -69,6 +70,7 @@ const Footer = ({ categories }) => {
                             ))}
                         </ul>
                     </div>
+                    ) : null}
 
                     {/* Legal */}
                     <div>

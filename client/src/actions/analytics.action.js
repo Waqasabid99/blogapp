@@ -21,6 +21,7 @@ export const getDashboardAnalytics = async (range = 30) => {
         next: { tags: ["analytics"], revalidate: 300 }, // 5-min cache
       }
     );
+    console.log(response);
     if (!response.ok) return null;
     return await response.json();
   } catch {
@@ -38,6 +39,7 @@ export const getPostAnalytics = async (postId, range = 30) => {
         next: { tags: ["analytics"] },
       }
     );
+    console.log(response);
     if (!response.ok) return null;
     return await response.json();
   } catch {
@@ -52,6 +54,7 @@ export const getSiteOverview = async () => {
       headers,
       next: { tags: ["analytics"], revalidate: 60 },
     });
+    console.log(response);
     if (!response.ok) return null;
     return await response.json();
   } catch {

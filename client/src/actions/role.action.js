@@ -14,7 +14,7 @@ export const getAllRoles = async () => {
                 tags: ["roles"]
             }
         })
-
+        console.log(response);
         const data = await response.json();
         if (!response.ok) {
             throw new Error(data?.message || "Failed to fetch roles");
@@ -38,7 +38,7 @@ export const getAllPermissions = async () => {
                 tags: ["permissions"]
             }
         });
-
+        console.log(response);
         const data = await response.json();
         if (!response.ok) {
             throw new Error(data?.message || "Failed to fetch permissions");

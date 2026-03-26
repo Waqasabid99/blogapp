@@ -8,6 +8,7 @@ export const getAllPosts = async () => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -23,6 +24,7 @@ export const getOwnerPosts = async () => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -33,6 +35,7 @@ export const getSinglePost = async (slug) => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 }
@@ -48,6 +51,7 @@ export const getPostById = async (id) => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -63,6 +67,7 @@ export const getRelatedPosts = async (categoryId, excludeId, limit) => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -74,6 +79,7 @@ export const getPublishedPosts = async () => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -84,6 +90,7 @@ export const getLatestPosts = async () => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -94,6 +101,7 @@ export const getFeaturedPosts = async () => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -104,6 +112,7 @@ export const getPinnedPosts = async () => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -114,6 +123,7 @@ export const getPopularPosts = async () => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -124,6 +134,7 @@ export const getTrendingPosts = async () => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };
@@ -135,6 +146,7 @@ export const getPostsByCategory = async (slug) => {
             tags: ["posts"]
         }
     })
+    console.log(response);
     const data = await response.json()
     return data
 };

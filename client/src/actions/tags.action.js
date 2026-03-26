@@ -9,7 +9,7 @@ export const getAllTags = async (filters) => {
                 tags: ["tags"]
             }
         });
-        
+        console.log(response);
         if (!response.ok) {
             throw new Error("Failed to fetch tags");
         }
@@ -33,7 +33,7 @@ export const getTagById = async (id) => {
                 tags: ["tags"]
             },
         });
-
+        console.log(response);
         if (!response.ok) {
             throw new Error("Failed to fetch tag");
         }

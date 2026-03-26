@@ -18,7 +18,6 @@ export async function generateMetadata({ params }) {
 }
 
 const page = async function page({ params }) {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     const { category } = await params
     const posts = await getPostsByCategory(category)
     if (!posts?.data?.posts?.length) {

@@ -133,7 +133,7 @@ const useAuthStore = create(
 
       checkAuth: async () => {
         try {
-          const { data } = await api.get("/auth");
+          const { data } = await api.post("/auth/verify");
           if (data?.success && data?.data?.user) {
             get().setAuthUser(data.data.user);
           } else {

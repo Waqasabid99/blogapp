@@ -13,6 +13,7 @@ const useAuthStore = create(
       role: null,
 
       isLoading: false,
+      isCheckingAuth: true,
       isGoogleLoading: false,
       isAppleLoading: false,
 
@@ -132,42 +133,39 @@ const useAuthStore = create(
       clearError: () => set({ error: null }),
 
       checkAuth: async () => {
+        set({ isCheckingAuth: true });
         try {
           const { data } = await api.get("/auth");
           if (data?.success && data?.data?.user) {
             get().setAuthUser(data.data.user);
-            return {
-              success: true
-            }
+            return { success: true };
           } else {
             get().forceLogout();
-            return {
-              success: false
-            }
+            return { success: false };
           }
         } catch (error) {
           get().forceLogout();
-          return {
-            success: false
-          }
+          return { success: false };
+        } finally {
+          set({ isCheckingAuth: false });
         }
       },
 
       forceLogout: () => {
         set({
           user: null,
+          avatar: null,
           isAuthenticated: false,
           permissions: [],
           role: null,
           isLoading: false,
+          isCheckingAuth: false,
           error: null,
         });
       },
     }),
     {
       name: "auth-store",
-      skipHydration: true,
-
       partialize: (state) => ({
         user: state.user,
         avatar: state.avatar,

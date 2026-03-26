@@ -44,18 +44,20 @@ export function verifyToken(token) {
     }
 }
 
-// Cookie Options for singup
+// Cookie Options for access token
 export const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? true : false,
-    sameSite: "strict",
-    maxAge:  15 * 60 * 1000 // 15 minutes
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax",
+    path: "/",
+    maxAge: 15 * 60 * 1000 // 15 minutes
 }
 
-// Cookie Options for login
+// Cookie Options for refresh token
 export const refreshTokenCookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? true : false,
-    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax",
+    path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 }

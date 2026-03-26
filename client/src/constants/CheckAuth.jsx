@@ -1,17 +1,17 @@
 "use client";
-import { useEffect } from 'react'
 import useAuthStore from '@/store/authStore'
+import React, { useEffect } from 'react'
 
-const CheckAuth = ({children}) => {
-   const { checkAuth } = useAuthStore();
+const CheckAuth = ({ children }) => {
+  const { checkAuth } = useAuthStore();
 
-   useEffect(() => {
-    checkAuth()
-   }, [])
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   return (
     <>
-        {children}
+      {children}
     </>
   )
 }

@@ -22,7 +22,7 @@ export const setAuthCookies = (res, accessToken, refreshToken, accessOptions, re
 export const clearAuthCookies = (res) => {
   const clearOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? true : false,
+    secure: true,
     sameSite: "none",
     path: "/",
   };

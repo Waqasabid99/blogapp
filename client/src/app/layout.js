@@ -43,13 +43,15 @@ export default async function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${serif.variable} antialiased`}>
         <Providers>
-          <div className="flex flex-col justify-between min-h-screen">
-            <Navbar categories={categories?.data} />
-            <ToastContainer />
-            {children}
-            <BackToTop />
-            <Footer categories={categories?.data} />
-          </div>
+          <CheckAuth>
+            <div className="flex flex-col justify-between min-h-screen">
+              <Navbar categories={categories?.data} />
+              <ToastContainer />
+              {children}
+              <BackToTop />
+              <Footer categories={categories?.data} />
+            </div>
+          </CheckAuth>
         </Providers>
       </body>
     </html>

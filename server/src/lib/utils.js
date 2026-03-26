@@ -47,7 +47,7 @@ export function verifyToken(token) {
 // Cookie Options for access token
 export const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? true : false,
+    secure: true,
     sameSite: "none",
     path: "/",
     maxAge: 15 * 60 * 1000 // 15 minutes
@@ -56,7 +56,7 @@ export const cookieOptions = {
 // Cookie Options for refresh token
 export const refreshTokenCookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? true : false,
+    secure: true,
     sameSite: "none",
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days

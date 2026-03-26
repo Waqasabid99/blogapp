@@ -22,7 +22,7 @@ const page = async () => {
     getPinnedPosts(),
     getTrendingPosts(),
     getFlatCategories()
-  ]);
+  ])
 
   const sliderPosts = [
     ...new Map(
@@ -34,8 +34,6 @@ const page = async () => {
   if (sliderPosts.length === 0) {
     sliderPosts.push(...(latest?.data || []).slice(0, 5));
   }
-
-  if (sliderPosts.length === 0) return null;
 
   return (
     <>

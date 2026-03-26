@@ -1,5 +1,5 @@
 "use client";
-import { PostRow } from '@/components/ui/PostCard';
+import { EmptyState, PostRow } from '@/components/ui/PostCard';
 import HeroSlider from '@/components/ui/Swiper';
 
 const Hero = ({ latestPosts, sliderPosts }) => {

@@ -83,6 +83,8 @@ const Navbar = ({ categories }) => {
       lg: "w-10 h-10 text-base",
     };
 
+    console.log(user, isAuthenticated);
+
     const hasValidAvatar = avatar || user?.avatarUrl && !imageError;
 
     return (

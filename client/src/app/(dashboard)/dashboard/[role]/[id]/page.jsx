@@ -6,7 +6,7 @@ export const metadata = {
   description: "Your analytics dashboard",
 };
 
-const DashboardPage = async ({ searchParams }) => {
+const DashboardPage = async () => {
   const range = 30;
   const data = await getDashboardAnalytics(range);
 

@@ -1,6 +1,5 @@
 import Sidebar from "@/components/layout/Sidebar";
 import SidebarSkeleton from "@/components/ui/Loadingskeletons/SidebarSkeleton";
-import CheckAdminAuth from "@/constants/CheckAdminAuth";
 import { generateSEO } from "@/constants/seo";
 import { Suspense } from "react";
 
@@ -15,12 +14,12 @@ export const metadata = generateSEO({
 
 export default async function AdminLayout({ children }) {
   return (
-      <section className="flex">
-        <Suspense fallback={<SidebarSkeleton />}>
-          <Sidebar />
-        </Suspense>
-        <section className="flex-1 p-3">{children}</section>
-      </section>
-  
+    <section className="flex">
+      <Suspense fallback={<SidebarSkeleton />}>
+        <Sidebar />
+      </Suspense>
+      <section className="flex-1 p-3">{children}</section>
+    </section>
+
   );
 }

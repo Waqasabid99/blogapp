@@ -1,24 +1,22 @@
-"use client";
+import { getAllUsers } from '@/actions/user.action'
+import AllUsers from '@/components/dashboard/users/AllUsers'
+import { generateSEO } from '@/constants/seo'
 
-import { useEffect, useState } from "react";
-import AllUsers from "@/components/dashboard/users/AllUsers";
-import { getAllUsers } from "@/actions/user.action";
+export const dynamic = "force-dynamic";
 
-const UsersPage = () => {
-    const [users, setUsers] = useState(null);
-    const [loading, setLoading] = useState(true);
+export const metadata = generateSEO({
+    title: "Users",
+    description: "View and manage all users and their sub-users",
+    image: "/logo.png",
+    url: "/dashboard/users",
+    type: "website",
+});
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            setLoading(true);
-            const data = await getAllUsers();
-            setUsers(data?.data ?? null);
-            setLoading(false);
-        };
-        fetchUsers();
-    }, []);
+const page = async () => {
+    const { data } = await getAllUsers();
+    return (
+        <AllUsers users={data} />
+    )
+}
 
-    return <AllUsers users={users} loading={loading} />;
-};
-
-export default UsersPage;
+export default page

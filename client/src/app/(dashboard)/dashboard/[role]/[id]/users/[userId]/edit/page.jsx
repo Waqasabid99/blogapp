@@ -1,37 +1,25 @@
-"use client";
+import EditUser from '@/components/dashboard/users/EditUsers'
+import { getAllRoles } from '@/actions/role.action'
+import { getUserById } from '@/actions/user.action';
+import { generateSEO } from '@/constants/seo'
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import EditUser from "@/components/dashboard/users/EditUsers";
-import { getAllRolesClient } from "@/actions/role.action";
-import { getUserById } from "@/actions/user.action";
+export const metadata = generateSEO({
+    title: "Edit User - Dashboard",
+    description: "Edit user",
+    image: "/logo.png",
+    url: "/dashboard/users/edit",
+    type: "website",
+});
 
-const EditUserPage = () => {
-    const params = useParams();
-    const userId = params?.userId;
+const page = async ({ params }) => {
+    const { userId } = await params;
+    const [roles, user] = await Promise.all([
+        getAllRoles(),
+        getUserById(userId)
+    ])
+    return (
+        <EditUser user={user?.data} roles={roles?.data} />
+    )
+}
 
-    const [user, setUser] = useState(null);
-    const [roles, setRoles] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        if (!userId) return;
-        const fetchData = async () => {
-            setLoading(true);
-            const [rolesRes, userRes] = await Promise.all([
-                getAllRolesClient(),
-                getUserById(userId),
-            ]);
-            setRoles(rolesRes?.data ?? []);
-            setUser(userRes?.data ?? null);
-            setLoading(false);
-        };
-        fetchData();
-    }, [userId]);
-
-    if (loading) return null;
-
-    return <EditUser user={user} roles={roles} />;
-};
-
-export default EditUserPage;
+export default page

@@ -2,7 +2,7 @@
 import DashboardBox from "@/components/ui/DashboardBox";
 import Table from "@/components/ui/Table";
 import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { ChevronRight } from "lucide-react";
 import DeleteModal from "@/components/ui/DeleteModal";
 import axios from "axios";
@@ -10,16 +10,12 @@ import { base_url } from "@/constants/utils";
 import { useRouter } from "next/navigation";
 
 /* Allusers */
-const AllUsers = ({ users, loading = false }) => {
+const AllUsers = ({ users }) => {
     const [data, setData] = useState(() => users?.users ?? []);
     const [toDelete, setToDelete] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [error, setError] = useState(null);
     const router = useRouter();
-
-    useEffect(() => {
-        setData(users?.users ?? []);
-    }, [users]);
 
     const handleDeleteConfirm = useCallback(async () => {
         if (!toDelete) return;
@@ -171,7 +167,7 @@ const AllUsers = ({ users, loading = false }) => {
                 columns={columns}
                 data={data}
                 emptyMessage="No users found. Create your first user to get started."
-                isLoading={loading}
+                isLoading={false}
                 pagination
                 defaultPerPage={10}
             />

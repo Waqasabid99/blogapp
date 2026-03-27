@@ -21,7 +21,8 @@ const AllUsers = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             const { data } = await getAllUsers();
-            setData(data);
+            console.log(data)
+            setData(data?.data);
         }
         fetchUsers();
     }, []);

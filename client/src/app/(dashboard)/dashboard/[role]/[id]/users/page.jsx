@@ -1,4 +1,4 @@
-import dynamic from 'next/dist/server/app-render/dynamic-rendering';
+import { dynamic } from 'next/dist/server/app-render/dynamic-rendering';
 import { getAllUsers } from '@/actions/user.action'
 import AllUsers from '@/components/dashboard/users/AllUsers'
 import { generateSEO } from '@/constants/seo'

@@ -2,6 +2,8 @@ import { getAllUsers } from '@/actions/user.action'
 import AllUsers from '@/components/dashboard/users/AllUsers'
 import { generateSEO } from '@/constants/seo'
 
+export const dynamic = "force-dynamic";
+
 export const metadata = generateSEO({
     title: "Users",
     description: "View and manage all users and their sub-users",

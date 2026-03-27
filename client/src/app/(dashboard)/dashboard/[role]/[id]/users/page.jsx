@@ -11,9 +11,9 @@ export const metadata = generateSEO({
 });
 
 const page = async () => {
-    const { data } = await getAllUsers();
+    // const { data } = await getAllUsers();
     return (
-        <AllUsers users={data} />
+        <AllUsers />
     )
 }
 

@@ -8,14 +8,23 @@ import DeleteModal from "@/components/ui/DeleteModal";
 import axios from "axios";
 import { base_url } from "@/constants/utils";
 import { useRouter } from "next/navigation";
+import { getAllUsers } from "@/actions/user.action";
 
 /* Allusers */
-const AllUsers = ({ users }) => {
-    const [data, setData] = useState(() => users?.users ?? []);
+const AllUsers = () => {
+    const [data, setData] = useState([]);
     const [toDelete, setToDelete] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [error, setError] = useState(null);
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const { data } = await getAllUsers();
+            setData(data);
+        }
+        fetchUsers();
+    }, []);
 
     const handleDeleteConfirm = useCallback(async () => {
         if (!toDelete) return;

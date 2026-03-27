@@ -2,7 +2,7 @@
 import DashboardBox from "@/components/ui/DashboardBox";
 import Table from "@/components/ui/Table";
 import Link from "next/link";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
 import DeleteModal from "@/components/ui/DeleteModal";
 import axios from "axios";

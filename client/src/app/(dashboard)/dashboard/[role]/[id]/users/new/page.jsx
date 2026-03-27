@@ -1,20 +1,24 @@
-import { getAllRoles } from "@/actions/role.action"
-import AddUser from "@/components/dashboard/users/AddUsers"
-import { generateSEO } from "@/constants/seo"
+"use client";
 
-export const metadata = generateSEO({
-  title: "Create User - Dashboard",
-  description: "Create user",
-  image: "/logo.png",
-  url: "/dashboard/users/new",
-  type: "website",
-})
+import { useEffect, useState } from "react";
+import AddUser from "@/components/dashboard/users/AddUsers";
+import { getAllRolesClient } from "@/actions/role.action";
 
-const page = async () => {
-  const { data } = await getAllRoles();
-  return (
-    <AddUser roles={data} />
-  )
-}
+const AddUserPage = () => {
+  const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-export default page
+  useEffect(() => {
+    const fetchRoles = async () => {
+      setLoading(true);
+      const data = await getAllRolesClient();
+      setRoles(data?.data ?? []);
+      setLoading(false);
+    };
+    fetchRoles();
+  }, []);
+
+  return <AddUser roles={roles} rolesLoading={loading} />;
+};
+
+export default AddUserPage;

@@ -22,7 +22,7 @@ const AllUsers = () => {
         const fetchUsers = async () => {
             const { data } = await getAllUsers();
             console.log(data)
-            setData(data?.data);
+            setData(data?.users);
         }
         fetchUsers();
     }, []);

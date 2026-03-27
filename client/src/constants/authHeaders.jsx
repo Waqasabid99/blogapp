@@ -1,11 +1,12 @@
-import { cookies } from "next/headers";
+// lib/authHeaders.js
+import { headers } from "next/headers";
 
 export const getAuthHeaders = async () => {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+    const headerStore = await headers();
+    const cookieHeader = headerStore.get("cookie"); // raw cookie string from browser
 
     return {
         "Content-Type": "application/json",
-        ...(accessToken && { Cookie: `accessToken=${accessToken}` }),
+        ...(cookieHeader && { Cookie: cookieHeader }), // forward entire cookie string
     };
 };

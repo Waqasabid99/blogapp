@@ -2,12 +2,13 @@
 import DashboardBox from "@/components/ui/DashboardBox";
 import Table from "@/components/ui/Table";
 import Link from "next/link";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
 import DeleteModal from "@/components/ui/DeleteModal";
 import axios from "axios";
 import { base_url } from "@/constants/utils";
 import { useRouter } from "next/navigation";
+import { getAllCategories } from "@/actions/category.action";
 
 /* ─── Flatten nested categories into a renderable list ─────────── */
 const flattenCategories = (categories = [], depth = 0) => {
@@ -22,12 +23,27 @@ const flattenCategories = (categories = [], depth = 0) => {
 };
 
 /* ─── AllCategories ─────────────────────────────────────────────── */
-const AllCategories = ({ categories }) => {
-    const [data, setData] = useState(() => categories?.data ?? []);
+const AllCategories = () => {
+    const [data, setData] = useState([]);
     const [toDelete, setToDelete] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [error, setError] = useState(null);
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await getAllCategories();
+                console.log("All categories data : ", data);
+                setData(data.data);
+            } catch (error) {
+                console.log("All categories error : ", error);
+                setError(error.response.data.message);
+            }
+        }
+        fetchCategories();
+    }, [])
+
     /* flatten for table */
     const flatRows = flattenCategories(data);
 

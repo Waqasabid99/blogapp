@@ -6,11 +6,12 @@ import DashboardBox from "@/components/ui/DashboardBox";
 import ValidationToast from "@/components/ui/ValidationToast";
 import { createCategory } from "@/api/categoryApi";
 import Loader from "@/components/ui/Loader";
+import { getAllCategories } from "@/actions/category.action";
 
 /* Main Component */
-const AddCategory = ({ categories }) => {
+const AddCategory = () => {
     const router = useRouter();
-
+    const [categories, setCategories] = useState([]);
     /* form state */
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -20,6 +21,21 @@ const AddCategory = ({ categories }) => {
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await getAllCategories();
+                console.log("All categories data : ", data);
+                setCategories(data.data);
+            } catch (error) {
+                console.log("All categories error : ", error);
+                setToast({ type: "error", message: error?.message ?? "Failed to fetch categories." });
+            }
+        }
+
+        fetchCategories();
+    }, []);
 
     /* validation */
     const validate = () => {

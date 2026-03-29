@@ -1,15 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Loader2, AlertCircle } from "lucide-react";
 import DashboardBox from "@/components/ui/DashboardBox";
 import ValidationToast from "@/components/ui/ValidationToast";
 import { updateCategory } from "@/api/categoryApi";
+import { getAllCategories, getCategoryById } from "@/actions/category.action";
 
 /* Main Component  */
-const EditCategory = ({ category, allCategories = [] }) => {
+const EditCategory = ({ categoryId }) => {
     const router = useRouter();
-
+    const [category, setCategory] = useState(null);
+    const [allCategories, setAllCategories] = useState([]);
     /* form state */
     const [name, setName] = useState(category?.name ?? "");
     const [description, setDescription] = useState(category?.description ?? "");
@@ -19,6 +21,30 @@ const EditCategory = ({ category, allCategories = [] }) => {
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const [category, allCategories] = await Promise.all([
+                    getCategoryById(categoryId),
+                    getAllCategories()
+                ])
+                if (category.data) {
+                    setCategory(category.data);
+                    setName(category.data.name || "");
+                    setDescription(category.data.description || "");
+                    setParentId(category.data.parentId || "");
+                }
+                if (allCategories.data) {
+                    setAllCategories(allCategories.data);
+                }
+            } catch (error) {
+                console.log("Error fetching categories : ", error);
+                setToast({ type: "error", message: error?.message ?? "Failed to fetch categories." });
+            }
+        }
+        fetchCategories();
+    }, [])
 
     /* eligible parent options — cannot be itself or its own descendants */
     const descendantIds = new Set();
@@ -37,7 +63,7 @@ const EditCategory = ({ category, allCategories = [] }) => {
     /* validation */
     const validate = () => {
         const e = {};
-        if (!name.trim()) e.name = "Name is required.";
+        if (!name?.trim()) e.name = "Name is required.";
         return e;
     };
 
@@ -50,9 +76,15 @@ const EditCategory = ({ category, allCategories = [] }) => {
         setLoading(true);
 
         try {
+            if (!category?.id) {
+                setToast({ type: "error", message: "Category data missing." });
+                setLoading(false);
+                return;
+            }
+
             const data = await updateCategory(category.id, {
-                name: name.trim(),
-                description: description.trim(),
+                name: name?.trim(),
+                description: description?.trim(),
                 parentId: parentId || null,
             });
             if (data.success) {

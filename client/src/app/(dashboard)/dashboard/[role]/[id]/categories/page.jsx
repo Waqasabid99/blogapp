@@ -1,4 +1,3 @@
-import { getAllCategories } from '@/actions/category.action';
 import AllCategories from '@/components/dashboard/categories/AllCategories'
 import { generateSEO } from '@/constants/seo'
 
@@ -10,10 +9,9 @@ export const metadata = generateSEO({
     type: "website",
 });
 
-const page = async () => {
-    const categories = await getAllCategories();
+const page = () => {
     return (
-        <AllCategories categories={categories} />
+        <AllCategories />
     )
 }
 

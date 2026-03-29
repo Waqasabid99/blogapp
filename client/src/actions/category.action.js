@@ -1,43 +1,45 @@
-const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
+"use client";
+
+import api from "@/api/api";
 
 export const getAllCategories = async () => {
-  const response = await fetch(`${base_url}/category`, {
-    next: {
-      tags: ["categories"]
+  try {
+    const { data } = await api.get(`/category`)
+    console.log(data);
+    if (!data.success) {
+      throw new Error("Failed to fetch categories")
     }
-  })
-  console.log(response);
-  if (!response.ok) {
-    throw new Error("Failed to fetch categories")
+    return data
+  } catch (error) {
+    console.log(error);
+    throw error
   }
-  const data = await response.json()
-  return data
 }
 
 export const getFlatCategories = async () => {
-  const response = await fetch(`${base_url}/category/flat`, {
-    next: {
-      tags: ["categories"]
+  try {
+    const { data } = await api.get(`/category/flat`)
+    console.log(data);
+    if (!data.success) {
+      throw new Error("Failed to fetch categories")
     }
-  })
-  console.log(response);
-  if (!response.ok) {
-    throw new Error("Failed to fetch categories")
+    return data
+  } catch (error) {
+    console.log(error);
+    throw error
   }
-  const data = await response.json()
-  return data
 }
 
 export const getCategoryById = async (id) => {
-  const response = await fetch(`${base_url}/category/${id}`, {
-    next: {
-      tags: ["categories"]
+  try {
+    const { data } = await api.get(`/category/${id}`)
+    console.log(data);
+    if (!data.success) {
+      throw new Error("Failed to fetch category")
     }
-  })
-  console.log(response);
-  if (!response.ok) {
-    throw new Error("Failed to fetch category")
+    return data
+  } catch (error) {
+    console.log(error);
+    throw error
   }
-  const data = await response.json()
-  return data
 }

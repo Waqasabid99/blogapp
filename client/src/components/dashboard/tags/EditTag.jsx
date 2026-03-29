@@ -26,8 +26,10 @@ const EditTag = ({ tagId }) => {
             try {
                 const data = await getTagById(tagId);
                 console.log("Edit Tag page : ", data);
-                if (data.success) {
-                    setTag(data?.data);
+                if (data.success && data.data) {
+                    setTag(data.data);
+                    setName(data.data.name || "");
+                    setDescription(data.data.description || "");
                 }
             } catch (error) {
                 console.log(error);
@@ -38,7 +40,7 @@ const EditTag = ({ tagId }) => {
     /* validation */
     const validate = () => {
         const e = {};
-        if (!name.trim()) e.name = "Name is required.";
+        if (!name?.trim()) e.name = "Name is required.";
         return e;
     };
 
@@ -51,9 +53,15 @@ const EditTag = ({ tagId }) => {
         setLoading(true);
 
         try {
+            if (!tag?.id) {
+                setToast({ type: "error", message: "Tag data missing." });
+                setLoading(false);
+                return;
+            }
+
             const data = await updateTag(tag.id, {
-                name: name.trim(),
-                description: description.trim(),
+                name: name?.trim(),
+                description: description?.trim(),
             });
             if (data.success) {
                 router.refresh();

@@ -198,6 +198,7 @@ const EditUser = ({ userId }) => {
                 setToast({ type: "error", message: data?.message ?? "Update failed." });
             }
         } catch (err) {
+            console.log(err);
             setToast({ type: "error", message: err?.message ?? "Update failed." });
         } finally {
             setLoading(false);

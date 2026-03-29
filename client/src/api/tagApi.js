@@ -1,5 +1,4 @@
 "use client";
-
 import api from "./api";
 
 /**
@@ -8,10 +7,6 @@ import api from "./api";
 export async function createTag(payload) {
     try {
         const { data } = await api.post(`/tag/create`, payload);
-
-        if (data.success) {
-            revalidateTag("tags");
-        }
         return data;
     } catch (error) {
         console.log("Error creating tag:", error);
@@ -25,10 +20,6 @@ export async function createTag(payload) {
 export async function updateTag(tagId, payload) {
     try {
         const { data } = await api.patch(`/tag/update/${tagId}`, payload);
-
-        if (data.success) {
-            revalidateTag("tags");
-        }
         return data;
     } catch (error) {
         console.log("Error updating tag:", error);

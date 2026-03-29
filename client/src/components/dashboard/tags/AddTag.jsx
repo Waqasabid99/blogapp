@@ -36,10 +36,11 @@ const AddTag = () => {
         setLoading(true);
 
         try {
-            const data = await createTag({
+            const { data } = await createTag({
                 name: name.trim(),
                 description: description.trim(),
             });
+            console.log("Add Tag page : ", data);
             if (data.success) {
                 router.refresh();
                 setToast({ type: "success", message: "tag created successfully." });

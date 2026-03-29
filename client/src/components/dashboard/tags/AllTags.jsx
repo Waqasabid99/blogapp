@@ -21,7 +21,7 @@ const AllTags = () => {
     useEffect(() => {
         const fetchTags = async () => {
             try {
-                const data = await getAllTags();
+                const { data } = await getAllTags();
                 console.log("All Tags page : ", data);
                 setData(data?.tags);
             } catch (error) {

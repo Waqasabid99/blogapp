@@ -1,17 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import DashboardBox from "@/components/ui/DashboardBox";
 import ValidationToast from "@/components/ui/ValidationToast";
 import { updateTag } from "@/api/tagApi";
 import Loader from "@/components/ui/Loader";
-import { getTagById } from "@/actions/tags.action";
 
 /* Main Component  */
-const EditTag = ({ tagId }) => {
+const EditTag = ({ tag }) => {
     const router = useRouter();
-    const [tag, setTag] = useState(null);
+
     /* form state */
     const [name, setName] = useState(tag?.name ?? "");
     const [description, setDescription] = useState(tag?.description ?? "");
@@ -21,26 +20,10 @@ const EditTag = ({ tagId }) => {
     const [toast, setToast] = useState(null);
     const [errors, setErrors] = useState({});
 
-    useEffect(() => {
-        const fetchTag = async () => {
-            try {
-                const data = await getTagById(tagId);
-                console.log("Edit Tag page : ", data);
-                if (data.success && data.data) {
-                    setTag(data.data);
-                    setName(data.data.name || "");
-                    setDescription(data.data.description || "");
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchTag();
-    }, [tagId]);
     /* validation */
     const validate = () => {
         const e = {};
-        if (!name?.trim()) e.name = "Name is required.";
+        if (!name.trim()) e.name = "Name is required.";
         return e;
     };
 
@@ -53,15 +36,9 @@ const EditTag = ({ tagId }) => {
         setLoading(true);
 
         try {
-            if (!tag?.id) {
-                setToast({ type: "error", message: "Tag data missing." });
-                setLoading(false);
-                return;
-            }
-
             const data = await updateTag(tag.id, {
-                name: name?.trim(),
-                description: description?.trim(),
+                name: name.trim(),
+                description: description.trim(),
             });
             if (data.success) {
                 router.refresh();

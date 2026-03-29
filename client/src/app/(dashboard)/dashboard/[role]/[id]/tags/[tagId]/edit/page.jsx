@@ -1,3 +1,4 @@
+import { getTagById } from '@/actions/tags.action';
 import EditTag from '@/components/dashboard/tags/EditTag'
 import { generateSEO } from '@/constants/seo'
 
@@ -11,8 +12,9 @@ export const metadata = generateSEO({
 
 const page = async ({ params }) => {
     const { tagId } = await params;
+    const data = await getTagById(tagId);
     return (
-        <EditTag tagId={tagId} />
+        <EditTag tag={data?.data} />
     )
 }
 

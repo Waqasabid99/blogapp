@@ -1,6 +1,6 @@
 import { getFlatCategories } from "@/actions/category.action";
 import { getAllSeries } from "@/actions/series.action";
-import { getAllTags } from "@/actions/tags.action";
+import { getAllTags } from "@/actions/tags.server.action";
 import AddPost from "@/components/dashboard/posts/AddPosts";
 import { generateSEO } from "@/constants/seo";
 

@@ -2,10 +2,10 @@
 import { getFlatCategories } from "@/actions/category.action";
 import { getPostById } from "@/actions/post.action";
 import { getAllSeries } from "@/actions/series.action";
-import { getAllTags } from "@/actions/tags.action";
 import EditPost from "@/components/dashboard/posts/EditPosts";
 import { notFound } from "next/navigation";
 import { generateSEO } from "@/constants/seo";
+import { getAllTags } from "@/actions/tags.server.action";
 
 export const metadata = generateSEO({
     title: "Edit Post - Dashboard",
@@ -18,19 +18,15 @@ export const metadata = generateSEO({
 const page = async ({ params }) => {
     const { postId } = await params;
 
-    const [postRes, catRes, tagRes, seriesRes] = await Promise.all([
-        getPostById(postId),
+    const [catRes, tagRes, seriesRes] = await Promise.all([
         getFlatCategories(),
         getAllTags(),
         getAllSeries(),
     ]);
 
-    // Redirect to 404 if post not found
-    if (!postRes?.data) notFound();
-
     return (
         <EditPost
-            post={postRes.data}
+            postId={postId}
             categories={catRes?.data ?? []}
             tags={tagRes?.data?.tags ?? []}
             series={seriesRes?.data?.series ?? []}

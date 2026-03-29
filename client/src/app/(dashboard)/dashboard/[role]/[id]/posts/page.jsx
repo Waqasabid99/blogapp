@@ -1,5 +1,5 @@
 import { getFlatCategories } from "@/actions/category.action";
-import { getAllTags } from "@/actions/tags.action";
+import { getAllTags } from "@/actions/tags.server.action";
 import PostGrid from "@/components/ui/PostGrid";
 import { generateSEO } from "@/constants/seo";
 

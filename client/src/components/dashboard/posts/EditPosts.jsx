@@ -15,15 +15,16 @@ import { CategorySelector, SectionTitle, STATUS_META, TagSelector, ThumbnailUplo
 import { STYLES } from "@/app/styles/postStyles";
 import Loader from "@/components/ui/Loader";
 import useAuthStore from "@/store/authStore";
+import { getPostById } from "@/actions/post.client.action";
 
-const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
+const EditPost = ({ postId, categories = [], tags = [], series = [] }) => {
     const router = useRouter();
     const { user } = useAuthStore();
-
+    const [post, setPost] = useState(null);
     /* ── Derive initial values from post prop ── */
     const initialCategoryIds = post?.categories?.map((c) => c.category.id) ?? [];
-    const initialTagIds      = post?.tags?.map((t) => t.tag.id) ?? [];
-    const initialThumbnail   = post?.coverImage
+    const initialTagIds = post?.tags?.map((t) => t.tag.id) ?? [];
+    const initialThumbnail = post?.coverImage
         ? { id: post.coverImage.id, url: post.coverImage.url, name: "Cover image" }
         : null;
     const initialScheduledAt = post?.scheduledAt
@@ -31,31 +32,46 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
         : "";
 
     /* ── Form State ── */
-    const [title, setTitle]              = useState(post?.title        ?? "");
-    const [excerpt,            setExcerpt]            = useState(post?.excerpt       ?? "");
-    const [content,            setContent]            = useState(post?.content       ?? null);
-    const [thumbnail,          setThumbnail]          = useState(initialThumbnail);
+    const [title, setTitle] = useState(post?.title ?? "");
+    const [excerpt, setExcerpt] = useState(post?.excerpt ?? "");
+    const [content, setContent] = useState(post?.content ?? null);
+    const [thumbnail, setThumbnail] = useState(initialThumbnail);
     const [selectedCategories, setSelectedCategories] = useState(initialCategoryIds);
-    const [selectedTags,       setSelectedTags]       = useState(initialTagIds);
+    const [selectedTags, setSelectedTags] = useState(initialTagIds);
     // const [selectedSeries,     setSelectedSeries]     = useState(post?.seriesId     ?? "");
-    const [status,             setStatus]             = useState(post?.status        ?? "DRAFT");
-    const [isFeatured,         setIsFeatured]         = useState(post?.isFeatured    ?? false);
-    const [isPinned,           setIsPinned]           = useState(post?.isPinned      ?? false);
-    const [scheduledAt,        setScheduledAt]        = useState(initialScheduledAt);
+    const [status, setStatus] = useState(post?.status ?? "DRAFT");
+    const [isFeatured, setIsFeatured] = useState(post?.isFeatured ?? false);
+    const [isPinned, setIsPinned] = useState(post?.isPinned ?? false);
+    const [scheduledAt, setScheduledAt] = useState(initialScheduledAt);
 
     /* ── SEO State ── */
-    const [metaTitle,       setMetaTitle]       = useState(post?.seo?.metaTitle       ?? post?.title        ?? "");
-    const [metaDescription, setMetaDescription] = useState(post?.seo?.metaDescription ?? post?.excerpt       ?? "");
+    const [metaTitle, setMetaTitle] = useState(post?.seo?.metaTitle ?? post?.title ?? "");
+    const [metaDescription, setMetaDescription] = useState(post?.seo?.metaDescription ?? post?.excerpt ?? "");
 
     /* ── UI State ── */
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [activeTab,   setActiveTab]   = useState("details");
-    const [errors,      setErrors]      = useState({});
-    const [loading,     setLoading]     = useState(false);
+    const [activeTab, setActiveTab] = useState("details");
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
     const [savingDraft, setSavingDraft] = useState(false);
-    const [toast,       setToast]       = useState(null);
-    const [wordCount,   setWordCount]   = useState(post?.wordCount    ?? 0);
-    const [readTime,    setReadTime]    = useState(post?.readingTime   ?? 0);
+    const [toast, setToast] = useState(null);
+    const [wordCount, setWordCount] = useState(post?.wordCount ?? 0);
+    const [readTime, setReadTime] = useState(post?.readingTime ?? 0);
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const data = await getPostById(postId);
+                console.log(data)
+                if (data.success) {
+                    setPost(data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching post:", error);
+            }
+        };
+        fetchPost();
+    }, [postId]);
 
     /* ── Track whether editor has been seeded with existing content ── */
     const seededRef = useRef(false);
@@ -99,17 +115,17 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
 
     /* ── Payload ── */
     const buildPayload = (overrideStatus) => ({
-        title:        title.trim(),
+        title: title.trim(),
         content,
-        excerpt:      excerpt.trim() || undefined,
-        coverImageId: thumbnail?.id  ?? null,
-        categories:   selectedCategories,
-        tags:         selectedTags,
-        seriesId:     null,
-        status:       overrideStatus ?? status,
+        excerpt: excerpt.trim() || undefined,
+        coverImageId: thumbnail?.id ?? null,
+        categories: selectedCategories,
+        tags: selectedTags,
+        seriesId: null,
+        status: overrideStatus ?? status,
         isFeatured,
         isPinned,
-        scheduledAt:  scheduledAt    || undefined,
+        scheduledAt: scheduledAt || undefined,
     });
 
     /* ── Save as Draft ── */
@@ -387,8 +403,8 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
                                                         <option value="DRAFT">Draft</option>
                                                         <option value="PENDING">Submit for Review</option>
                                                         {user?.role === "admin" || user?.role === "editor" ? (
-                                                        <option value="PUBLISHED">Published</option>
-                                                        ): null}
+                                                            <option value="PUBLISHED">Published</option>
+                                                        ) : null}
                                                         <option value="SCHEDULED">Scheduled</option>
                                                     </select>
                                                     <ChevronDown size={13} className="uc-chevron" />
@@ -607,9 +623,9 @@ const EditPost = ({ post, categories = [], tags = [], series = [] }) => {
                                                         })
                                                         : "Not published",
                                                 },
-                                                { label: "Views",        value: post?.viewCount  ?? 0 },
+                                                { label: "Views", value: post?.viewCount ?? 0 },
                                                 { label: "Reading time", value: `${post?.readingTime ?? readTime} min` },
-                                                { label: "Word count",   value: post?.wordCount   ?? wordCount },
+                                                { label: "Word count", value: post?.wordCount ?? wordCount },
                                             ].map(({ label, value }) => (
                                                 <div
                                                     key={label}

@@ -192,7 +192,7 @@ export function PostCard({
                     Edit
                   </Link>
                   <Link
-                    href={`posts/${post?.id}`}
+                    href={`blog/${post?.categories?.[0]?.category?.slug}/${post?.slug}`}
                     className="pg-action-item"
                     onClick={() => setMenuOpen(false)}
                   >

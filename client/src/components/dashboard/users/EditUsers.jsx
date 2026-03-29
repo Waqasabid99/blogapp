@@ -63,14 +63,14 @@ const EditUser = ({ userId }) => {
             console.log("Edit Page : ", user, roles);
             setUser(user);
             setRoles(roles);
-            setName(user?.name);
-            setEmail(user?.email);
-            setBio(user?.bio);
-            setWebsite(user?.website);
-            setTwitter(user?.twitter);
-            setGithub(user?.github);
-            setRoleId(user?.roleId);
-            setAvatarUrl(user?.avatarUrl);
+            setName(user?.name || "");
+            setEmail(user?.email || "");
+            setBio(user?.bio || "");
+            setWebsite(user?.website || "");
+            setTwitter(user?.twitter || "");
+            setGithub(user?.github || "");
+            setRoleId(user?.roleId || "");
+            setAvatarUrl(user?.avatarUrl || "");
         }
         fetchData();
     }, [userId]);
@@ -148,8 +148,8 @@ const EditUser = ({ userId }) => {
     /* ── validation ── */
     const validate = () => {
         const e = {};
-        if (!name.trim()) e.name = "Name is required.";
-        if (name.trim().length > 100) e.name = "Name must not exceed 100 characters.";
+        if (!name?.trim()) e.name = "Name is required.";
+        if (name?.trim().length > 100) e.name = "Name must not exceed 100 characters.";
         if (email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) e.email = "Invalid email format.";
@@ -177,12 +177,12 @@ const EditUser = ({ userId }) => {
             }
 
             const payload = {
-                name: name.trim(),
-                email: email.trim() || undefined,
-                bio: bio.trim() || null,
-                website: website.trim() || null,
-                twitter: twitter.trim() || null,
-                github: github.trim() || null,
+                name: name?.trim(),
+                email: email?.trim() || undefined,
+                bio: bio?.trim() || null,
+                website: website?.trim() || null,
+                twitter: twitter?.trim() || null,
+                github: github?.trim() || null,
                 avatarUrl: finalAvatarUrl || null,
             };
 

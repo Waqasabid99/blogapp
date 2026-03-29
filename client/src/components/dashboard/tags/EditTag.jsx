@@ -24,7 +24,7 @@ const EditTag = ({ tagId }) => {
     useEffect(() => {
         const fetchTag = async () => {
             try {
-                const { data } = await getTagById(tagId);
+                const data = await getTagById(tagId);
                 console.log("Edit Tag page : ", data);
                 if (data.success) {
                     setTag(data?.data);

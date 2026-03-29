@@ -36,7 +36,7 @@ const AddTag = () => {
         setLoading(true);
 
         try {
-            const { data } = await createTag({
+            const data = await createTag({
                 name: name.trim(),
                 description: description.trim(),
             });

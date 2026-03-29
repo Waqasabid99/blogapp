@@ -1,19 +1,14 @@
-import { cookies } from "next/headers";
+"use client"
 
-const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
+import api from "@/api/api";
 
 export const getAllTags = async (filters) => {
     try {
-        const response = await fetch(`${base_url}/tag?${new URLSearchParams(filters).toString()}`, {
-            next: {
-                tags: ["tags"]
-            }
-        });
-        console.log(response);
-        if (!response.ok) {
+        const { data } = await api.get(`/tag?${new URLSearchParams(filters).toString()}`);
+        console.log(data);
+        if (!data.success) {
             throw new Error("Failed to fetch tags");
         }
-        const data = await response.json();
         return data;
     } catch (error) {
         console.log(error);
@@ -22,22 +17,11 @@ export const getAllTags = async (filters) => {
 }
 
 export const getTagById = async (id) => {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
     try {
-        const response = await fetch(`${base_url}/tag/id/${id}`, {
-            headers: {
-                Cookie: `accessToken=${accessToken}`
-            },
-            next: {
-                tags: ["tags"]
-            },
-        });
-        console.log(response);
-        if (!response.ok) {
+        const { data } = await api.get(`/tag/id/${id}`);
+        if (!data.success) {
             throw new Error("Failed to fetch tag");
         }
-        const data = await response.json();
         return data;
     } catch (error) {
         console.log(error);

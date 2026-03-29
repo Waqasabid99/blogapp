@@ -1,74 +1,37 @@
-"use server";
+"use client";
 
-import { cookies } from "next/headers";
-import { revalidateTag } from "next/cache";
-
-const base_url = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-function buildCookieHeader(cookieStore) {
-    const all = cookieStore.getAll();
-    if (!all.length) return "";
-    return all.map((c) => `${c.name}=${c.value}`).join("; ");
-}
-
-async function parseJsonResponse(res) {
-    const text = await res.text();
-    if (!text) return { success: false, message: "Empty response" };
-    try {
-        return JSON.parse(text);
-    } catch {
-        return { success: false, message: text || "Invalid JSON" };
-    }
-}
+import api from "./api";
 
 /**
  * Create a tag (POST /tag/create). Forwards cookies for verifyUser + permissions.
  */
 export async function createTag(payload) {
-    const cookieStore = await cookies();
-    const cookieHeader = buildCookieHeader(cookieStore);
+    try {
+        const { data } = await api.post(`/tag/create`, payload);
 
-    const res = await fetch(`${base_url}/tag/create`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-        },
-        body: JSON.stringify(payload),
-        cache: "no-store",
-    });
-
-    const data = await parseJsonResponse(res);
-
-    if (res.ok && data.success) {
-        revalidateTag("tags");
+        if (data.success) {
+            revalidateTag("tags");
+        }
+        return data;
+    } catch (error) {
+        console.log("Error creating tag:", error);
+        return error.data;
     }
-
-    return data;
 }
 
 /**
  * Update a tag (PATCH /tag/update/:id).
  */
 export async function updateTag(tagId, payload) {
-    const cookieStore = await cookies();
-    const cookieHeader = buildCookieHeader(cookieStore);
+    try {
+        const { data } = await api.patch(`/tag/update/${tagId}`, payload);
 
-    const res = await fetch(`${base_url}/tag/update/${tagId}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-        },
-        body: JSON.stringify(payload),
-        cache: "no-store",
-    });
-
-    const data = await parseJsonResponse(res);
-
-    if (res.ok && data.success) {
-        revalidateTag("tags");
+        if (data.success) {
+            revalidateTag("tags");
+        }
+        return data;
+    } catch (error) {
+        console.log("Error updating tag:", error);
+        return error.data;
     }
-
-    return data;
 }

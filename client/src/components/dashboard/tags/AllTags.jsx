@@ -2,20 +2,34 @@
 import DashboardBox from "@/components/ui/DashboardBox";
 import Table from "@/components/ui/Table";
 import Link from "next/link";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
 import DeleteModal from "@/components/ui/DeleteModal";
 import axios from "axios";
 import { base_url } from "@/constants/utils";
 import { useRouter } from "next/navigation";
+import { getAllTags } from "@/actions/tags.action";
 
 /* AllTags */
-const AllTags = ({ tags }) => {
-    const [data, setData] = useState(() => tags?.tags ?? []);
+const AllTags = () => {
+    const [data, setData] = useState([]);
     const [toDelete, setToDelete] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [error, setError] = useState(null);
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const data = await getAllTags();
+                console.log("All Tags page : ", data);
+                setData(data?.tags);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchTags();
+    }, []);
 
     const handleDeleteConfirm = useCallback(async () => {
         if (!toDelete) return;

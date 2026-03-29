@@ -8,7 +8,7 @@ import { createTag } from "@/api/tagApi";
 import Loader from "@/components/ui/Loader";
 
 /* Main Component */
-const AddTag = ({ tags }) => {
+const AddTag = () => {
     const router = useRouter();
 
     /* form state */

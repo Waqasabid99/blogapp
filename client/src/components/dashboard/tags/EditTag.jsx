@@ -1,16 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import DashboardBox from "@/components/ui/DashboardBox";
 import ValidationToast from "@/components/ui/ValidationToast";
 import { updateTag } from "@/api/tagApi";
 import Loader from "@/components/ui/Loader";
+import { getTagById } from "@/actions/tags.action";
 
 /* Main Component  */
-const EditTag = ({ tag }) => {
+const EditTag = ({ tagId }) => {
     const router = useRouter();
-
+    const [tag, setTag] = useState(null);
     /* form state */
     const [name, setName] = useState(tag?.name ?? "");
     const [description, setDescription] = useState(tag?.description ?? "");
@@ -20,6 +21,19 @@ const EditTag = ({ tag }) => {
     const [toast, setToast] = useState(null);
     const [errors, setErrors] = useState({});
 
+    useEffect(() => {
+        const fetchTag = async () => {
+            try {
+                const data = await getTagById(tagId);
+                if (data.success) {
+                    setTag(data?.data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchTag();
+    }, [tagId]);
     /* validation */
     const validate = () => {
         const e = {};

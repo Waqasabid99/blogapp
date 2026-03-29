@@ -1,4 +1,3 @@
-import { getAllTags } from '@/actions/tags.action'
 import AddTag from '@/components/dashboard/tags/AddTag'
 import { generateSEO } from '@/constants/seo'
 
@@ -11,9 +10,8 @@ export const metadata = generateSEO({
 });
 
 const page = async () => {
-    const { data } = await getAllTags();
     return (
-        <AddTag tags={data?.tags} />
+        <AddTag />
     )
 }
 

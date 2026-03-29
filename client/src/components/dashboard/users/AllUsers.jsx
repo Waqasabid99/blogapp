@@ -23,7 +23,7 @@ const AllUsers = () => {
             try {
                 const data = await getAllUsers();
                 console.log("All Users page : ", data);
-                setData(data);
+                setData(data?.users || []);
             } catch (error) {
                 console.log(error);
             }

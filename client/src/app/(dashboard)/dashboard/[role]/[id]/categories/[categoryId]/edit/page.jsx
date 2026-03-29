@@ -1,3 +1,4 @@
+import { getAllCategories, getCategoryById } from '@/actions/category.action'
 import EditCategory from '@/components/dashboard/categories/EditCategory'
 import { generateSEO } from '@/constants/seo'
 
@@ -11,8 +12,12 @@ export const metadata = generateSEO({
 
 const page = async ({ params }) => {
     const { categoryId } = await params
+    const [category, allCategories] = await Promise.all([
+        getCategoryById(categoryId),
+        getAllCategories()
+    ])
     return (
-        <EditCategory categoryId={categoryId} />
+        <EditCategory category={category.data} allCategories={allCategories.data} />
     )
 }
 

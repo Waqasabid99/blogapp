@@ -6,13 +6,7 @@ import api from "./api";
  */
 export async function createUser(payload) {
     try {
-        const { data } = await api.post(`/users`, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
-
+        const { data } = await api.post(`/users`, payload);
         return data?.data;
     } catch (error) {
         console.error("Error creating user:", error);
@@ -25,12 +19,7 @@ export async function createUser(payload) {
  */
 export async function updateUser(userId, payload) {
     try {
-        const { data } = await api.patch(`/users/update/${userId}`, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
+        const { data } = await api.patch(`/users/update/${userId}`, payload);
 
         return data?.data;
     } catch (error) {

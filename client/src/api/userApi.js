@@ -7,7 +7,7 @@ import api from "./api";
 export async function createUser(payload) {
     try {
         const { data } = await api.post(`/users`, payload);
-        return data?.data;
+        return data;
     } catch (error) {
         console.error("Error creating user:", error);
         throw error;
@@ -21,7 +21,7 @@ export async function updateUser(userId, payload) {
     try {
         const { data } = await api.patch(`/users/update/${userId}`, payload);
 
-        return data?.data;
+        return data;
     } catch (error) {
         console.error("Error updating user:", error);
         throw error;

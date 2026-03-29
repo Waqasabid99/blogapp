@@ -1,8 +1,5 @@
-import { getAllUsers } from '@/actions/user.action'
 import AllUsers from '@/components/dashboard/users/AllUsers'
 import { generateSEO } from '@/constants/seo'
-
-export const dynamic = "force-dynamic";
 
 export const metadata = generateSEO({
     title: "Users",
@@ -12,10 +9,9 @@ export const metadata = generateSEO({
     type: "website",
 });
 
-const page = async () => {
-    const { data } = await getAllUsers();
+const page = () => {
     return (
-        <AllUsers users={data} />
+        <AllUsers />
     )
 }
 

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
     AlertCircle,
@@ -20,12 +20,15 @@ import Loader from "@/components/ui/Loader";
 import api from "@/api/api";
 import { updateUser } from "@/api/userApi";
 import useAuthStore from "@/store/authStore";
+import { getUserById } from "@/actions/user.action";
+import { getAllRoles } from "@/actions/role.action";
 
-const EditUser = ({ user, roles = [] }) => {
+const EditUser = ({ userId }) => {
     const { user: currentUser } = useAuthStore();
     const router = useRouter();
     const fileInputRef = useRef(null);
-
+    const [roles, setRoles] = useState([]);
+    const [user, setUser] = useState(null);
     const isAdmin = currentUser?.role.toUpperCase() === "ADMIN";
 
     /* ── form state ── */
@@ -37,12 +40,7 @@ const EditUser = ({ user, roles = [] }) => {
     const [github, setGithub] = useState(user?.github ?? "");
     const [roleId, setRoleId] = useState(user?.role?.id ?? "");
 
-    /* ── avatar state ──
-       Three possible states:
-       1. existing URL from server  → avatarUrl set, no file, no preview (hasExistingUrl)
-       2. new file picked           → avatarFile + avatarPreview (blob), avatarUrl empty (hasNewFile)
-       3. file uploaded to CDN      → avatarFile + avatarPreview + avatarUrl (CDN), avatarUploaded true
-    ── */
+    /* ── avatar state ── */
     const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? "");
     const [avatarFile, setAvatarFile] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null);
@@ -55,6 +53,19 @@ const EditUser = ({ user, roles = [] }) => {
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const [user, roles] = await Promise.all([
+                getUserById(userId),
+                getAllRoles(),
+            ])
+            console.log("Edit Page : ", user, roles);
+            setUser(user);
+            setRoles(roles);
+        }
+        fetchData();
+    }, [userId]);
 
     /* ── avatar handlers ── */
     const processAvatarFile = useCallback((file) => {

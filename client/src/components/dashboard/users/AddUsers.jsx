@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
     AlertCircle,
@@ -22,12 +22,13 @@ import Loader from "@/components/ui/Loader";
 import api from "@/api/api";
 import { createUser } from "@/api/userApi";
 import useAuthStore from "@/store/authStore";
+import { getAllRoles } from "@/actions/role.action";
 
-const AddUser = ({ roles = [] }) => {
+const AddUser = () => {
     const { user: currentUser } = useAuthStore();
     const router = useRouter();
     const fileInputRef = useRef(null);
-
+    const [roles, setRoles] = useState([]);
     const isAdmin = currentUser?.role.toUpperCase() === "ADMIN";
 
     /* ── form state ── */
@@ -54,6 +55,15 @@ const AddUser = ({ roles = [] }) => {
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        const fetchRoles = async () => {
+            const data = await getAllRoles();
+            console.log("Add User page :", roles);
+            setRoles(data);
+        };
+        fetchRoles();
+    }, []);
 
     /* ── password strength ── */
     const getPasswordStrength = (pw) => {

@@ -1,4 +1,3 @@
-import { getAllRoles } from "@/actions/role.action"
 import AddUser from "@/components/dashboard/users/AddUsers"
 import { generateSEO } from "@/constants/seo"
 
@@ -11,9 +10,8 @@ export const metadata = generateSEO({
 })
 
 const page = async () => {
-  const { data } = await getAllRoles();
   return (
-    <AddUser roles={data} />
+    <AddUser />
   )
 }
 

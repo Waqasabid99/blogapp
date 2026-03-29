@@ -32,16 +32,16 @@ const EditUser = ({ userId }) => {
     const isAdmin = currentUser?.role.toUpperCase() === "ADMIN";
 
     /* ── form state ── */
-    const [name, setName] = useState(user?.name ?? "");
-    const [email, setEmail] = useState(user?.email ?? "");
-    const [bio, setBio] = useState(user?.bio ?? "");
-    const [website, setWebsite] = useState(user?.website ?? "");
-    const [twitter, setTwitter] = useState(user?.twitter ?? "");
-    const [github, setGithub] = useState(user?.github ?? "");
-    const [roleId, setRoleId] = useState(user?.role?.id ?? "");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [bio, setBio] = useState("");
+    const [website, setWebsite] = useState("");
+    const [twitter, setTwitter] = useState("");
+    const [github, setGithub] = useState("");
+    const [roleId, setRoleId] = useState("");
 
     /* ── avatar state ── */
-    const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? "");
+    const [avatarUrl, setAvatarUrl] = useState("");
     const [avatarFile, setAvatarFile] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null);
     const [avatarUploading, setAvatarUploading] = useState(false);
@@ -63,6 +63,14 @@ const EditUser = ({ userId }) => {
             console.log("Edit Page : ", user, roles);
             setUser(user);
             setRoles(roles);
+            setName(user?.name);
+            setEmail(user?.email);
+            setBio(user?.bio);
+            setWebsite(user?.website);
+            setTwitter(user?.twitter);
+            setGithub(user?.github);
+            setRoleId(user?.roleId);
+            setAvatarUrl(user?.avatarUrl);
         }
         fetchData();
     }, [userId]);

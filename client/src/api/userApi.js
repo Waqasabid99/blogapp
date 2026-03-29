@@ -1,5 +1,4 @@
 "use client";
-
 import api from "./api";
 
 /**
@@ -13,7 +12,7 @@ export async function createUser(payload) {
             },
             body: JSON.stringify(payload),
         });
-    
+
         return data?.data;
     } catch (error) {
         console.error("Error creating user:", error);

@@ -1,6 +1,7 @@
 "use client";
-const { useState, useRef, useEffect } = require("react");
+import { useState, useRef, useEffect } from "react";
 import { debounce } from "lodash";
+import api from "@/api/api";
 
 const debouncedSave = debounce(async (api, onChange) => {
   const data = await api.saver.save();

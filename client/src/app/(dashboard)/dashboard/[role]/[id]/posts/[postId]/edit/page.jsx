@@ -1,9 +1,7 @@
 
 import { getFlatCategories } from "@/actions/category.action";
-import { getPostById } from "@/actions/post.action";
 import { getAllSeries } from "@/actions/series.action";
 import EditPost from "@/components/dashboard/posts/EditPosts";
-import { notFound } from "next/navigation";
 import { generateSEO } from "@/constants/seo";
 import { getAllTags } from "@/actions/tags.server.action";
 

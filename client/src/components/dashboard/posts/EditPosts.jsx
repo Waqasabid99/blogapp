@@ -64,7 +64,26 @@ const EditPost = ({ postId, categories = [], tags = [], series = [] }) => {
                 const data = await getPostById(postId);
                 console.log(data)
                 if (data.success) {
-                    setPost(data.data);
+                    const fetchedPost = data.data;
+                    setPost(fetchedPost);
+                    setTitle(fetchedPost.title ?? "");
+                    setExcerpt(fetchedPost.excerpt ?? "");
+                    setContent(fetchedPost.content ?? null);
+                    if (fetchedPost.coverImage) {
+                        setThumbnail({ id: fetchedPost.coverImage.id, url: fetchedPost.coverImage.url, name: "Cover image" });
+                    }
+                    setSelectedCategories(fetchedPost.categories?.map((c) => c.category.id) ?? []);
+                    setSelectedTags(fetchedPost.tags?.map((t) => t.tag.id) ?? []);
+                    setStatus(fetchedPost.status ?? "DRAFT");
+                    setIsFeatured(fetchedPost.isFeatured ?? false);
+                    setIsPinned(fetchedPost.isPinned ?? false);
+                    if (fetchedPost.scheduledAt) {
+                        setScheduledAt(new Date(fetchedPost.scheduledAt).toISOString().slice(0, 16));
+                    }
+                    setMetaTitle(fetchedPost.seo?.metaTitle ?? fetchedPost.title ?? "");
+                    setMetaDescription(fetchedPost.seo?.metaDescription ?? fetchedPost.excerpt ?? "");
+                    setWordCount(fetchedPost.wordCount ?? 0);
+                    setReadTime(fetchedPost.readingTime ?? 0);
                 }
             } catch (error) {
                 console.error("Error fetching post:", error);

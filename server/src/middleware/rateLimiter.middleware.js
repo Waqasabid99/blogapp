@@ -4,7 +4,7 @@ import rateLimit from "express-rate-limit";
 export const rateLimiter = (options = {}) => {
   return rateLimit({
     windowMs: options.windowMs || 15 * 60 * 1000, // 15 minutes
-    max: options.max || 100, // limit each IP to 100 requests per windowMs
+    max: options.max || 1000, // limit each IP to 1000 requests per windowMs
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable `X-RateLimit-*` headers
     message: {
@@ -19,7 +19,7 @@ export const rateLimiter = (options = {}) => {
 
 export const loginLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max 5 login attempts per IP per window
+  max: 1000, // max 1000 login attempts per IP per window
   message: {
     status: 429,
     success: false,

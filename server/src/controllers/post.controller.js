@@ -227,7 +227,7 @@ const updatePost = asyncHandler(async (req, res) => {
                 throw err;
             });
 
-            slug = await generateUniqueSlug(title, tx);
+            slug = await generateUniqueSlug(title, prisma);
         }
 
         let generatedExcerpt = excerpt;

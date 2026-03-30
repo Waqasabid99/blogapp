@@ -7,6 +7,7 @@ import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
 import useAuthStore from "@/store/authStore";
 import Image from "next/image";
+import PaletteSwitcher from "../ui/PaletteSwitcher";
 
 /* ─── tiny hook: close a floating panel when clicking outside ─── */
 function useClickOutside(ref, handler) {
@@ -175,9 +176,13 @@ const Navbar = ({ categories }) => {
         {/* Right side controls */}
         <div className="flex items-center gap-3">
           {/* Theme Toggle */}
+          <PaletteSwitcher />
+
+          {/* Theme Mode Toggle */}
           <button
             onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
             aria-label="switch-theme"
+            title="Toggle Theme"
             className="relative flex items-center w-16 h-8 px-1 rounded-full bg-(--bg-tertiary) transition-colors duration-300 cursor-pointer"
           >
             <Moon className="w-4 h-4 text-(--text-secondary)" aria-label="Dark mode" />

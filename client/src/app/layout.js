@@ -41,6 +41,22 @@ export default async function RootLayout({ children }) {
   const categories = await getAllCategories();
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+      <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var p = localStorage.getItem('palette');
+                  if (p && p !== 'orange') {
+                    document.documentElement.setAttribute('data-theme', p);
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className={`${inter.variable} ${serif.variable} antialiased`}>
         <Providers>
           <CheckAuth>

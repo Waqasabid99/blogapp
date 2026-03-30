@@ -192,7 +192,7 @@ export function PostCard({
                     Edit
                   </Link>
                   <Link
-                    href={`blog/${post?.categories?.[0]?.category?.slug}/${post?.slug}`}
+                    href={`/blog/${post?.categories?.[0]?.category?.slug}/${post?.slug}`}
                     className="pg-action-item"
                     onClick={() => setMenuOpen(false)}
                   >
@@ -414,6 +414,7 @@ export function Pagination({ pagination, onPageChange }) {
         <button
           type="button"
           className="pg-page-btn"
+          aria-label="Previous Page"
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
         >
@@ -431,6 +432,7 @@ export function Pagination({ pagination, onPageChange }) {
           <button
             key={p}
             type="button"
+            aria-label={`Page ${p}`}
             className={`pg-page-btn${p === page ? " pg-page-btn--active" : ""}`}
             onClick={() => onPageChange(p)}
           >
@@ -448,6 +450,7 @@ export function Pagination({ pagination, onPageChange }) {
         <button
           type="button"
           className="pg-page-btn"
+          aria-label="Next Page"
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
         >

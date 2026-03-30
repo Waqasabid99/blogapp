@@ -130,21 +130,6 @@ const ViewPost = ({ post, relatedPosts = [] }) => {
 
                 {/* ── HERO ── */}
                 <header className="vp-hero">
-                    {/* Breadcrumb */}
-                    <nav className="vp-breadcrumb" aria-label="breadcrumb">
-                        <Link href="/blog">Blog</Link>
-                        {post?.categories?.[0]?.category && (
-                            <>
-                                <span className="vp-breadcrumb-sep">/</span>
-                                <Link href={`/blog/category/${post.categories[0].category.slug}`}>
-                                    {post.categories[0].category.name}
-                                </Link>
-                            </>
-                        )}
-                        <span className="vp-breadcrumb-sep">/</span>
-                        <span>{post?.title}</span>
-                    </nav>
-
                     {/* Category badges */}
                     {post?.categories?.length > 0 && (
                         <div className="vp-cat-row">
@@ -154,7 +139,7 @@ const ViewPost = ({ post, relatedPosts = [] }) => {
                                 </Link>
                             ))}
                             {post?.isFeatured && <span className="vp-badge vp-badge--featured">⭐ Featured</span>}
-                            {post?.isPinned   && <span className="vp-badge vp-badge--pinned">📌 Pinned</span>}
+                            {post?.isPinned && <span className="vp-badge vp-badge--pinned">📌 Pinned</span>}
                         </div>
                     )}
 
@@ -345,9 +330,9 @@ const ViewPost = ({ post, relatedPosts = [] }) => {
                     <section className="vp-related">
                         <h2 className="vp-related-heading">More to read</h2>
                         <div className="pg-grid">
-                        {relatedPosts?.map((post) => (
-                            <PostCard key={post.id} post={post} showActions={false} />
-                        ))}
+                            {relatedPosts?.map((post) => (
+                                <PostCard key={post.id} post={post} showActions={false} />
+                            ))}
                         </div>
                     </section>
                 )}

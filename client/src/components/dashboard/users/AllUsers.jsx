@@ -14,6 +14,7 @@ import { getAllUsers } from "@/actions/user.action";
 const AllUsers = () => {
     const [data, setData] = useState([]);
     const [toDelete, setToDelete] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [error, setError] = useState(null);
     const router = useRouter();
@@ -21,11 +22,14 @@ const AllUsers = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
+                setIsLoading(true);
                 const data = await getAllUsers();
                 console.log("All Users page : ", data);
                 setData(data?.users || []);
+                setIsLoading(false);
             } catch (error) {
                 console.log(error);
+                setIsLoading(false);
             }
         };
 
@@ -182,7 +186,7 @@ const AllUsers = () => {
                 columns={columns}
                 data={data}
                 emptyMessage="No users found. Create your first user to get started."
-                isLoading={false}
+                isLoading={isLoading}
                 pagination
                 defaultPerPage={10}
             />

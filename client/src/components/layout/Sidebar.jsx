@@ -28,6 +28,24 @@ const Sidebar = () => {
         setMobileOpen(false);
     }, [pathname]);
 
+    // Close on Escape and lock body scroll when open (mobile/tablet)
+    useEffect(() => {
+        if (!mobileOpen) return;
+
+        const onKeyDown = (e) => {
+            if (e.key === "Escape") setMobileOpen(false);
+        };
+
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        window.addEventListener("keydown", onKeyDown);
+
+        return () => {
+            document.body.style.overflow = prevOverflow;
+            window.removeEventListener("keydown", onKeyDown);
+        };
+    }, [mobileOpen]);
+
     const handleLogout = async () => {
         await logout();
         router.push("/");
@@ -128,9 +146,23 @@ const Sidebar = () => {
         return null;
     }
 
-    const SidebarContent = () => (
-        <div className="flex flex-col h-screen bg-(--bg-primary) border-r border-(--border-light)">
-            <nav className="flex-1 py-4">
+    const SidebarContent = ({ isMobile = false }) => (
+        <div className="flex flex-col h-dvh lg:h-screen bg-(--bg-primary) border-r border-(--border-light)">
+            {isMobile && (
+                <div className="flex items-center justify-between px-3 py-3 border-b border-(--border-light)">
+                    <span className="text-sm font-semibold text-(--text-primary)">Menu</span>
+                    <button
+                        type="button"
+                        onClick={() => setMobileOpen(false)}
+                        className="p-2 rounded-md text-(--text-secondary) hover:bg-(--bg-tertiary) hover:text-(--text-primary)"
+                        aria-label="Close sidebar"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+            )}
+
+            <nav className="flex-1 min-h-0 py-4 overflow-y-auto">
                 <ul className="space-y-1 px-3">
                     {visibleItems.map((item) => {
                         const Icon = item.icon;
@@ -176,7 +208,10 @@ const Sidebar = () => {
             {/* Mobile Toggle Button (hidden on lg) */}
             <button
                 onClick={() => setMobileOpen(true)}
-                className="lg:hidden fixed bottom-4 right-4 z-40 p-3 bg-(--brand-primary) text-white rounded-full shadow-lg"
+                className="lg:hidden fixed bottom-4 right-4 z-30 p-3 bg-(--brand-primary) text-white rounded-full shadow-lg"
+                aria-label="Open sidebar"
+                aria-controls="mobile-sidebar"
+                aria-expanded={mobileOpen}
             >
                 <Menu className="w-6 h-6" />
             </button>
@@ -186,15 +221,19 @@ const Sidebar = () => {
                 <div
                     className="fixed inset-0 bg-black/50 z-40 lg:hidden"
                     onClick={() => setMobileOpen(false)}
+                    aria-hidden="true"
                 />
             )}
 
             {/* Mobile Sidebar */}
             <aside
+                id="mobile-sidebar"
                 className={`fixed top-0 left-0 bottom-0 w-64 z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
+                role="dialog"
+                aria-modal="true"
             >
-                <SidebarContent />
+                <SidebarContent isMobile />
             </aside>
 
             {/* Desktop Sidebar */}

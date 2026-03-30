@@ -40,6 +40,7 @@ import {
   ArrowDownRight,
   Layers,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // ─────────────────────────────────────────────
 // CONSTANTS
@@ -134,7 +135,7 @@ const ChartTooltip = ({ active, payload, label }) => {
 const fmtAxisDate = (d) => {
   if (!d) return "";
   const [, m, day] = d.split("-");
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   return `${months[parseInt(m) - 1]} ${parseInt(day)}`;
 };
 
@@ -1032,15 +1033,29 @@ const ROLE_LABELS = {
   guest_writer: "Guest Writer",
 };
 
-const DashboardClient = ({ analytics, range }) => {
+const DashboardClient = ({ range }) => {
   const router = useRouter();
   const role = analytics?.role;
+  const [analytics, setAnalytics] = useState(null);
 
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const data = await getDashboardAnalytics(range);
+        console.log("Analytics page : ", data);
+        setAnalytics(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAnalytics();
+  }, [range]);
   console.log(analytics)
 
   const handleRangeChange = (newRange) => {
     router.push(`?range=${newRange}`);
   };
+
 
   const renderDashboard = () => {
     switch (role) {

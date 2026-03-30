@@ -6,9 +6,7 @@ import api from "./api";
 export async function createCategory(payload) {
     try {
         const { data } = await api.post(`/category/create`, payload);
-        if (data?.success) {
-            await triggerRevalidation(["categories"])
-        }
+        await triggerRevalidation(["categories"])
         return data;
     } catch (error) {
         console.log(error);
@@ -20,9 +18,7 @@ export async function createCategory(payload) {
 export async function updateCategory(categoryId, payload) {
     try {
         const { data } = await api.patch(`/category/update/${categoryId}`, payload);
-        if (data?.success) {
-            await triggerRevalidation(["categories"])
-        }
+        await triggerRevalidation(["categories"])
         return data;
     } catch (error) {
         console.log(error);

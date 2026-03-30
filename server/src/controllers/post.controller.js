@@ -175,6 +175,10 @@ const createPost = asyncHandler(async (req, res) => {
                     postId: createdPost.id,
                     oldSlug: slug,
                 },
+            }).catch((err) => {
+                // SlugHistory has @@unique([postId, oldSlug]); treat duplicates as no-op.
+                if (err?.code === "P2002") return null;
+                throw err;
             });
 
             await tx.postSEO.create({
@@ -225,6 +229,10 @@ const updatePost = asyncHandler(async (req, res) => {
                     postId: id,
                     oldSlug: existingPost.slug,
                 },
+            }).catch((err) => {
+                // SlugHistory has @@unique([postId, oldSlug]); treat duplicates as no-op.
+                if (err?.code === "P2002") return null;
+                throw err;
             });
 
             slug = await generateUniqueSlug(title, prisma);

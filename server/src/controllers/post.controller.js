@@ -9,8 +9,10 @@ const createPost = asyncHandler(async (req, res) => {
     const authorId = author?.id;
     const { title, content, coverImageId, categories = [], tags = [], status, excerpt, isFeatured, seriesId, isPinned } = req.body;
 
-    if (!title || !content || !authorId) throw new ApiError(400, "Missing required fields");
-
+    if (!title || !authorId) {
+        throw new ApiError(400, "Missing required fields");
+    }
+    
     if (!content || !Array.isArray(content.blocks) || content.blocks.length === 0) {
         throw new ApiError(400, "Post content is empty");
     }
@@ -157,29 +159,20 @@ const createPost = asyncHandler(async (req, res) => {
                 },
             });
 
-            await tx.tag.updateMany({
-                where: {
-                    id: {
-                        in: tags,
+            if (tags?.length > 0) {
+                await tx.tag.updateMany({
+                    where: {
+                        id: {
+                            in: tags,
+                        },
                     },
-                },
-                data: {
-                    postCount: {
-                        increment: 1,
+                    data: {
+                        postCount: {
+                            increment: 1,
+                        },
                     },
-                },
-            });
-
-            await tx.slugHistory.create({
-                data: {
-                    postId: createdPost.id,
-                    oldSlug: slug,
-                },
-            }).catch((err) => {
-                // SlugHistory has @@unique([postId, oldSlug]); treat duplicates as no-op.
-                if (err?.code === "P2002") return null;
-                throw err;
-            });
+                });
+            }
 
             await tx.postSEO.create({
                 data: {
@@ -203,7 +196,7 @@ const createPost = asyncHandler(async (req, res) => {
 const updatePost = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const { title, content, excerpt, coverImageId, categories = [], tags = [], status, seriesId } = req.body;
+    const { title, content, excerpt, coverImageId, categories = [], tags = [], status, seriesId, isFeatured, isPinned } = req.body;
 
     const authorId = req.user.id;
 
@@ -229,11 +222,7 @@ const updatePost = asyncHandler(async (req, res) => {
                     postId: id,
                     oldSlug: existingPost.slug,
                 },
-            }).catch((err) => {
-                // SlugHistory has @@unique([postId, oldSlug]); treat duplicates as no-op.
-                if (err?.code === "P2002") return null;
-                throw err;
-            });
+            })
 
             slug = await generateUniqueSlug(title, prisma);
         }
@@ -319,10 +308,12 @@ const updatePost = asyncHandler(async (req, res) => {
                 content,
                 excerpt: generatedExcerpt,
                 coverImageId,
-                seriesId,
+                seriesId: typeof seriesId !== "undefined" ? seriesId : existingPost.seriesId,
                 status,
                 readingTime,
                 wordCount,
+                ...(typeof isFeatured !== "undefined" && { isFeatured }),
+                ...(typeof isPinned !== "undefined" && { isPinned }),
             },
         });
 

@@ -1,9 +1,7 @@
 "use client";
 import "./globals.css";
 import { AlertCircle, RefreshCcw, Home } from "lucide-react";
-import { usePalette } from "@/app/providers";
 export default function GlobalError({ error, reset }) {
-  const { palette } = usePalette();
   return (
     <html lang="en">
       <body className={`bg-(--bg-primary) text-(--text-primary) min-h-screen flex items-center justify-center font-sans antialiased m-0`}>

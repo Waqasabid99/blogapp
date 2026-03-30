@@ -59,7 +59,6 @@ const AddUser = () => {
     useEffect(() => {
         const fetchRoles = async () => {
             const data = await getAllRoles();
-            console.log("Add User page :", roles);
             setRoles(data);
         };
         fetchRoles();

@@ -62,7 +62,6 @@ const EditPost = ({ postId, categories = [], tags = [], series = [] }) => {
         const fetchPost = async () => {
             try {
                 const data = await getPostById(postId);
-                console.log(data)
                 if (data.success) {
                     const fetchedPost = data.data;
                     setPost(fetchedPost);

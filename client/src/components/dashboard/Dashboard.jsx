@@ -1045,7 +1045,6 @@ const DashboardClient = ({ range }) => {
       try {
         setIsLoading(true);
         const data = await getDashboardAnalytics(range);
-        console.log("Analytics page : ", data);
         setAnalytics(data);
       } catch (error) {
         console.log(error);

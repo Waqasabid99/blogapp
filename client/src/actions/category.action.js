@@ -6,7 +6,6 @@ export const getAllCategories = async () => {
       tags: ["categories"]
     }
   })
-  console.log(response);
   if (!response.ok) {
     throw new Error("Failed to fetch categories")
   }
@@ -20,7 +19,6 @@ export const getFlatCategories = async () => {
       tags: ["categories"]
     }
   })
-  console.log(response);
   if (!response.ok) {
     throw new Error("Failed to fetch categories")
   }
@@ -34,7 +32,6 @@ export const getCategoryById = async (id) => {
       tags: ["categories"]
     }
   })
-  console.log(response);
   if (!response.ok) {
     throw new Error("Failed to fetch category")
   }

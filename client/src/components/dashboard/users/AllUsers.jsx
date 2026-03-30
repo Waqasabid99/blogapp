@@ -24,7 +24,6 @@ const AllUsers = () => {
             try {
                 setIsLoading(true);
                 const data = await getAllUsers();
-                console.log("All Users page : ", data);
                 setData(data?.users || []);
                 setIsLoading(false);
             } catch (error) {

@@ -25,7 +25,6 @@ const EditTag = ({ tagId }) => {
         const fetchTag = async () => {
             try {
                 const data = await getTagById(tagId);
-                console.log("Edit Tag page : ", data);
                 if (data.success && data.data) {
                     setTag(data?.data);
                     setName(data?.data?.name || "");

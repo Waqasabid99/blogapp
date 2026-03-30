@@ -60,7 +60,6 @@ const EditUser = ({ userId }) => {
                 getUserById(userId),
                 getAllRoles(),
             ])
-            console.log("Edit Page : ", user, roles);
             setUser(user);
             setRoles(roles);
             setName(user?.name || "");

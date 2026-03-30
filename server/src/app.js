@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import morgan from "morgan"
 import rateLimit from "express-rate-limit";
 import { errorHandler } from "./middleware/error.middleware.js";
 import authRouter from "./routes/auth.routes.js";
@@ -17,7 +18,19 @@ import analyticsRouter from "./routes/analytics.routes.js";
 import userRouter from "./routes/user.routes.js";
 import rolePermissionRouter from "./routes/rolePermission.routes.js";
 import mediaRouter from "./routes/media.routes.js";
+import logger from "./utils/logger.js";
 const app = express();
+
+// Logging
+app.use(
+    morgan("combined", {
+        stream: {
+            write: (message) => {
+                logger.info(message.trim());
+            },
+        },
+    })
+);
 
 // Middleware
 app.use(
@@ -28,7 +41,7 @@ app.use(
                 scriptSrc: ["'self'", "https:", "'unsafe-inline'"],
                 styleSrc: ["'self'", "https:", "'unsafe-inline'"],
                 imgSrc: ["'self'", "data:", "https:"],
-                connectSrc: ["'self'", "https:"],
+                connectSrc: ["'self'", "https:", process.env.ORIGIN],
                 fontSrc: ["'self'", "https:", "data:"],
                 objectSrc: ["'none'"],
                 frameAncestors: ["'none'"],
@@ -54,19 +67,30 @@ app.use(
     })
 );
 
+// Trust Proxy configuration
+app.set('trust proxy', true);
+
 app.use(
     rateLimit({
         windowMs: 15 * 60 * 1000,
-        max: 1000,
+        max: 200,
     })
 );
 
+const allowedOrigins = [
+    "http://localhost:3000",
+    process.env.ORIGIN,
+];
+
 app.use(
     cors({
-        origin:
-            process.env.NODE_ENV === "production"
-                ? process.env.ORIGIN
-                : "http://localhost:3000",
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
         credentials: true,
     })
 );
@@ -94,6 +118,14 @@ app.get("/", (req, res) => {
 })
 app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok", message: "Backend is running!" });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: "Route not found",
+    });
 });
 
 // Global error handler

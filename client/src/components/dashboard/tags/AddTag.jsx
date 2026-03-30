@@ -40,7 +40,6 @@ const AddTag = ({ tags }) => {
                 name: name.trim(),
                 description: description.trim(),
             });
-            console.log("Add Tag page : ", data);
             if (data.success) {
                 router.refresh();
                 setToast({ type: "success", message: "tag created successfully." });

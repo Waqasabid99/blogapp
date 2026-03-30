@@ -34,7 +34,7 @@ const SidebarSkeleton = () => {
             {/* Mobile Toggle Button (hidden on lg) */}
             <button
                 onClick={() => setMobileOpen(true)}
-                className="lg:hidden fixed bottom-4 right-4 z-40 p-3 bg-(--brand-primary) text-white rounded-full shadow-lg"
+                className="lg:hidden fixed bottom-4 right-4 z-70 p-3 bg-(--brand-primary) text-white rounded-full shadow-lg"
             >
                 <Menu className="w-6 h-6" />
             </button>
@@ -42,14 +42,14 @@ const SidebarSkeleton = () => {
             {/* Mobile Overlay */}
             {mobileOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/50 z-60 lg:hidden"
                     onClick={() => setMobileOpen(false)}
                 />
             )}
 
             {/* Mobile Sidebar */}
             <aside
-                className={`fixed top-0 left-0 bottom-0 w-64 z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"
+            className={`fixed top-0 left-0 bottom-0 w-64 z-70 transform transition-transform duration-300 ease-in-out lg:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
             >
                 <SidebarContent />

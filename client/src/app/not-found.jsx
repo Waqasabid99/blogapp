@@ -1,10 +1,24 @@
 "use client";
 import Link from "next/link";
 import { SearchX, Home, ArrowLeft } from "lucide-react";
+import { Providers } from "./providers";
 
 export default function NotFound() {
 
   return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>Page Not Found | Newszone</title>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="description" content="We couldn't find the page you're looking for. It might have been moved, deleted, or perhaps the URL is incorrect." />
+        <meta name="keywords" content="page not found, error, newszone" />
+        <meta name="author" content="Newszone" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+      </head>
+    <Providers>
     <div className="bg-(--bg-primary) min-h-[80vh] flex flex-col items-center justify-center px-6 text-center py-20">
 
       {/* Glowing 404 Icon */}
@@ -45,5 +59,7 @@ export default function NotFound() {
         </Link>
       </div>
     </div>
+    </Providers>
+    </html>
   );
 }

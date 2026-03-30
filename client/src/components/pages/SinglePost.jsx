@@ -129,7 +129,7 @@ const ViewPost = ({ post, relatedPosts = [] }) => {
             <article className="vp-root">
 
                 {/* ── HERO ── */}
-                <header className="vp-hero">
+                <header className="vp-hero mt-10">
                     {/* Category badges */}
                     {post?.categories?.length > 0 && (
                         <div className="vp-cat-row">

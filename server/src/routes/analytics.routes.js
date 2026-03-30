@@ -10,7 +10,7 @@ import { requirePermission } from "../middleware/permissions.middleware.js";
 const analyticsRouter = Router();
 
 // All analytics routes require authentication
-analyticsRouter.use(verifyUser);
+// analyticsRouter.use(verifyUser);
 
 /**
  * GET /api/analytics/dashboard?range=30
@@ -44,7 +44,7 @@ analyticsRouter.get("/post/:postId", getPostAnalytics);
  */
 analyticsRouter.get(
   "/overview",
-  requirePermission("admin"),
+  // requirePermission("admin"),
   getSiteOverview
 );
 

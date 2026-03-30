@@ -8,7 +8,10 @@ import api from "./api";
 export async function createTag(payload) {
     try {
         const { data } = await api.post(`/tag/create`, payload);
-        await triggerRevalidation(["tags"])
+        console.log("Create Tag page : ", data);
+        if (data.success) {
+            await triggerRevalidation(["tags"]);
+        }
         return data;
     } catch (error) {
         console.log("Error creating tag:", error);
@@ -22,7 +25,10 @@ export async function createTag(payload) {
 export async function updateTag(tagId, payload) {
     try {
         const { data } = await api.patch(`/tag/update/${tagId}`, payload);
-        await triggerRevalidation(["tags"])
+        console.log("Update Tag page : ", data);
+        if (data.success) {
+            await triggerRevalidation(["tags"]);
+        }
         return data;
     } catch (error) {
         console.log("Error updating tag:", error);

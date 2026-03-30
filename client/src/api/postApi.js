@@ -6,7 +6,10 @@ import api from "./api";
 export async function createPost(payload) {
     try {
         const { data } = await api.post(`/post`, payload);
-        await triggerRevalidation(["posts"])
+        console.log("Create Post page : ", data);
+        if (data.success) {
+            await triggerRevalidation(["posts"]);
+        }
         return data;
     } catch (error) {
         console.log(error);
@@ -17,7 +20,10 @@ export async function createPost(payload) {
 export async function updatePost(postId, payload) {
     try {
         const { data } = await api.put(`/post/${postId}`, payload);
-        await triggerRevalidation(["posts"])
+        console.log("Update Post page : ", data);
+        if (data.success) {
+            await triggerRevalidation(["posts"]);
+        }
         return data;
     } catch (error) {
         console.log(error);

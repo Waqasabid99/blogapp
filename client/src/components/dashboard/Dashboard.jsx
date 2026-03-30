@@ -41,6 +41,7 @@ import {
   Layers,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getDashboardAnalytics } from "@/actions/analytics.action";
 
 // ─────────────────────────────────────────────
 // CONSTANTS
@@ -1035,7 +1036,6 @@ const ROLE_LABELS = {
 
 const DashboardClient = ({ range }) => {
   const router = useRouter();
-  const role = analytics?.role;
   const [analytics, setAnalytics] = useState(null);
 
   useEffect(() => {
@@ -1050,7 +1050,8 @@ const DashboardClient = ({ range }) => {
     };
     fetchAnalytics();
   }, [range]);
-  console.log(analytics)
+
+  const role = analytics?.role;
 
   const handleRangeChange = (newRange) => {
     router.push(`?range=${newRange}`);

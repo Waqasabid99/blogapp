@@ -93,27 +93,6 @@ const Footer = ({ categories }) => {
             </ul>
           </div>
 
-          {/* Categories */}
-          {categories.length > 0 ? (
-            <div>
-              <h4 className="text-base font-semibold text-(--text-primary) mb-6">
-                Categories
-              </h4>
-              <ul className="flex flex-col gap-3">
-                {categories?.slice(0, 5).map((category) => (
-                  <li key={category.id}>
-                    <Link
-                      href={`/blog/${category.slug}`}
-                      className="text-sm text-(--text-muted) hover:text-(--brand-primary) transition-colors"
-                    >
-                      {category.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
           {/* Legal */}
           <div>
             <h4 className="text-base font-semibold text-(--text-primary) mb-6">
@@ -146,6 +125,28 @@ const Footer = ({ categories }) => {
               </li>
             </ul>
           </div>
+
+          {/* Categories */}
+          {categories.length > 0 ? (
+            <div>
+              <h4 className="text-base font-semibold text-(--text-primary) mb-6">
+                Categories
+              </h4>
+              <ul className="flex flex-col gap-3">
+                {categories?.slice(0, 5).map((category) => (
+                  <li key={category.id}>
+                    <Link
+                      href={`/blog/${category.slug}`}
+                      className="text-sm text-(--text-muted) hover:text-(--brand-primary) transition-colors"
+                    >
+                      {category.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
         </div>
 
         {/* Bottom */}

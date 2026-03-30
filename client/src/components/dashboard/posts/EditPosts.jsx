@@ -184,6 +184,7 @@ const EditPost = ({ postId, categories = [], tags = [], series = [] }) => {
                     type: "success",
                     message: status === "DRAFT" ? "Post saved as draft." : "Post updated successfully!",
                 });
+                router.refresh();
                 setTimeout(() => router.push(`/dashboard/${user?.role}/${user?.id}/posts`), 1400);
             } else {
                 setToast({ type: "error", message: data?.message ?? "Failed to update post." });

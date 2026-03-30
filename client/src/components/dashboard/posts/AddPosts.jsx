@@ -104,6 +104,7 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
             const data = await createPost(buildPayload("DRAFT"));
             if (data.success) {
                 setToast({ type: "success", message: "Draft saved successfully." });
+                router.refresh();
                 setTimeout(() => router.push(`posts/${data.data.id}/edit`), 1200);
             } else {
                 setToast({ type: "error", message: data?.message ?? "Failed to save draft." });
@@ -127,6 +128,7 @@ const AddPost = ({ categories = [], tags = [], series = [] }) => {
             const data = await createPost(buildPayload());
             if (data.success) {
                 setToast({ type: "success", message: status === "DRAFT" ? "Post saved as draft." : "Post published!" });
+                router.refresh();
                 setTimeout(() => router.push(`/dashboard/${user?.role}/${user?.id}/posts`), 1400);
             } else {
                 setToast({ type: "error", message: data?.message ?? "Failed to create post." });

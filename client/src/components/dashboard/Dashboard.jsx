@@ -42,6 +42,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getDashboardAnalytics } from "@/actions/analytics.action";
+import Loader from "../ui/Loader";
 
 // ─────────────────────────────────────────────
 // CONSTANTS
@@ -1037,15 +1038,19 @@ const ROLE_LABELS = {
 const DashboardClient = ({ range }) => {
   const router = useRouter();
   const [analytics, setAnalytics] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
+        setIsLoading(true);
         const data = await getDashboardAnalytics(range);
         console.log("Analytics page : ", data);
         setAnalytics(data);
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchAnalytics();
@@ -1080,6 +1085,14 @@ const DashboardClient = ({ range }) => {
         );
     }
   };
+
+  if (isLoading || !analytics) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] w-full">
+        <Loader size="lg" text="Loading dashboard..." />
+      </div>
+    );
+  }
 
   return (
     <div

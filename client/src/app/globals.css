@@ -13,163 +13,76 @@
 }
 
 :root {
-  /* =========================
-     BRAND
-  ========================= */
+  /* BRAND */
+  --brand-primary: #1a3a6b;
+  --brand-primary-hover: #0f2548;
+  --brand-primary-light: #f0f3fa;
 
-  --brand-primary: #ff6a00;
-  --brand-primary-hover: #e65f00;
-  --brand-primary-light: #fff1e6;
+  /* ACCENT (gold — use for category tags, highlights, CTAs) */
+  --brand-accent: #b8860b;
+  --brand-accent-hover: #9a6f09;
+  --brand-accent-light: #fdf8ec;
 
-  /* =========================
-     BACKGROUNDS
-  ========================= */
-
+  /* BACKGROUNDS */
   --bg-primary: #ffffff;
-  --bg-secondary: #f7f7f7;
-  --bg-tertiary: #efefef;
-  --bg-light: #f4f4f4;
-  --bg-dark: #111111;
+  --bg-secondary: #f7f8fc;
+  --bg-tertiary: #eef0f7;
+  --bg-light: #f3f4f9;
+  --bg-dark: #111318;
 
-  /* =========================
-     TEXT COLORS
-  ========================= */
-
-  --text-primary: #111111;
-  --text-secondary: #555555;
-  --text-muted: #8a8a8a;
+  /* TEXT */
+  --text-primary: #0d1117;
+  --text-secondary: #3a3f52;
+  --text-muted: #777c91;
   --text-inverse: #ffffff;
   --text-white: #ffffff;
 
-  /* =========================
-     BORDERS
-  ========================= */
+  /* BORDERS */
+  --border-light: #e2e5f0;
+  --border-medium: #cdd1e5;
+  --border-dark: #a8afc8;
+  --border-black: #0d1117;
 
-  --border-light: #e5e5e5;
-  --border-medium: #d6d6d6;
-  --border-dark: #bfbfbf;
-  --border-black: #000000;
-
-  /* =========================
-     TYPOGRAPHY SCALE
-  ========================= */
-
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-md: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
-  --text-5xl: 3rem;
-
-  /* =========================
-     FONT WEIGHTS
-  ========================= */
-
-  --font-regular: 400;
-  --font-medium: 500;
-  --font-semibold: 600;
-  --font-bold: 700;
-
-  /* =========================
-     LINE HEIGHT
-  ========================= */
-
-  --line-tight: 1.2;
-  --line-normal: 1.5;
-  --line-relaxed: 1.7;
-
-  /* =========================
-     SPACING SCALE
-  ========================= */
-
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-7: 32px;
-  --space-8: 40px;
-  --space-9: 48px;
-
-  /* =========================
-     RADIUS
-  ========================= */
-
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-xl: 25px;
-
-  /* =========================
-     SHADOWS
-  ========================= */
-
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.08);
-  --shadow-lg: 0 10px 20px rgba(0,0,0,0.12);
-
-  /* =========================
-     TRANSITIONS
-  ========================= */
-
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s ease;
-
-  /* =========================
-     FOCUS
-  ========================= */
-
-  --focus-ring: 0 0 0 3px rgba(255,106,0,0.35);
+  --focus-ring: 0 0 0 3px rgba(26, 58, 107, 0.35);
 }
-
-
-/* =====================================================
-   DARK THEME
-===================================================== */
 
 .dark {
   /* BRAND */
+  --brand-primary: #4a7fd4;
+  --brand-primary-hover: #6b97de;
+  --brand-primary-light: #0f1d35;
 
-  --brand-primary: #ff7a1a;
-  --brand-primary-hover: #ff8a33;
-  --brand-primary-light: #3a1f0a;
+  /* ACCENT */
+  --brand-accent: #d4a030;
+  --brand-accent-hover: #e0b44a;
+  --brand-accent-light: #2a1f08;
 
   /* BACKGROUNDS */
-
-  --bg-primary: #0f0f0f;
-  --bg-secondary: #171717;
-  --bg-tertiary: #1f1f1f;
-  --bg-light: #2a2a2a;
+  --bg-primary: #0d1117;
+  --bg-secondary: #131720;
+  --bg-tertiary: #1a2030;
+  --bg-light: #1e2535;
   --bg-dark: #000000;
 
   /* TEXT */
-
-  --text-primary: #f5f5f5;
-  --text-secondary: #c7c7c7;
-  --text-muted: #dbdbdb;
-  --text-inverse: #111111;
+  --text-primary: #e8ecf5;
+  --text-secondary: #a8b0cc;
+  --text-muted: #6b7290;
+  --text-inverse: #0d1117;
   --text-white: #ffffff;
 
   /* BORDERS */
-
-  --border-light: #2a2a2a;
-  --border-medium: #3a3a3a;
-  --border-dark: #555555;
-  --border-black: #ffffff;
+  --border-light: #1e2535;
+  --border-medium: #2a3350;
+  --border-dark: #3d4d75;
+  --border-black: #e8ecf5;
 
   /* SHADOWS */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.5);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.6);
+  --shadow-lg: 0 10px 20px rgba(0,0,0,0.7);
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.5);
-  --shadow-lg: 0 10px 20px rgba(0,0,0,0.6);
-
-  /* FOCUS */
-
-  --focus-ring: 0 0 0 3px rgba(255,122,26,0.5);
+  --focus-ring: 0 0 0 3px rgba(74, 127, 212, 0.45);
 }
 
 body{ 

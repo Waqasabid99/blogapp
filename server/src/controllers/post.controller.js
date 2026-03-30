@@ -222,7 +222,10 @@ const updatePost = asyncHandler(async (req, res) => {
                     postId: id,
                     oldSlug: existingPost.slug,
                 },
-            })
+            }).catch((err) => {
+                if (err?.code === "P2002") return null;
+                throw err;
+            });
 
             slug = await generateUniqueSlug(title, tx);
         }

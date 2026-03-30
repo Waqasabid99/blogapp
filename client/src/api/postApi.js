@@ -7,12 +7,15 @@ export async function createPost(payload) {
     try {
         const { data } = await api.post(`/post`, payload);
         console.log("Create Post page : ", data);
-        if (data.success) {
+        if (data?.success) {
             await triggerRevalidation(["posts"]);
+            return data;
+        } else {
+            throw new Error(data?.message ?? "Failed to create post.");
         }
-        return data;
     } catch (error) {
         console.log(error);
+        throw new Error(error?.message ?? "Failed to create post.");
     }
 }
 
@@ -21,11 +24,14 @@ export async function updatePost(postId, payload) {
     try {
         const { data } = await api.put(`/post/${postId}`, payload);
         console.log("Update Post page : ", data);
-        if (data.success) {
+        if (data?.success) {
             await triggerRevalidation(["posts"]);
+            return data;
+        } else {
+            throw new Error(data?.message ?? "Failed to update post.");
         }
-        return data;
     } catch (error) {
         console.log(error);
+        throw new Error(error?.message ?? "Failed to update post.");
     }
 }

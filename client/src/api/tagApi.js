@@ -9,13 +9,15 @@ export async function createTag(payload) {
     try {
         const { data } = await api.post(`/tag/create`, payload);
         console.log("Create Tag page : ", data);
-        if (data.success) {
+        if (data?.success) {
             await triggerRevalidation(["tags"]);
+            return data;
+        } else {
+            throw new Error(data?.message ?? "Failed to create tag.");
         }
-        return data;
     } catch (error) {
         console.log("Error creating tag:", error);
-        return error.data;
+        throw new Error(error?.message ?? "Failed to create tag.");
     }
 }
 
@@ -26,12 +28,14 @@ export async function updateTag(tagId, payload) {
     try {
         const { data } = await api.patch(`/tag/update/${tagId}`, payload);
         console.log("Update Tag page : ", data);
-        if (data.success) {
+        if (data?.success) {
             await triggerRevalidation(["tags"]);
+            return data;
+        } else {
+            throw new Error(data?.message ?? "Failed to update tag.");
         }
-        return data;
     } catch (error) {
         console.log("Error updating tag:", error);
-        return error.data;
+        throw new Error(error?.message ?? "Failed to update tag.");
     }
 }

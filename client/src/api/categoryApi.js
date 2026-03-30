@@ -7,13 +7,15 @@ export async function createCategory(payload) {
     try {
         const { data } = await api.post(`/category/create`, payload);
         console.log("Create Category page : ", data);
-        if (data.success) {
+        if (data?.success) {
             await triggerRevalidation(["categories"]);
+            return data;
+        } else {
+            throw new Error(data?.message ?? "Failed to create category.");
         }
-        return data;
     } catch (error) {
         console.log(error);
-        throw error;
+        throw new Error(error?.message ?? "Failed to create category.");
     }
 }
 
@@ -22,12 +24,14 @@ export async function updateCategory(categoryId, payload) {
     try {
         const { data } = await api.patch(`/category/update/${categoryId}`, payload);
         console.log("Update Category page : ", data);
-        if (data.success) {
+        if (data?.success) {
             await triggerRevalidation(["categories"]);
+            return data;
+        } else {
+            throw new Error(data?.message ?? "Failed to update category.");
         }
-        return data;
     } catch (error) {
         console.log(error);
-        throw error;
+        throw new Error(error?.message ?? "Failed to update category.");
     }
 }
